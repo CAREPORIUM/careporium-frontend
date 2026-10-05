@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Careporium - Account Created</title>
+
+    <!-- Tailwind CSS from the CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Use SF Pro (the Apple system font) for the whole page -->
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [
+                "-apple-system",
+                "BlinkMacSystemFont",
+                '"SF Pro Text"',
+                '"Segoe UI"',
+                "Roboto",
+                "sans-serif",
+              ],
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+
+  <body class="bg-slate-50 min-h-screen relative overflow-x-hidden">
+    <!-- Soft blue circles in the background -->
+    <div
+      class="absolute top-20 left-10 w-72 h-72 bg-blue-100 rounded-full blur-3xl"
+    ></div>
+    <div
+      class="absolute bottom-10 right-10 w-80 h-80 bg-blue-100 rounded-full blur-3xl"
+    ></div>
+
+    <!-- This puts the white card in the middle of the screen -->
+    <main
+      class="relative min-h-screen flex items-center justify-center px-5 py-10"
+    >
+      <!-- White card (max-w-2xl controls how wide it can get) -->
+      <div class="w-full max-w-2xl bg-white rounded-xl shadow-sm p-5 md:p-10">
+        <!-- Logo -->
+        <img
+          src="/images/logo-blue.png"
+          alt="Careporium logo"
+          class="w-44 h-auto mx-auto"
+        />
+
+        <!-- Check icon in a light blue circle -->
+        <div
+          class="w-14 h-14 rounded-full bg-blue-50 flex items-center justify-center mx-auto mt-10"
+        >
+          <img src="/icons/blue-success.png" alt="" class="w-7 h-7" />
+        </div>
+
+        <!-- Title -->
+        <h2 class="text-2xl font-semibold text-gray-900 text-center mt-5">
+          Account created successfully
+        </h2>
+        <p
+          class="text-xs font-medium text-gray-700 text-center mt-3 max-w-md mx-auto"
+        >
+          Check your email for a verification link before logging in. The link
+          confirms that this email belongs to you.
+        </p>
+
+        <!-- Go to login button (not full width: half the card on desktop) -->
+        <a
+          href="/AuthenticationSection/login.html"
+          class="block w-full md:w-1/2 mx-auto bg-blue-600 text-white text-sm font-semibold text-center py-3 rounded-lg mt-5 hover:bg-blue-700"
+        >
+          Go to login
+        </a>
+
+        <!-- Resend link (will work once there is a backend) -->
+        <a
+          href="#"
+          class="block text-xs font-medium text-blue-600 text-center mt-3 mb-5"
+        >
+          Didn't receive the email? Resend link
+        </a>
+      </div>
+    </main>
+  </body>
+</html>

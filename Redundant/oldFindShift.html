@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Careporium - Find Shifts</title>
+
+    <!-- Tailwind CSS from the CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Use SF Pro (the Apple system font) for the whole page -->
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ["-apple-system", "BlinkMacSystemFont", '"SF Pro Text"', '"Segoe UI"', "Roboto", "sans-serif"],
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+
+  <body class="bg-slate-50 text-gray-900">
+    <!-- Sidebar on the left, page on the right -->
+    <div class="flex min-h-screen">
+
+      <!-- ==================== SIDEBAR ==================== -->
+      <!-- On desktop it always shows (md:flex). On mobile it's hidden until the menu button opens it. -->
+     <aside id="sidebar" class="hidden md:flex fixed md:static inset-y-0 left-0 z-20 w-56 flex-shrink-0 flex-col bg-white border-r border-gray-200 p-5">
+        <!-- Logo, with a close button next to it (the close button only shows on mobile) -->
+        <div class="flex items-center justify-between">
+          <img src="/images/logo-blue.png" alt="Careporium logo" class="w-36 h-auto" />
+          <button type="button" id="closeMenuButton" class="md:hidden">
+            <img src="/icons/close.png" alt="Close menu" class="w-6 h-6" />
+          </button>
+        </div>
+
+        <!-- Menu links -->
+        <nav class="space-y-2 mt-10">
+          <a href="/WorkerShiftMarket/Dashboard.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50">
+            <img src="/icons/nav-dashboard.png" alt="" class="w-4 h-4" />
+            Dashboard
+          </a>
+          <a href="/WorkerShiftMarket/FindShifts.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50">
+            <img src="/icons/nav-find-shifts.png" alt="" class="w-4 h-4" />
+            Find shifts
+          </a>
+  <!-- Active page: light blue -->
+          <a href="/WorkerShiftMarket/MyApplications.html" class="flex items-center gap-3 px-3 py-2 rounded-lg bg-blue-50 text-blue-600 text-sm font-medium">
+            <img src="/icons/nav-applications.png" alt="" class="w-4 h-4" />
+            My applications
+          </a>
+          <a href="/WorkerShiftMarket/UpcomingShifts.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50">
+            <img src="/icons/nav-upcoming.png" alt="" class="w-4 h-4" />
+            Upcoming shifts
+          </a>
+          <a href="/WorkerShiftMarket/Profile.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50">
+            <img src="/icons/nav-profile.png" alt="" class="w-4 h-4" />
+            Profile
+          </a>
+        </nav>
+      </aside>
+
+      <!-- ==================== RIGHT SIDE ==================== -->
+      <div class="flex-1 min-w-0">
+        <!-- Top bar: where you are on the left, user on the right -->
+        <header class="bg-white border-b border-gray-200 px-5 md:px-8 py-4 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <!-- Menu button (only on mobile) -->
+            <button type="button" id="menuButton" class="md:hidden">
+              <img src="/icons/menu.png" alt="Open menu" class="w-6 h-6" />
+            </button>
+            <p class="text-xs font-medium text-gray-500 uppercase">Worker workspace / Find shifts</p>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <img src="/icons/bell.png" alt="Notifications" class="w-4 h-4" />
+            <p class="hidden sm:block text-sm font-medium">Amara Okafor</p>
+            <!-- Initials in a light blue circle -->
+            <span class="w-8 h-8 rounded-full bg-blue-50 text-blue-600 text-xs font-semibold flex items-center justify-center">AO</span>
+          </div>
+        </header>
+
+        <!-- ==================== PAGE CONTENT ==================== -->
+        <main class="p-5 md:p-8 max-w-6xl">
+          <!-- Page heading -->
+          <p class="text-xs font-medium text-blue-600 uppercase">Shift marketplace</p>
+          <h1 class="text-3xl font-semibold mt-2">Find your next healthcare shift.</h1>
+          <p class="text-sm text-gray-700 mt-2">Explore verified facilities across Lagos. Choose shifts that fit your specialty and availability.</p>
+
+          <!-- Search and filters -->
+          <section class="bg-white border border-gray-200 rounded-2xl p-6 grid grid-cols-1 md:grid-cols-5 gap-5 mt-5">
+            <div class="md:col-span-2">
+              <label for="shiftSearch" class="block text-sm font-semibold mb-2">Search shifts</label>
+              <input type="text" id="shiftSearch" placeholder="Role, specialty or facility" class="w-full border border-gray-200 rounded-lg py-3 px-3 text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-200" />
+            </div>
+            <div>
+                <label for="location" class="block text-sm font-semibold mb-2">Location</label>
+                <div class="relative">
+                  <select id="location" class="w-full appearance-none bg-white border border-gray-200 rounded-lg py-3 pl-3 pr-10 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-200"><option>Lagos · 25 km</option><option>Lagos · 10 km</option><option>Lagos · 50 km</option></select>
+                  <img src="/icons/akar-icons_chevron-down-small.png" alt="" class="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                </div>
+              </div>
+            <div>
+                <label for="date" class="block text-sm font-semibold mb-2">Date</label>
+                <div class="relative">
+                  <select id="date" class="w-full appearance-none bg-white border border-gray-200 rounded-lg py-3 pl-3 pr-10 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-200"><option>Any date</option><option>Today</option><option>This week</option><option>Next week</option></select>
+                  <img src="/icons/akar-icons_chevron-down-small.png" alt="" class="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                </div>
+              </div>
+            <div>
+                <label for="specialty" class="block text-sm font-semibold mb-2">Specialty</label>
+                <div class="relative">
+                  <select id="specialty" class="w-full appearance-none bg-white border border-gray-200 rounded-lg py-3 pl-3 pr-10 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-200"><option>Nursing</option><option>Midwifery</option><option>Pharmacy</option><option>Laboratory</option></select>
+                  <img src="/icons/akar-icons_chevron-down-small.png" alt="" class="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                </div>
+              </div>
+          </section>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mt-5">
+            <!-- Shift list -->
+            <section class="bg-white border border-gray-200 rounded-2xl p-6 md:col-span-2">
+              <div class="flex justify-between items-center">
+                <h2 class="text-lg font-semibold">Recommended shifts</h2>
+                <span class="inline-block bg-blue-50 text-blue-600 text-xs font-semibold uppercase px-2 py-1 rounded">24 results</span>
+              </div>
+
+              <!-- Each shift card has the class "shift-card" so the search box can find it -->
+              <div class="space-y-3 mt-5">
+              <div class="shift-card border border-gray-200 rounded-xl p-5">
+                <div class="flex justify-between items-start gap-3">
+                  <p class="text-base font-semibold">Registered Nurse · Acute Care</p>
+                  <span class="inline-block bg-amber-50 text-amber-700 text-xs font-semibold uppercase px-2 py-1 rounded">Urgent</span>
+                </div>
+                <p class="text-xs text-gray-700 mt-1">Mainland Care Hospital · Verified facility</p>
+                <p class="text-xs text-gray-700 mt-3">Tue, 6 Oct · 07:00–19:00 WAT · Ikeja, Lagos · 4.2 km</p>
+                <div class="flex justify-between items-center gap-3 mt-1">
+                  <p class="text-sm font-semibold">₦3,000/hr · ₦36,000 total</p>
+                  <a href="/WorkerShiftMarket/ShiftDetails.html" class="bg-blue-600 text-white text-sm font-medium px-8 py-3 rounded-lg hover:bg-blue-700">View shift</a>
+                </div>
+              </div>
+              <div class="shift-card border border-gray-200 rounded-xl p-5">
+                <div class="flex justify-between items-start gap-3">
+                  <p class="text-base font-semibold">Community Nurse</p>
+                  <span class="inline-block bg-green-50 text-green-700 text-xs font-semibold uppercase px-2 py-1 rounded">94% match</span>
+                </div>
+                <p class="text-xs text-gray-700 mt-1">Yaba Community Clinic · Verified facility</p>
+                <p class="text-xs text-gray-700 mt-3">Fri, 9 Oct · 08:00–16:00 WAT · Yaba, Lagos · 7.5 km</p>
+                <div class="flex justify-between items-center gap-3 mt-1">
+                  <p class="text-sm font-semibold">₦3,500/hr · ₦28,000 total</p>
+                  <a href="/WorkerShiftMarket/ShiftDetails.html" class="bg-blue-600 text-white text-sm font-medium px-8 py-3 rounded-lg hover:bg-blue-700">View shift</a>
+                </div>
+              </div>
+              <div class="shift-card border border-gray-200 rounded-xl p-5">
+                <div class="flex justify-between items-start gap-3">
+                  <p class="text-base font-semibold">Registered Nurse · Night Shift</p>
+                  <span class="inline-block bg-green-50 text-green-700 text-xs font-semibold uppercase px-2 py-1 rounded">New</span>
+                </div>
+                <p class="text-xs text-gray-700 mt-1">Ikeja Medical Centre · Verified facility</p>
+                <p class="text-xs text-gray-700 mt-3">Sat, 10 Oct · 18:00–07:00 WAT · Ikeja, Lagos · 5.1 km</p>
+                <div class="flex justify-between items-center gap-3 mt-1">
+                  <p class="text-sm font-semibold">₦4,500/hr · ₦54,000 total</p>
+                  <a href="/WorkerShiftMarket/ShiftDetails.html" class="bg-blue-600 text-white text-sm font-medium px-8 py-3 rounded-lg hover:bg-blue-700">View shift</a>
+                </div>
+              </div>
+              </div>
+
+              <!-- Shown by the JS when the search finds nothing -->
+              <p id="noResults" class="hidden text-sm text-gray-700 text-center py-10">No shifts match your search.</p>
+
+              <p id="resultsText" class="text-xs text-gray-500 mt-3">Showing 3 of 24 sample shifts · All times are WAT</p>
+            </section>
+
+            <!-- Sort + profile -->
+            <section class="bg-white border border-gray-200 rounded-2xl p-6 self-start">
+              <div>
+                <label for="sort" class="block text-sm font-semibold mb-2">Sort shifts</label>
+                <div class="relative">
+                  <select id="sort" class="w-full appearance-none bg-white border border-gray-200 rounded-lg py-3 pl-3 pr-10 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-200"><option>Best match</option><option>Highest pay</option><option>Closest</option><option>Soonest</option></select>
+                  <img src="/icons/akar-icons_chevron-down-small.png" alt="" class="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                </div>
+              </div>
+              <div class="mt-5"><span class="inline-block bg-green-50 text-green-700 text-xs font-semibold uppercase px-2 py-1 rounded">✓ Profile verified</span></div>
+              <h2 class="text-lg font-semibold mt-3">Ready for your next shift</h2>
+              <p class="text-xs text-gray-700 mt-3">Your credentials are approved. Set your availability to improve your matches.</p>
+              <div class="space-y-3 mt-3">
+                <div class="flex justify-between gap-3 text-xs"><span class="text-gray-700">Specialty</span><span class="font-semibold">Registered nurse</span></div>
+                <div class="flex justify-between gap-3 text-xs"><span class="text-gray-700">Search radius</span><span class="font-semibold">25 km</span></div>
+              </div>
+              <a href="/WorkerShiftMarket/Profile.html" class="block border border-blue-600 text-blue-600 text-sm font-medium text-center px-8 py-3 rounded-lg hover:bg-blue-50 mt-5">Update availability</a>
+            </section>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <!-- Shared JavaScript for all worker dashboard pages -->
+    <script src="/js/WorkerDashboard.js"></script>
+  </body>
+</html>

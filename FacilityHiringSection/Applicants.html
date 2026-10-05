@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Careporium - Applicants</title>
+
+    <!-- Tailwind CSS from the CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Use SF Pro (the Apple system font) for the whole page -->
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [
+                "-apple-system",
+                "BlinkMacSystemFont",
+                '"SF Pro Text"',
+                '"Segoe UI"',
+                "Roboto",
+                "sans-serif",
+              ],
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+
+  <body class="bg-slate-50 text-gray-900">
+    <!-- Sidebar on the left, page on the right -->
+    <div class="flex min-h-screen">
+      <!-- ==================== SIDEBAR ==================== -->
+      <!-- On desktop it always shows (md:flex). On mobile it's hidden until the menu button opens it. -->
+      <aside
+        id="sidebar"
+        class="hidden md:flex fixed md:static inset-y-0 left-0 z-20 w-56 flex-shrink-0 flex-col bg-white border-r border-gray-200 p-5"
+      >
+        <!-- Logo, with a close button next to it (the close button only shows on mobile) -->
+        <div class="flex items-center justify-between">
+          <img
+            src="/images/logo-blue.png"
+            alt="Careporium logo"
+            class="w-36 h-auto"
+          />
+          <button type="button" id="closeMenuButton" class="md:hidden">
+            <img src="/icons/close.png" alt="Close menu" class="w-6 h-6" />
+          </button>
+        </div>
+
+        <!-- Menu links -->
+        <nav class="space-y-2 mt-10">
+          <!-- <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50">
+            <img src="/icons/nav-dashboard.png" alt="" class="w-4 h-4" />
+            Dashboard
+          </a> -->
+          <a
+            href="/FacilityHiringSection/PostShift.html"
+            class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50"
+          >
+            <img src="/icons/nav-post-shift.png" alt="" class="w-4 h-4" />
+            Post a shift
+          </a>
+          <!-- Active page: light blue -->
+          <a
+            href="/FacilityHiringSection/Applicants.html"
+            class="flex items-center gap-3 px-3 py-2 rounded-lg bg-blue-50 text-blue-600 text-sm font-medium"
+          >
+            <img src="/icons/nav-applicants.png" alt="" class="w-4 h-4" />
+            Applicants
+          </a>
+          <!-- <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50">
+            <img src="/icons/nav-my-shifts.png" alt="" class="w-4 h-4" />
+            My shifts
+          </a> -->
+          <!-- <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50">
+            <img src="/icons/nav-facility-profile.png" alt="" class="w-4 h-4" />
+            Facility profile
+          </a> -->
+          <!-- Log out button. mt-auto pushes it to the bottom of the sidebar on desktop. -->
+          <!-- data-login says which sign-in page to go to after logging out. -->
+          <button
+            type="button"
+            id="logoutButton"
+            data-login="/AuthenticationSection/login.html"
+            class="mt-auto flex items-center gap-3 px-3 py-2 rounded-lg border border-red-600 text-red-600 text-sm font-medium hover:bg-red-50"
+          >
+            <img src="/icons/logout.png" alt="" class="w-4 h-4" />
+            Log out
+          </button>
+        </nav>
+      </aside>
+
+      <!-- ==================== RIGHT SIDE ==================== -->
+      <div class="flex-1 min-w-0">
+        <!-- Top bar: where you are on the left, user on the right -->
+        <header
+          class="bg-white border-b border-gray-200 px-5 md:px-8 py-4 flex items-center justify-between"
+        >
+          <div class="flex items-center gap-3">
+            <!-- Menu button (only on mobile) -->
+            <button type="button" id="menuButton" class="md:hidden">
+              <img src="/icons/menu.png" alt="Open menu" class="w-6 h-6" />
+            </button>
+            <p class="text-xs font-medium text-gray-500 uppercase">
+              Facility workspace / Applicants for your shift
+            </p>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <img src="/icons/bell.png" alt="Notifications" class="w-4 h-4" />
+            <p class="hidden sm:block text-sm font-medium">Mainland Care</p>
+            <!-- Initials in a light blue circle -->
+            <span
+              class="w-8 h-8 rounded-full bg-blue-50 text-blue-600 text-xs font-semibold flex items-center justify-center"
+              >MC</span
+            >
+          </div>
+        </header>
+
+        <!-- ==================== PAGE CONTENT ==================== -->
+        <main class="p-5 md:p-8 max-w-6xl">
+          <!-- Page heading -->
+          <h1 class="text-3xl font-semibold">Applicants for your shift</h1>
+          <p class="text-sm text-gray-700 mt-2">
+            Registered Nurse · Acute Care · 6 Oct · Mainland Care Hospital
+          </p>
+
+          <!-- Search and filters -->
+          <section
+            class="bg-white border border-gray-200 rounded-2xl p-6 grid grid-cols-1 md:grid-cols-4 gap-5 mt-5"
+          >
+            <div class="md:col-span-2">
+              <label
+                for="applicantSearch"
+                class="block text-sm font-semibold mb-2"
+                >Search applicants</label
+              >
+              <input
+                type="text"
+                id="applicantSearch"
+                placeholder="Name or specialty"
+                class="w-full border border-gray-200 rounded-lg py-3 px-3 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+              />
+            </div>
+            <div>
+              <label
+                for="credentialStatus"
+                class="block text-sm font-semibold mb-2"
+                >Credential status</label
+              >
+              <div class="relative">
+                <select
+                  id="credentialStatus"
+                  class="w-full appearance-none bg-white border border-gray-200 rounded-lg py-3 pl-3 pr-10 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                >
+                  <option>Verified only</option>
+                  <option>All applicants</option>
+                </select>
+                <img
+                  src="/icons/akar-icons_chevron-down-small.png"
+                  alt=""
+                  class="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
+                />
+              </div>
+            </div>
+            <div>
+              <label
+                for="sortApplicants"
+                class="block text-sm font-semibold mb-2"
+                >Sort by</label
+              >
+              <div class="relative">
+                <select
+                  id="sortApplicants"
+                  class="w-full appearance-none bg-white border border-gray-200 rounded-lg py-3 pl-3 pr-10 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                >
+                  <option>Best match</option>
+                  <option>Highest rated</option>
+                  <option>Most experience</option>
+                </select>
+                <img
+                  src="/icons/akar-icons_chevron-down-small.png"
+                  alt=""
+                  class="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
+                />
+              </div>
+            </div>
+          </section>
+
+          <h2 id="applicantCount" class="text-base font-semibold mt-5">
+            3 verified applicants · Sample applicant data
+          </h2>
+
+          <div class="space-y-3 mt-3">
+            <div
+              class="applicant-card bg-white border border-gray-200 rounded-2xl p-6"
+            >
+              <h2 class="text-base font-semibold">Amara Okafor</h2>
+              <div class="mt-3">
+                <span
+                  class="inline-block bg-green-50 text-green-700 text-xs font-semibold uppercase px-3 py-1 rounded"
+                  >License verified · Active</span
+                >
+              </div>
+              <p class="text-xs text-gray-700 mt-3">
+                Registered nurse · Acute care · 5 years
+              </p>
+              <p class="text-xs text-gray-700 mt-1">
+                ★ 4.9 (24 reviews) · 32 completed shifts · 98% attendance
+              </p>
+              <div class="flex flex-wrap gap-3 mt-5">
+                <a
+                  href="workerProfile.html"
+                  class="border border-blue-600 text-blue-600 text-sm font-medium text-center py-3 rounded-lg hover:bg-blue-50 px-8"
+                  >View worker profile</a
+                >
+                <!-- "shortlist-button": the JS changes it to "Shortlisted ✓" when clicked -->
+                <button
+                  type="button"
+                  class="shortlist-button bg-blue-600 text-white text-sm font-medium text-center py-3 rounded-lg hover:bg-blue-700 px-8"
+                >
+                  Shortlist
+                </button>
+              </div>
+            </div>
+            <div
+              class="applicant-card bg-white border border-gray-200 rounded-2xl p-6"
+            >
+              <h2 class="text-base font-semibold">Chidinma Eze</h2>
+              <div class="mt-3">
+                <span
+                  class="inline-block bg-green-50 text-green-700 text-xs font-semibold uppercase px-3 py-1 rounded"
+                  >License verified · Active</span
+                >
+              </div>
+              <p class="text-xs text-gray-700 mt-3">
+                Registered nurse · Emergency care · 4 years
+              </p>
+              <p class="text-xs text-gray-700 mt-1">
+                ★ 4.8 (18 reviews) · 26 completed shifts · 96% attendance
+              </p>
+              <div class="flex flex-wrap gap-3 mt-5">
+                <a
+                  href="workerProfile.html"
+                  class="border border-blue-600 text-blue-600 text-sm font-medium text-center py-3 rounded-lg hover:bg-blue-50 px-8"
+                  >View worker profile</a
+                >
+                <!-- "shortlist-button": the JS changes it to "Shortlisted ✓" when clicked -->
+                <button
+                  type="button"
+                  class="shortlist-button bg-blue-600 text-white text-sm font-medium text-center py-3 rounded-lg hover:bg-blue-700 px-8"
+                >
+                  Shortlist
+                </button>
+              </div>
+            </div>
+            <div
+              class="applicant-card bg-white border border-gray-200 rounded-2xl p-6"
+            >
+              <h2 class="text-base font-semibold">Tunde Adeyemi</h2>
+              <div class="mt-3">
+                <span
+                  class="inline-block bg-green-50 text-green-700 text-xs font-semibold uppercase px-3 py-1 rounded"
+                  >License verified · Active</span
+                >
+              </div>
+              <p class="text-xs text-gray-700 mt-3">
+                Registered nurse · Acute care · 3 years
+              </p>
+              <p class="text-xs text-gray-700 mt-1">
+                ★ 4.7 (12 reviews) · 19 completed shifts · 95% attendance
+              </p>
+              <div class="flex flex-wrap gap-3 mt-5">
+                <a
+                  href="workerProfile.html"
+                  class="border border-blue-600 text-blue-600 text-sm font-medium text-center py-3 rounded-lg hover:bg-blue-50 px-8"
+                  >View worker profile</a
+                >
+                <!-- "shortlist-button": the JS changes it to "Shortlisted ✓" when clicked -->
+                <button
+                  type="button"
+                  class="shortlist-button bg-blue-600 text-white text-sm font-medium text-center py-3 rounded-lg hover:bg-blue-700 px-8"
+                >
+                  Shortlist
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <p class="text-xs text-gray-700 mt-3">
+            Verification confirms credentials. Ratings and attendance are
+            historical indicators, not guarantees.
+          </p>
+        </main>
+      </div>
+    </div>
+
+    <!-- Shared JavaScript for this workspace -->
+    <script src="/js/facilityDashboard.js"></script>
+  </body>
+</html>

@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Careporium - Marketplace Overview</title>
+
+    <!-- Tailwind CSS from the CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Use SF Pro (the Apple system font) for the whole page -->
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [
+                "-apple-system",
+                "BlinkMacSystemFont",
+                '"SF Pro Text"',
+                '"Segoe UI"',
+                "Roboto",
+                "sans-serif",
+              ],
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+
+  <body class="bg-slate-50 text-gray-900">
+    <!-- Sidebar on the left, page on the right -->
+    <div class="flex min-h-screen">
+      <!-- ==================== SIDEBAR ==================== -->
+      <!-- On desktop it always shows (md:flex). On mobile it's hidden until the menu button opens it. -->
+      <aside
+        id="sidebar"
+        class="hidden md:flex fixed md:static inset-y-0 left-0 z-20 w-56 flex-shrink-0 flex-col bg-white border-r border-gray-200 p-5"
+      >
+        <!-- Logo, with a close button next to it (the close button only shows on mobile) -->
+        <div class="flex items-center justify-between">
+          <img
+            src="/images/logo-blue.png"
+            alt="Careporium logo"
+            class="w-36 h-auto"
+          />
+          <button type="button" id="closeMenuButton" class="md:hidden">
+            <img src="/icons/close.png" alt="Close menu" class="w-6 h-6" />
+          </button>
+        </div>
+
+        <!-- Menu links -->
+        <nav class="space-y-2 mt-10">
+          <a
+            href="/Admin/AdminOverview.html"
+            class="flex items-center gap-3 px-3 py-2 rounded-lg bg-blue-50 text-blue-600 text-sm font-medium hover:bg-gray-50"
+          >
+            <img src="/icons/nav-dashboard.png" alt="" class="w-4 h-4" />
+            Overview
+          </a>
+          <a
+            href="/Admin/VerificationQueue.html"
+            class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50"
+          >
+            <img src="/icons/nav-find-shifts.png" alt="" class="w-4 h-4" />
+            Verifications
+          </a>
+          <a
+            href="/Admin/ManageUsers.html"
+            class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50"
+          >
+            <img src="/icons/nav-profile.png" alt="" class="w-4 h-4" />
+            Users
+          </a>
+          <a
+            href="/Admin/ManageAdmins.html"
+            class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50"
+          >
+            <img src="/icons/nav-profile.png" alt="" class="w-4 h-4" />
+            Admins
+          </a>
+          <a
+            href="/Admin/Disputes.html"
+            class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50"
+          >
+            <img src="/icons/nav-upcoming.png" alt="" class="w-4 h-4" />
+            Disputes
+          </a>
+          <!-- Active page: light blue -->
+          <a
+            href="/Admin/ActivityReports.html"
+            class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium"
+          >
+            <img src="/icons/nav-applications.png" alt="" class="w-4 h-4" />
+            Activity &amp; reports
+          </a>
+          <button
+            type="button"
+            id="logoutButton"
+            data-login="/Admin/AdminLogin.html"
+            class="mt-auto flex items-center gap-3 px-3 py-2 rounded-lg border border-red-600 text-red-600 text-sm font-medium hover:bg-red-50"
+          >
+            <img src="/icons/logout.png" alt="" class="w-4 h-4" />
+            Log out
+          </button>
+        </nav>
+      </aside>
+
+      <!-- ==================== RIGHT SIDE ==================== -->
+      <div class="flex-1 min-w-0">
+        <!-- Top bar: where you are on the left, user on the right -->
+        <header
+          class="bg-white border-b border-gray-200 px-5 md:px-8 py-4 flex items-center justify-between"
+        >
+          <div class="flex items-center gap-3">
+            <!-- Menu button (only on mobile) -->
+            <button type="button" id="menuButton" class="md:hidden">
+              <img src="/icons/menu.png" alt="Open menu" class="w-6 h-6" />
+            </button>
+            <p class="text-xs font-medium text-gray-500 uppercase">
+              Admin workspace / Marketplace overview
+            </p>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <img src="/icons/bell.png" alt="Notifications" class="w-4 h-4" />
+            <p class="hidden sm:block text-sm font-medium">Platform admin</p>
+            <!-- Initials in a light blue circle -->
+            <span
+              class="w-8 h-8 rounded-full bg-blue-50 text-blue-600 text-xs font-semibold flex items-center justify-center"
+              >PA</span
+            >
+          </div>
+        </header>
+
+        <!-- ==================== PAGE CONTENT ==================== -->
+        <main class="p-5 md:p-8 max-w-6xl">
+          <!-- Page heading -->
+          <h1 class="text-3xl font-semibold">Marketplace overview</h1>
+          <p class="text-sm text-gray-700 mt-2">
+            Today · 2 October 2026 · Illustrative dashboard data
+          </p>
+
+          <!-- 6 numbers: 1 column on mobile, 3 on desktop -->
+          <div
+            class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5 mt-5"
+          >
+            <div class="bg-white border border-gray-200 rounded-2xl p-5">
+              <p class="text-sm font-medium">Healthcare workers</p>
+              <p class="text-lg font-semibold mt-3">
+                1,240 total · 1,080 verified
+              </p>
+            </div>
+            <div class="bg-white border border-gray-200 rounded-2xl p-5">
+              <p class="text-sm font-medium">Facilities</p>
+              <p class="text-lg font-semibold mt-3">186 total · 164 verified</p>
+            </div>
+            <div class="bg-white border border-gray-200 rounded-2xl p-5">
+              <p class="text-sm font-medium">Pending verifications</p>
+              <p class="text-lg font-semibold mt-3">42 submissions</p>
+            </div>
+            <div class="bg-white border border-gray-200 rounded-2xl p-5">
+              <p class="text-sm font-medium">Active shifts</p>
+              <p class="text-lg font-semibold mt-3">128 shifts</p>
+            </div>
+            <div class="bg-white border border-gray-200 rounded-2xl p-5">
+              <p class="text-sm font-medium">Completed shifts</p>
+              <p class="text-lg font-semibold mt-3">2,860 shifts</p>
+            </div>
+            <div class="bg-white border border-gray-200 rounded-2xl p-5">
+              <p class="text-sm font-medium">Open disputes</p>
+              <p class="text-lg font-semibold mt-3">8 cases</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mt-5">
+            <!-- Payments -->
+            <section
+              class="bg-white border border-gray-200 rounded-2xl p-6 self-start"
+            >
+              <h2 class="text-base font-medium">Payment activity</h2>
+              <p class="text-xl font-semibold mt-3">₦4.8m released this week</p>
+              <p class="text-xs text-gray-700 mt-3">
+                ₦1.2m funded · awaiting completion
+              </p>
+              <p class="text-xs text-gray-700 mt-1">
+                3 payment failures need review
+              </p>
+              <a
+                href="/Admin/ActivityReports.html"
+                class="inline-block border border-blue-600 text-blue-600 text-sm font-medium text-center py-3 rounded-lg hover:bg-blue-50 px-14 mt-5"
+                >View activity</a
+              >
+            </section>
+
+            <!-- Bar chart, made with plain divs -->
+            <section class="bg-white border border-gray-200 rounded-2xl p-6">
+              <h2 class="text-base font-medium">
+                Completed shifts · last 7 days
+              </h2>
+              <div class="space-y-3 mt-3">
+                <div class="flex items-center gap-3 text-xs">
+                  <span class="w-8 text-gray-700">Mon</span>
+                  <!-- Gray track with a blue bar. The width is the day's number compared with the biggest day (52 = 100%). -->
+                  <div class="flex-1">
+                    <div
+                      class="h-2 bg-blue-600 rounded"
+                      style="width: 62%"
+                    ></div>
+                  </div>
+                  <span class="w-6 text-right text-gray-700">32</span>
+                </div>
+                <div class="flex items-center gap-3 text-xs">
+                  <span class="w-8 text-gray-700">Tue</span>
+                  <!-- Gray track with a blue bar. The width is the day's number compared with the biggest day (52 = 100%). -->
+                  <div class="flex-1">
+                    <div
+                      class="h-2 bg-blue-600 rounded"
+                      style="width: 85%"
+                    ></div>
+                  </div>
+                  <span class="w-6 text-right text-gray-700">44</span>
+                </div>
+                <div class="flex items-center gap-3 text-xs">
+                  <span class="w-8 text-gray-700">Wed</span>
+                  <!-- Gray track with a blue bar. The width is the day's number compared with the biggest day (52 = 100%). -->
+                  <div class="flex-1">
+                    <div
+                      class="h-2 bg-blue-600 rounded"
+                      style="width: 73%"
+                    ></div>
+                  </div>
+                  <span class="w-6 text-right text-gray-700">38</span>
+                </div>
+                <div class="flex items-center gap-3 text-xs">
+                  <span class="w-8 text-gray-700">Thu</span>
+                  <!-- Gray track with a blue bar. The width is the day's number compared with the biggest day (52 = 100%). -->
+                  <div class="flex-1">
+                    <div
+                      class="h-2 bg-blue-600 rounded"
+                      style="width: 100%"
+                    ></div>
+                  </div>
+                  <span class="w-6 text-right text-gray-700">52</span>
+                </div>
+                <div class="flex items-center gap-3 text-xs">
+                  <span class="w-8 text-gray-700">Fri</span>
+                  <!-- Gray track with a blue bar. The width is the day's number compared with the biggest day (52 = 100%). -->
+                  <div class="flex-1">
+                    <div
+                      class="h-2 bg-blue-600 rounded"
+                      style="width: 87%"
+                    ></div>
+                  </div>
+                  <span class="w-6 text-right text-gray-700">45</span>
+                </div>
+                <div class="flex items-center gap-3 text-xs">
+                  <span class="w-8 text-gray-700">Sat</span>
+                  <!-- Gray track with a blue bar. The width is the day's number compared with the biggest day (52 = 100%). -->
+                  <div class="flex-1">
+                    <div
+                      class="h-2 bg-blue-600 rounded"
+                      style="width: 54%"
+                    ></div>
+                  </div>
+                  <span class="w-6 text-right text-gray-700">28</span>
+                </div>
+                <div class="flex items-center gap-3 text-xs">
+                  <span class="w-8 text-gray-700">Sun</span>
+                  <!-- Gray track with a blue bar. The width is the day's number compared with the biggest day (52 = 100%). -->
+                  <div class="flex-1">
+                    <div
+                      class="h-2 bg-blue-600 rounded"
+                      style="width: 40%"
+                    ></div>
+                  </div>
+                  <span class="w-6 text-right text-gray-700">21</span>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          <!-- Priority actions (each part links to its page) -->
+          <p class="text-sm text-blue-600 mt-5">
+            Priority actions:
+            <a href="/Admin/VerificationQueue.html" class="hover:underline"
+              >42 verifications to review</a
+            >
+            ·
+            <a href="/Admin/Disputes.html" class="hover:underline"
+              >8 open disputes</a
+            >
+            ·
+            <a href="/Admin/ActivityReports.html" class="hover:underline"
+              >3 payment failures</a
+            >
+          </p>
+        </main>
+      </div>
+    </div>
+
+    <!-- Shared JavaScript for all admin pages -->
+    <script src="/js/AdminDashboard.js"></script>
+  </body>
+</html>

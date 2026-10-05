@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Careporium - Set Up Your Admin Account</title>
+
+    <!-- Tailwind CSS from the CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Use SF Pro (the Apple system font) for the whole page -->
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [
+                "-apple-system",
+                "BlinkMacSystemFont",
+                '"SF Pro Text"',
+                '"Segoe UI"',
+                "Roboto",
+                "sans-serif",
+              ],
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+
+  <body class="bg-slate-50 text-gray-900">
+    <!-- Everything in the middle of the screen -->
+    <main
+      class="min-h-screen flex flex-col items-center justify-center px-5 py-10"
+    >
+      <img
+        src="/images/logo-blue.png"
+        alt="Careporium logo"
+        class="w-36 h-auto"
+      />
+
+      <!-- ===== STATE 1: the setup form ===== -->
+      <div id="setupStep" class="w-full max-w-md flex flex-col items-center">
+        <h1 class="text-2xl font-semibold mt-3">Set up your admin account</h1>
+        <p class="text-xs text-gray-700 mt-3">
+          You've been invited to the Careporium admin workspace.
+        </p>
+
+        <div
+          class="w-full bg-white border border-gray-200 rounded-2xl p-6 mt-5"
+        >
+          <!-- Invitation details. The JS fills in the email and role from the invitation link. -->
+          <div class="bg-slate-50 rounded-xl p-3 space-y-1 text-xs">
+            <div class="flex gap-3">
+              <span class="w-20 text-gray-700">Email</span
+              ><span id="inviteEmailText" class="font-semibold"></span>
+            </div>
+            <div class="flex gap-3">
+              <span class="w-20 text-gray-700">Role</span
+              ><span id="inviteRoleText" class="font-semibold"></span>
+            </div>
+            <div class="flex gap-3">
+              <span class="w-20 text-gray-700">Invited by</span
+              ><span class="font-semibold">Platform admin</span>
+            </div>
+          </div>
+
+          <!-- The form. "novalidate" turns off the browser's own popups so our JS messages show instead -->
+          <form id="setupForm" class="space-y-3 mt-5" novalidate>
+            <div>
+              <label for="adminName" class="block text-sm font-semibold mb-2"
+                >Full name</label
+              >
+              <input
+                type="text"
+                id="adminName"
+                placeholder="e.g., Ngozi Adeyemi"
+                class="w-full border border-gray-200 rounded-lg py-3 px-3 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+              />
+              <p
+                id="adminNameError"
+                class="text-xs font-medium text-red-500 mt-1 hidden"
+              ></p>
+            </div>
+
+            <div>
+              <label for="newPassword" class="block text-sm font-semibold mb-2"
+                >Password</label
+              >
+              <div class="relative">
+                <input
+                  type="password"
+                  id="newPassword"
+                  placeholder="••••••••••••"
+                  class="w-full border border-gray-200 rounded-lg py-3 pl-3 pr-10 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                />
+                <!-- Eye button to show or hide the password -->
+                <button
+                  type="button"
+                  id="newPasswordToggle"
+                  class="absolute right-3 top-1/2 -translate-y-1/2"
+                >
+                  <img
+                    id="newPasswordEyeOff"
+                    src="/icons/famicons_eye-off-sharp.png"
+                    alt="Show password"
+                    class="w-4 h-4"
+                  />
+                  <img
+                    id="newPasswordEyeOn"
+                    src="/icons/famicons_eye-solid.png"
+                    alt="Hide password"
+                    class="w-4 h-4 hidden"
+                  />
+                </button>
+              </div>
+              <p
+                id="newPasswordError"
+                class="text-xs font-medium text-red-500 mt-1 hidden"
+              ></p>
+            </div>
+
+            <!-- Password rules. They start gray and turn green as the user meets each one. -->
+            <ul class="space-y-1">
+              <li id="ruleLength" class="text-xs font-medium text-gray-400">
+                ✓ At least 8 characters
+              </li>
+              <li id="ruleCase" class="text-xs font-medium text-gray-400">
+                ✓ Uppercase and lowercase letters
+              </li>
+              <li id="ruleNumber" class="text-xs font-medium text-gray-400">
+                ✓ A number or special character
+              </li>
+            </ul>
+
+            <div>
+              <label
+                for="confirmPassword"
+                class="block text-sm font-semibold mb-2"
+                >Confirm password</label
+              >
+              <div class="relative">
+                <input
+                  type="password"
+                  id="confirmPassword"
+                  placeholder="••••••••••••"
+                  class="w-full border border-gray-200 rounded-lg py-3 pl-3 pr-10 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                />
+                <!-- Eye button to show or hide the password -->
+                <button
+                  type="button"
+                  id="confirmPasswordToggle"
+                  class="absolute right-3 top-1/2 -translate-y-1/2"
+                >
+                  <img
+                    id="confirmPasswordEyeOff"
+                    src="/icons/famicons_eye-off-sharp.png"
+                    alt="Show password"
+                    class="w-4 h-4"
+                  />
+                  <img
+                    id="confirmPasswordEyeOn"
+                    src="/icons/famicons_eye-solid.png"
+                    alt="Hide password"
+                    class="w-4 h-4 hidden"
+                  />
+                </button>
+              </div>
+              <p
+                id="confirmPasswordError"
+                class="text-xs font-medium text-red-500 mt-1 hidden"
+              ></p>
+            </div>
+
+            <div>
+              <label class="flex items-start gap-2 text-xs text-gray-900">
+                <input
+                  type="checkbox"
+                  id="auditAgree"
+                  class="w-4 h-4 mt-0.5 accent-blue-600"
+                />
+                I understand that my sign-ins and admin actions are recorded in
+                the audit log.
+              </label>
+              <p
+                id="auditAgreeError"
+                class="text-xs font-medium text-red-500 mt-1 hidden"
+              ></p>
+            </div>
+
+            <button
+              type="submit"
+              class="w-full bg-blue-600 text-white text-sm font-medium text-center py-3 rounded-lg hover:bg-blue-700"
+            >
+              Create admin account
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- ===== STATE 2: success (hidden until the form is correct) ===== -->
+      <div
+        id="doneStep"
+        class="hidden w-full max-w-md bg-white border border-gray-200 rounded-2xl p-6 mt-5 text-center"
+      >
+        <h1 class="text-2xl font-semibold text-teal-700">
+          Your admin account is ready
+        </h1>
+        <p class="text-xs text-gray-700 mt-3">
+          Sign in with your work email and password. A verification code will be
+          sent to your email every time you sign in.
+        </p>
+        <a
+          href="/Admin/AdminLogin.html"
+          class="block bg-blue-600 text-white text-sm font-medium text-center py-3 rounded-lg hover:bg-blue-700 mt-5"
+          >Go to admin sign in</a
+        >
+      </div>
+    </main>
+
+    <!-- JavaScript for the admin sign-in pages -->
+    <script src="/js/AdminAuth.js"></script>
+  </body>
+</html>

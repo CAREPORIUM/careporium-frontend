@@ -1,0 +1,716 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Careporium - Fill urgent shifts. Find work that fits.</title>
+
+    <!-- Tailwind CSS from the CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Use SF Pro (the Apple system font) for the whole page -->
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [
+                "-apple-system",
+                "BlinkMacSystemFont",
+                '"SF Pro Text"',
+                '"Segoe UI"',
+                "Roboto",
+                "sans-serif",
+              ],
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+
+  <body class="bg-white text-gray-900">
+    <!-- ==================== 1. NAVBAR ==================== -->
+    <!-- sticky top-0 keeps the navbar at the top of the screen while scrolling -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+      <!-- max-w-7xl mx-auto keeps the content in the middle and not too wide -->
+      <nav
+        class="max-w-7xl mx-auto px-5 md:px-8 py-4 flex items-center justify-between"
+      >
+        <!-- Logo (href="#" scrolls back to the top) -->
+        <a href="#">
+          <img
+            src="/images/logo-blue.png"
+            alt="Careporium logo"
+            class="w-36 h-auto"
+          />
+        </a>
+
+        <!-- Links in the middle (hidden on mobile). "nav-link" lets the JS color the active one. -->
+        <div class="hidden md:flex items-center gap-12">
+          <a href="#shifts" class="nav-link text-sm font-medium text-blue-600"
+            >Find jobs</a
+          >
+          <a
+            href="#facilities"
+            class="nav-link text-sm font-medium text-gray-900 hover:text-blue-600"
+            >Facilities</a
+          >
+          <a
+            href="#how-it-works"
+            class="nav-link text-sm font-medium text-gray-900 hover:text-blue-600"
+            >How it works</a
+          >
+          <a
+            href="#about"
+            class="nav-link text-sm font-medium text-gray-900 hover:text-blue-600"
+            >About us</a
+          >
+        </div>
+
+        <!-- Buttons on the right (hidden on mobile) -->
+        <div class="hidden md:flex items-center gap-20">
+          <a
+            href="/AuthenticationSection/login.html"
+            class="text-sm font-medium text-blue-600"
+            >Log in</a
+          >
+          <a
+            href="/OnboardingSection/onboardingOne.html"
+            class="bg-blue-600 text-white text-sm font-medium px-5 py-3 rounded-lg hover:bg-blue-700"
+          >
+            Get started
+          </a>
+        </div>
+
+        <!-- Menu button (only on mobile). It holds both icons: JS shows one at a time. -->
+        <button type="button" id="menuButton" class="md:hidden">
+          <img
+            id="menuIcon"
+            src="/icons/menu.png"
+            alt="Open menu"
+            class="w-6 h-6"
+          />
+          <img
+            id="closeIcon"
+            src="/icons/close.png"
+            alt="Close menu"
+            class="w-6 h-6 hidden"
+          />
+        </button>
+      </nav>
+
+      <!-- Mobile menu (hidden until the menu button is clicked) -->
+      <div
+        id="mobileMenu"
+        class="hidden md:hidden border-t border-gray-200 px-5 py-5 space-y-3"
+      >
+        <a
+          href="#shifts"
+          class="nav-link block text-sm font-medium text-blue-600"
+          >Find jobs</a
+        >
+        <a
+          href="#facilities"
+          class="nav-link block text-sm font-medium text-gray-900"
+          >Facilities</a
+        >
+        <a
+          href="#how-it-works"
+          class="nav-link block text-sm font-medium text-gray-900"
+          >How it works</a
+        >
+        <a
+          href="#about"
+          class="nav-link block text-sm font-medium text-gray-900"
+          >About us</a
+        >
+        <a
+          href="/AuthenticationSection/login.html"
+          class="block text-sm font-medium text-blue-600"
+          >Log in</a
+        >
+        <a
+          href="/OnboardingSection/onboardingOne.html"
+          class="block bg-blue-600 text-white text-sm font-medium text-center py-3 rounded-lg"
+        >
+          Get started
+        </a>
+      </div>
+    </header>
+
+    <!-- ==================== 2. HERO (light blue background) ==================== -->
+    <section class="bg-blue-50">
+      <div class="max-w-7xl mx-auto px-5 md:px-8 py-10">
+        <!-- Two columns on desktop: text on the left, photo on the right -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
+          <!-- Left: text and buttons -->
+          <div>
+            <p class="text-xs font-medium text-blue-600 uppercase">
+              Healthcare staffing, simplified
+            </p>
+            <h1
+              class="text-4xl md:text-5xl font-semibold text-gray-900 leading-tight mt-5"
+            >
+              Fill urgent shifts. Find work that fits.
+            </h1>
+            <p class="text-base md:text-lg text-gray-700 mt-5">
+              Careporium connects verified healthcare professionals with
+              hospitals, clinics, and care providers that need trusted shift
+              coverage.
+            </p>
+
+            <!-- Buttons side by side -->
+            <div class="flex gap-3 mt-5">
+              <a
+                href="/AuthenticationSection/signUp.html"
+                class="bg-blue-600 text-white text-sm font-semibold text-center px-10 py-3 rounded-lg hover:bg-blue-700"
+              >
+                Find shifts
+              </a>
+              <a
+                href="/AuthenticationSection/signUp.html"
+                class="bg-white border border-blue-600 text-blue-600 text-sm font-semibold text-center px-10 py-3 rounded-lg hover:bg-blue-50"
+              >
+                Post a shift
+              </a>
+            </div>
+
+            <!-- Small line with dots between the words -->
+            <p class="text-xs font-medium text-gray-700 mt-5">
+              Verified credentials · Local matching · Payment after confirmation
+            </p>
+          </div>
+
+          <!-- Right: photo -->
+          <img
+            src="/images/Landing-image-one.png"
+            alt="Doctor and nurse looking at a tablet"
+            class="w-full h-100 md:h-[32rem] object-cover rounded-2xl"
+          />
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 3. FEATURE STRIP ==================== -->
+    <section class="bg-white">
+      <!-- 1 column on mobile, 2 on tablets, 4 on desktop -->
+      <div
+        class="max-w-7xl mx-auto px-5 md:px-8 py-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5"
+      >
+        <div class="flex items-center gap-3">
+          <!-- Icon in a light blue square -->
+          <span
+            class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center"
+          >
+            <img src="/icons/20.png" alt="" class="w-4 h-4" />
+          </span>
+          <div>
+            <p class="text-sm font-semibold">Verified credentials</p>
+            <p class="text-xs font-medium text-gray-600">
+              Professionals are reviewed
+            </p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <span
+            class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center"
+          >
+            <img src="/icons/21.png" alt="" class="w-4 h-4" />
+          </span>
+          <div>
+            <p class="text-sm font-semibold">Local matching</p>
+            <p class="text-xs font-medium text-gray-600">
+              Find nearby opportunities
+            </p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <span
+            class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center"
+          >
+            <img src="/icons/22.png" alt="" class="w-4 h-4" />
+          </span>
+          <div>
+            <p class="text-sm font-semibold">Specialty fit</p>
+            <p class="text-xs font-medium text-gray-600">
+              Match the right skills
+            </p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <span
+            class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center"
+          >
+            <img src="/icons/23.png" alt="" class="w-4 h-4" />
+          </span>
+          <div>
+            <p class="text-sm font-semibold">Clear shift timelines</p>
+            <p class="text-xs font-medium text-gray-600">Know when and where</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 4. HOW CAREPORIUM WORKS (light gray background) ==================== -->
+    <!-- scroll-mt-20 stops the sticky navbar from covering the section title after scrolling here -->
+    <section id="how-it-works" class="bg-slate-50 scroll-mt-20">
+      <div class="max-w-7xl mx-auto px-5 md:px-8 py-10">
+        <p class="text-xs font-medium text-blue-600 uppercase">
+          How Careporium works
+        </p>
+        <h2 class="text-2xl md:text-3xl font-semibold mt-3">
+          A faster way to fill and find healthcare shifts
+        </h2>
+
+        <!-- Two cards side by side on desktop -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
+          <!-- Card 1: facilities (id lets the navbar link jump here) -->
+          <div
+            id="facilities"
+            class="border border-gray-200 rounded-2xl p-6 scroll-mt-20"
+          >
+            <!-- Icon + title -->
+            <div class="flex items-center gap-3">
+              <span
+                class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center"
+              >
+                <img src="/icons/24.png" alt="" class="w-4 h-4" />
+              </span>
+              <h3 class="text-lg font-semibold">For healthcare facilities</h3>
+            </div>
+            <p class="text-sm text-gray-700 mt-5">
+              Cover urgent and upcoming shifts with qualified people.
+            </p>
+
+            <!-- Numbered steps -->
+            <ul class="space-y-5 mt-5">
+              <li class="flex items-center gap-3 text-sm text-gray-700">
+                <span
+                  class="w-6 h-6 rounded-full bg-blue-50 text-blue-600 text-xs flex items-center justify-center"
+                  >1</span
+                >
+                Post your shift with role, location, and schedule
+              </li>
+              <li class="flex items-center gap-3 text-sm text-gray-700">
+                <span
+                  class="w-6 h-6 rounded-full bg-blue-50 text-blue-600 text-xs flex items-center justify-center"
+                  >2</span
+                >
+                Review matched, verified professionals
+              </li>
+              <li class="flex items-center gap-3 text-sm text-gray-700">
+                <span
+                  class="w-6 h-6 rounded-full bg-blue-50 text-blue-600 text-xs flex items-center justify-center"
+                  >3</span
+                >
+                Confirm attendance and release payment
+              </li>
+            </ul>
+
+            <a
+              href="/AuthenticationSection/signUp.html"
+              class="inline-block bg-blue-600 text-white text-sm font-semibold text-center px-14 py-3 rounded-lg mt-5 hover:bg-blue-700"
+            >
+              Post a shift
+            </a>
+          </div>
+
+          <!-- Card 2: professionals -->
+          <div class="border border-gray-200 rounded-2xl p-6">
+            <div class="flex items-center gap-3">
+              <span
+                class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center"
+              >
+                <img src="/icons/25.png" alt="" class="w-4 h-4" />
+              </span>
+              <h3 class="text-lg font-semibold">
+                For healthcare professionals
+              </h3>
+            </div>
+            <p class="text-sm text-gray-700 mt-5">
+              Choose work that fits your expertise and availability.
+            </p>
+
+            <ul class="space-y-5 mt-5">
+              <li class="flex items-center gap-3 text-sm text-gray-700">
+                <span
+                  class="w-6 h-6 rounded-full bg-blue-50 text-blue-600 text-xs flex items-center justify-center"
+                  >1</span
+                >
+                Build your profile and verify credentials
+              </li>
+              <li class="flex items-center gap-3 text-sm text-gray-700">
+                <span
+                  class="w-6 h-6 rounded-full bg-blue-50 text-blue-600 text-xs flex items-center justify-center"
+                  >2</span
+                >
+                Browse shifts matched to specialty and location
+              </li>
+              <li class="flex items-center gap-3 text-sm text-gray-700">
+                <span
+                  class="w-6 h-6 rounded-full bg-blue-50 text-blue-600 text-xs flex items-center justify-center"
+                  >3</span
+                >
+                Complete shifts and track your earnings
+              </li>
+            </ul>
+
+            <a
+              href="/AuthenticationSection/signUp.html"
+              class="inline-block bg-white border border-blue-600 text-blue-600 text-sm font-semibold text-center px-14 py-3 rounded-lg mt-5 hover:bg-blue-50"
+            >
+              Find shifts
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 5. EXPLORE OPPORTUNITIES ==================== -->
+    <section id="shifts" class="bg-white scroll-mt-20">
+      <div class="max-w-7xl mx-auto px-5 md:px-8 py-10">
+        <p class="text-xs font-medium text-blue-600 uppercase">
+          Explore opportunities
+        </p>
+        <h2 class="text-2xl md:text-3xl font-semibold mt-3">
+          Find a shift that fits your skills
+        </h2>
+        <p class="text-sm text-gray-700 mt-3">
+          Examples of opportunities professionals can discover on Careporium.
+        </p>
+
+        <!-- 3 shift cards (small gap between them, like the design) -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-2 mt-16">
+          <div class="border border-gray-200 rounded-xl p-5">
+            <p class="text-xs font-medium text-blue-600 uppercase">
+              Open shift
+            </p>
+            <h3 class="text-base font-semibold mt-3">Registered Nurse</h3>
+            <p class="text-xs text-gray-700 mt-5">
+              Flexible day shifts · Lagos
+            </p>
+            <a
+              href="/AuthenticationSection/login.html"
+              class="inline-block text-xs font-medium text-blue-600 mt-8"
+              >View opportunity →</a
+            >
+          </div>
+
+          <div class="border border-gray-200 rounded-xl p-5">
+            <p class="text-xs font-medium text-blue-600 uppercase">
+              Open shift
+            </p>
+            <h3 class="text-base font-semibold mt-3">Pharmacist</h3>
+            <p class="text-xs text-gray-700 mt-5">Clinic coverage · Abeokuta</p>
+            <a
+              href="/AuthenticationSection/login.html"
+              class="inline-block text-xs font-medium text-blue-600 mt-8"
+              >View opportunity →</a
+            >
+          </div>
+
+          <div class="border border-gray-200 rounded-xl p-5">
+            <p class="text-xs font-medium text-blue-600 uppercase">
+              Open shift
+            </p>
+            <h3 class="text-base font-semibold mt-3">Laboratory Scientist</h3>
+            <p class="text-xs text-gray-700 mt-5">
+              Diagnostic centre shifts · Ibadan
+            </p>
+            <a
+              href="/AuthenticationSection/login.html"
+              class="inline-block text-xs font-medium text-blue-600 mt-8"
+              >View opportunity →</a
+            >
+          </div>
+        </div>
+
+        <!-- Browse button, in the middle -->
+        <div class="text-center mt-10">
+          <a
+            href="/AuthenticationSection/login.html"
+            class="inline-block border border-blue-600 text-blue-600 text-sm font-medium px-10 py-3 rounded-lg hover:bg-blue-50"
+          >
+            Browse all shifts
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 6. BUILT FOR TRUST (light gray background) ==================== -->
+    <section id="about" class="bg-slate-50 scroll-mt-20">
+      <div class="max-w-7xl mx-auto px-5 md:px-8 py-10">
+        <!-- Two columns: text on the left, photo on the right -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+          <div>
+            <p class="text-xs font-medium text-blue-600 uppercase">
+              Built for trust
+            </p>
+            <h2 class="text-2xl md:text-3xl font-semibold mt-3">
+              Better matches start with verified information.
+            </h2>
+            <p class="text-sm text-gray-700 mt-5">
+              Careporium brings the details facilities and professionals need
+              into one place.
+            </p>
+
+            <!-- 3 points with icons in light blue squares -->
+            <div class="space-y-8 mt-5">
+              <div class="flex items-start gap-3">
+                <span
+                  class="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center"
+                >
+                  <img src="/icons/20.png" alt="" class="w-4 h-4" />
+                </span>
+                <div>
+                  <p class="text-base font-semibold">Verified credentials</p>
+                  <p class="text-xs text-gray-700">
+                    Profiles and submitted documents are reviewed.
+                  </p>
+                </div>
+              </div>
+
+              <div class="flex items-start gap-3">
+                <span
+                  class="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center"
+                >
+                  <img src="/icons/21.png" alt="" class="w-4 h-4" />
+                </span>
+                <div>
+                  <p class="text-base font-semibold">Specialty and proximity</p>
+                  <p class="text-xs text-gray-700">
+                    See opportunities that fit skills and location.
+                  </p>
+                </div>
+              </div>
+
+              <div class="flex items-start gap-3">
+                <span
+                  class="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center"
+                >
+                  <img src="/icons/23.png" alt="" class="w-4 h-4" />
+                </span>
+                <div>
+                  <p class="text-base font-semibold">
+                    Availability and experience
+                  </p>
+                  <p class="text-xs text-gray-700">
+                    Match shifts to real schedules and relevant work.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Photo -->
+          <img
+            src="/images/Landing-image-two.png"
+            alt="Smiling nurse with a stethoscope"
+            class="w-full h-100 md:h-[28rem] object-cover rounded-2xl"
+          />
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 7. FROM SHIFT TO PAYMENT ==================== -->
+    <section class="bg-white">
+      <div class="max-w-7xl mx-auto px-5 md:px-8 py-10">
+        <p class="text-xs font-medium text-blue-600 uppercase">
+          From shift to payment
+        </p>
+        <h2 class="text-2xl md:text-3xl font-semibold mt-3">
+          Clear steps from booking to payout
+        </h2>
+        <p class="text-sm text-gray-700 mt-3">
+          Payment is released after the shift is completed and confirmed.
+        </p>
+
+        <!-- 6 steps: 2 columns on mobile, 3 on tablets, 6 on desktop -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 mt-5">
+          <div class="border border-gray-200 rounded-lg p-3">
+            <p class="text-base font-medium text-blue-600">01</p>
+            <p class="text-sm font-semibold mt-3">Post a paid shift</p>
+          </div>
+          <div class="border border-gray-200 rounded-lg p-3">
+            <p class="text-base font-medium text-blue-600">02</p>
+            <p class="text-sm font-semibold mt-3">Select a worker</p>
+          </div>
+          <div class="border border-gray-200 rounded-lg p-3">
+            <p class="text-base font-medium text-blue-600">03</p>
+            <p class="text-sm font-semibold mt-3">Fund the shift</p>
+          </div>
+          <div class="border border-gray-200 rounded-lg p-3">
+            <p class="text-base font-medium text-blue-600">04</p>
+            <p class="text-sm font-semibold mt-3">Complete the shift</p>
+          </div>
+          <div class="border border-gray-200 rounded-lg p-3">
+            <p class="text-base font-medium text-blue-600">05</p>
+            <p class="text-sm font-semibold mt-3">Confirm completion</p>
+          </div>
+          <div class="border border-gray-200 rounded-lg p-3">
+            <p class="text-base font-medium text-blue-600">06</p>
+            <p class="text-sm font-semibold mt-3">Release payment</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 8. CALL TO ACTION (full-width blue) ==================== -->
+    <section class="bg-blue-600">
+      <!-- Text on the left, button next to it (stacked on mobile) -->
+      <div
+        class="max-w-7xl mx-auto px-5 md:px-16 py-14 flex flex-col md:flex-row md:items-center gap-8 md:gap-24"
+      >
+        <div>
+          <p class="text-xs font-medium text-white uppercase">Careporium</p>
+          <h2 class="text-2xl md:text-3xl font-medium text-white mt-3">
+            Ready for a better way to cover every shift?
+          </h2>
+          <p class="text-sm text-blue-50 mt-3">
+            Join a trusted marketplace built for healthcare facilities and
+            professionals.
+          </p>
+        </div>
+        <a
+          href="/OnboardingSection/onboardingOne.html"
+          class="inline-block bg-white text-blue-600 text-sm font-medium text-center px-14 py-3 rounded-lg hover:bg-blue-50"
+        >
+          Get started
+        </a>
+      </div>
+    </section>
+
+    <!-- ==================== 9. FOOTER ==================== -->
+    <footer class="bg-white border-t border-gray-200">
+      <div class="max-w-6xl mx-auto px-5 py-10">
+        <!-- Logo on the left, 4 link columns on the right -->
+        <div class="grid grid-cols-2 md:grid-cols-6 gap-10">
+          <!-- Logo and short text (takes 2 columns) -->
+          <div class="col-span-2">
+            <img
+              src="/images/logo-blue.png"
+              alt="Careporium logo"
+              class="w-40 h-auto"
+            />
+            <p class="text-xs font-medium text-gray-500 mt-3">
+              Connecting healthcare facilities with verified professionals.
+            </p>
+          </div>
+
+          <div>
+            <p class="text-sm font-semibold">Product</p>
+            <div class="space-y-2 mt-3">
+              <a
+                href="#facilities"
+                class="block text-xs font-medium text-gray-500 hover:text-blue-600"
+                >For facilities</a
+              >
+              <a
+                href="#how-it-works"
+                class="block text-xs font-medium text-gray-500 hover:text-blue-600"
+                >For professionals</a
+              >
+              <a
+                href="#how-it-works"
+                class="block text-xs font-medium text-gray-500 hover:text-blue-600"
+                >How it works</a
+              >
+            </div>
+          </div>
+
+          <div>
+            <p class="text-sm font-semibold">Company</p>
+            <div class="space-y-2 mt-3">
+              <a
+                href="#about"
+                class="block text-xs font-medium text-gray-500 hover:text-blue-600"
+                >About us</a
+              >
+              <a
+                href="#"
+                class="block text-xs font-medium text-gray-500 hover:text-blue-600"
+                >Careers</a
+              >
+              <a
+                href="#"
+                class="block text-xs font-medium text-gray-500 hover:text-blue-600"
+                >Contact</a
+              >
+            </div>
+          </div>
+
+          <div>
+            <p class="text-sm font-semibold">Support</p>
+            <div class="space-y-2 mt-3">
+              <a
+                href="#"
+                class="block text-xs font-medium text-gray-500 hover:text-blue-600"
+                >Help center</a
+              >
+              <a
+                href="#"
+                class="block text-xs font-medium text-gray-500 hover:text-blue-600"
+                >FAQs</a
+              >
+            </div>
+          </div>
+
+          <div>
+            <p class="text-sm font-semibold">Legal</p>
+            <div class="space-y-2 mt-3">
+              <a
+                href="#"
+                class="block text-xs font-medium text-gray-500 hover:text-blue-600"
+                >Terms</a
+              >
+              <a
+                href="#"
+                class="block text-xs font-medium text-gray-500 hover:text-blue-600"
+                >Privacy Policy</a
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom line: copyright on the left, social links on the right (stacked on mobile) -->
+        <div
+          class="flex flex-col sm:flex-row sm:justify-between gap-3 w-full border-t border-gray-200 mt-10 pt-5"
+        >
+          <p class="text-xs font-medium text-gray-500">
+            © 2026 Careporium. All rights reserved.
+          </p>
+
+          <div class="flex items-center gap-5">
+            <a
+              href="#"
+              class="text-xs font-medium text-gray-500 hover:text-blue-600"
+              >LinkedIn</a
+            >
+            <a
+              href="#"
+              class="text-xs font-medium text-gray-500 hover:text-blue-600"
+              >Instagram</a
+            >
+            <a
+              href="#"
+              class="text-xs font-medium text-gray-500 hover:text-blue-600"
+              >Facebook</a
+            >
+            <a
+              href="#"
+              class="text-xs font-medium text-gray-500 hover:text-blue-600"
+              >X</a
+            >
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Our JavaScript for this page -->
+    <script src="/js/LandingPage.js"></script>
+  </body>
+</html>

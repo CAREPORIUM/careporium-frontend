@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Careporium - Create Account</title>
+
+    <!-- Tailwind CSS from the CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Use SF Pro (the Apple system font) for the whole page -->
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [
+                "-apple-system",
+                "BlinkMacSystemFont",
+                '"SF Pro Text"',
+                '"Segoe UI"',
+                "Roboto",
+                "sans-serif",
+              ],
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+
+  <body class="bg-slate-50 min-h-screen relative overflow-x-hidden">
+    <!-- Soft blue circles in the background -->
+    <div class="absolute top-20 left-10 w-72 h-72 bg-blue-100 rounded-full blur-3xl"></div>
+    <div class="absolute bottom-10 right-10 w-80 h-80 bg-blue-100 rounded-full blur-3xl"></div>
+
+    <!-- This puts the white card in the middle of the screen -->
+    <main class="relative min-h-screen flex items-center justify-center px-5 py-10">
+      <!-- White card -->
+      <div class="w-full max-w-4xl bg-white rounded-xl shadow-sm p-5 md:p-10">
+        <!-- Logo (stays in the middle) -->
+        <img src="/images/logo-blue.png" alt="Careporium logo" class="w-44 h-auto mx-auto" />
+
+        <!-- Title (on the left now) -->
+        <h2 class="text-2xl font-semibold text-gray-900 mt-5">Create your account</h2>
+        <p class="text-xs font-medium text-gray-700 mt-3">Choose how you want to get started.</p>
+
+        <!-- The two choices -->
+        <div class="space-y-5 mt-5">
+          <!-- Choice 1: Healthcare professional (selected at the start, so it's light blue) -->
+          <button
+            type="button"
+            id="professionalCard"
+            class="w-full flex items-center gap-3 border border-blue-400 bg-blue-50 rounded-lg p-5 text-left"
+          >
+            <img src="/icons/sign-up-doctor.png" alt="" class="w-4 h-4" />
+            <span>
+              <span class="block text-sm font-semibold text-gray-900">Healthcare professional</span>
+              <span class="block text-xs font-medium text-gray-600 mt-1">
+                Find flexible roles and shifts that fit your goals.
+              </span>
+            </span>
+          </button>
+
+          <!-- Choice 2: Healthcare facility (not selected, so it's white) -->
+          <button
+            type="button"
+            id="facilityCard"
+            class="w-full flex items-center gap-3 border border-gray-200 bg-white rounded-lg p-5 text-left"
+          >
+            <img src="/icons/health-facility.png" alt="" class="w-4 h-4" />
+            <span>
+              <span class="block text-sm font-semibold text-gray-900">Healthcare facility</span>
+              <span class="block text-xs font-medium text-gray-600 mt-1">
+                Connect with qualified healthcare professionals.
+              </span>
+            </span>
+          </button>
+        </div>
+
+        <!-- Get started button -->
+        <button
+          type="button"
+          id="getStartedButton"
+          class="w-full bg-blue-600 text-white text-sm font-semibold py-3 rounded-lg mt-5 hover:bg-blue-700"
+        >
+          Get started
+        </button>
+
+        <!-- Log in link (on the left, all blue) -->
+        <a href="/AuthenticationSection/login.html" class="inline-block text-xs font-medium text-blue-600 mt-5">
+          Already have an account? Log in
+        </a>
+      </div>
+    </main>
+
+    <!-- Our JavaScript for this page -->
+    <script src="/js/signUp.js"></script>
+  </body>
+</html>

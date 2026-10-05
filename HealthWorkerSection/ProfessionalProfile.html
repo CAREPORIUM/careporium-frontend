@@ -1,0 +1,567 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Careporium - Professional Profile</title>
+
+    <!-- Tailwind CSS from the CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Use SF Pro (the Apple system font) for the whole page -->
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [
+                "-apple-system",
+                "BlinkMacSystemFont",
+                '"SF Pro Text"',
+                '"Segoe UI"',
+                "Roboto",
+                "sans-serif",
+              ],
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+
+  <body class="bg-slate-50 min-h-screen relative overflow-x-hidden">
+    <!-- Soft blue circles in the background -->
+    <div
+      class="absolute top-20 left-10 w-72 h-72 bg-blue-100 rounded-full blur-3xl"
+    ></div>
+    <div
+      class="absolute bottom-10 right-10 w-80 h-80 bg-blue-100 rounded-full blur-3xl"
+    ></div>
+
+    <!-- This puts the white card in the middle of the screen -->
+    <main
+      class="relative min-h-screen flex items-center justify-center px-5 py-10"
+    >
+      <!-- White card -->
+      <div class="w-full max-w-4xl bg-white rounded-xl shadow-sm p-5 md:p-10">
+        <!-- Logo (stays in the middle) -->
+        <img
+          src="/images/logo-blue.png"
+          alt="Careporium logo"
+          class="w-44 h-auto mx-auto"
+        />
+
+        <!-- ==================== STEP 1: PROFILE ==================== -->
+        <section id="step1">
+          <!-- Back arrow: leaves this page and goes to the previous one -->
+          <button
+            type="button"
+            id="stepOneArrow"
+            class="w-7 h-7 rounded-full bg-blue-50 flex items-center justify-center mt-5"
+          >
+            <img src="/icons/BackButton.png" alt="Go back" class="w-4 h-4" />
+          </button>
+          <p class="text-xs font-semibold text-blue-600 mt-3">STEP 1 OF 3</p>
+          <h2 class="text-2xl font-semibold text-gray-900 mt-3">Profile</h2>
+          <p class="text-xs font-medium text-gray-700 mt-3">
+            Tell us the basics about you.
+          </p>
+
+          <!-- Progress bar: 3 pieces, the first is blue -->
+          <div class="flex gap-1 mt-3">
+            <div class="flex-1 h-1 bg-blue-600 rounded-full"></div>
+            <div class="flex-1 h-1 bg-gray-100 rounded-full"></div>
+            <div class="flex-1 h-1 bg-gray-100 rounded-full"></div>
+          </div>
+
+          <!-- The form. "novalidate" turns off the browser's own popups so our JS messages show instead -->
+          <form id="stepOneForm" class="mt-5" novalidate>
+            <!-- Two columns on desktop (md:grid-cols-2), one column on mobile -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <!-- Full name -->
+              <div>
+                <label
+                  for="fullName"
+                  class="block text-sm font-semibold text-gray-900 mb-2"
+                  >Full name</label
+                >
+                <input
+                  type="text"
+                  id="fullName"
+                  placeholder="Luke Marcus"
+                  class="w-full border border-gray-200 rounded-lg py-3 px-3 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                />
+                <!-- Error message (hidden until there is a mistake) -->
+                <p
+                  id="fullNameError"
+                  class="text-xs font-medium text-red-500 mt-1 hidden"
+                ></p>
+              </div>
+
+              <!-- Email address (with an @ sign inside the box) -->
+              <div>
+                <label
+                  for="email"
+                  class="block text-sm font-semibold text-gray-900 mb-2"
+                  >Email address</label
+                >
+                <div class="relative">
+                  <span
+                    class="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-gray-500"
+                    >@</span
+                  >
+                  <input
+                    type="email"
+                    id="email"
+                    placeholder="you@gmail.com"
+                    class="w-full border border-gray-200 rounded-lg py-3 pl-8 pr-3 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                  />
+                </div>
+                <p
+                  id="emailError"
+                  class="text-xs font-medium text-red-500 mt-1 hidden"
+                ></p>
+              </div>
+
+              <!-- Phone number -->
+              <div>
+                <label
+                  for="phone"
+                  class="block text-sm font-semibold text-gray-900 mb-2"
+                  >Phone number</label
+                >
+                <input
+                  type="tel"
+                  id="phone"
+                  placeholder="0812 345 6789"
+                  class="w-full border border-gray-200 rounded-lg py-3 px-3 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                />
+                <p
+                  id="phoneError"
+                  class="text-xs font-medium text-red-500 mt-1 hidden"
+                ></p>
+              </div>
+
+              <!-- Secondary phone number (optional) -->
+              <div>
+                <label
+                  for="secondaryPhone"
+                  class="block text-sm font-semibold text-gray-900 mb-2"
+                >
+                  Secondary phone number
+                  <span class="font-normal text-gray-500">(optional)</span>
+                </label>
+                <input
+                  type="tel"
+                  id="secondaryPhone"
+                  placeholder="0812 345 6789"
+                  class="w-full border border-gray-200 rounded-lg py-3 px-3 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                />
+                <p
+                  id="secondaryPhoneError"
+                  class="text-xs font-medium text-red-500 mt-1 hidden"
+                ></p>
+              </div>
+
+              <!-- Password -->
+              <div>
+                <label
+                  for="password"
+                  class="block text-sm font-semibold text-gray-900 mb-2"
+                  >Password</label
+                >
+                <div class="relative">
+                  <input
+                    type="password"
+                    id="password"
+                    placeholder="••••••••••••"
+                    class="w-full border border-gray-200 rounded-lg py-3 pl-3 pr-10 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                  />
+                  <!-- Eye button to show or hide the password -->
+                  <button
+                    type="button"
+                    id="passwordToggle"
+                    class="absolute right-3 top-1/2 -translate-y-1/2"
+                  >
+                    <img
+                      id="passwordEyeOff"
+                      src="/icons/famicons_eye-off-sharp.png"
+                      alt="Show password"
+                      class="w-4 h-4"
+                    />
+                    <img
+                      id="passwordEyeOn"
+                      src="/icons/eye.png"
+                      alt="Hide password"
+                      class="w-4 h-4 hidden"
+                    />
+                  </button>
+                </div>
+                <p
+                  id="passwordError"
+                  class="text-xs font-medium text-red-500 mt-1 hidden"
+                ></p>
+              </div>
+
+              <!-- Confirm password -->
+              <div>
+                <label
+                  for="confirmPassword"
+                  class="block text-sm font-semibold text-gray-900 mb-2"
+                  >Confirm password</label
+                >
+                <div class="relative">
+                  <input
+                    type="password"
+                    id="confirmPassword"
+                    placeholder="••••••••••••"
+                    class="w-full border border-gray-200 rounded-lg py-3 pl-3 pr-10 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                  />
+                  <!-- Eye button to show or hide the password -->
+                  <button
+                    type="button"
+                    id="confirmPasswordToggle"
+                    class="absolute right-3 top-1/2 -translate-y-1/2"
+                  >
+                    <img
+                      id="confirmPasswordEyeOff"
+                      src="/icons/famicons_eye-off-sharp.png"
+                      alt="Show password"
+                      class="w-4 h-4"
+                    />
+                    <img
+                      id="confirmPasswordEyeOn"
+                      src="/icons/eye.png"
+                      alt="Hide password"
+                      class="w-4 h-4 hidden"
+                    />
+                  </button>
+                </div>
+                <p
+                  id="confirmPasswordError"
+                  class="text-xs font-medium text-red-500 mt-1 hidden"
+                ></p>
+              </div>
+            </div>
+
+            <!-- Continue button (outside the grid, so it goes across both columns) -->
+            <button
+              type="submit"
+              class="w-full bg-blue-600 text-white text-sm font-semibold py-3 rounded-lg mt-5 hover:bg-blue-700"
+            >
+              Continue
+            </button>
+          </form>
+        </section>
+
+        <!-- ==================== STEP 2: PROFESSIONAL EXPERIENCE (hidden at the start) ==================== -->
+        <section id="step2" class="hidden">
+          <!-- Back arrow: goes back to step 1 -->
+          <button
+            type="button"
+            id="stepTwoArrow"
+            class="w-7 h-7 rounded-full bg-blue-50 flex items-center justify-center mt-5"
+          >
+            <img src="/icons/BackButton.png" alt="Go back" class="w-4 h-4" />
+          </button>
+          <p class="text-xs font-semibold text-blue-600 mt-3">STEP 2 OF 3</p>
+          <h2 class="text-2xl font-semibold text-gray-900 mt-3">
+            Professional experience
+          </h2>
+          <p class="text-xs font-medium text-gray-700 mt-3">
+            Tell us about your work and qualifications.
+          </p>
+
+          <!-- Progress bar: the first 2 pieces are blue -->
+          <div class="flex gap-1 mt-3">
+            <div class="flex-1 h-1 bg-blue-600 rounded-full"></div>
+            <div class="flex-1 h-1 bg-blue-600 rounded-full"></div>
+            <div class="flex-1 h-1 bg-gray-100 rounded-full"></div>
+          </div>
+
+          <form id="stepTwoForm" class="mt-5" novalidate>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <!-- Professional role -->
+              <div>
+                <label
+                  for="role"
+                  class="block text-sm font-semibold text-gray-900 mb-2"
+                  >Professional role</label
+                >
+                <div class="relative">
+                  <!-- appearance-none hides the browser's arrow so we can use our own -->
+                  <select
+                    id="role"
+                    class="w-full appearance-none bg-white border border-gray-200 rounded-lg py-3 pl-3 pr-10 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                  >
+                    <option value="">Select your role</option>
+                    <option value="doctor">Doctor</option>
+                    <option value="nurse">Nurse</option>
+                    <option value="midwife">Midwife</option>
+                    <option value="pharmacist">Pharmacist</option>
+                    <option value="lab-scientist">Laboratory Scientist</option>
+                    <option value="caregiver">Caregiver</option>
+                  </select>
+                  <img
+                    src="/icons/akar-icons_chevron-down-small.png"
+                    alt=""
+                    class="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
+                  />
+                </div>
+                <p
+                  id="roleError"
+                  class="text-xs font-medium text-red-500 mt-1 hidden"
+                ></p>
+              </div>
+
+              <!-- Specialty -->
+              <div>
+                <label
+                  for="specialty"
+                  class="block text-sm font-semibold text-gray-900 mb-2"
+                  >Specialty</label
+                >
+                <div class="relative">
+                  <select
+                    id="specialty"
+                    class="w-full appearance-none bg-white border border-gray-200 rounded-lg py-3 pl-3 pr-10 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                  >
+                    <option value="">Select your specialty</option>
+                    <option value="general-practice">General Practice</option>
+                    <option value="internal-medicine">Internal Medicine</option>
+                    <option value="pediatrics">Pediatrics</option>
+                    <option value="obstetrics-gynecology">
+                      Obstetrics &amp; Gynecology
+                    </option>
+                    <option value="surgery">Surgery</option>
+                    <option value="emergency">Emergency Medicine</option>
+                    <option value="cardiology">Cardiology</option>
+                    <option value="mental-health">Mental Health</option>
+                  </select>
+                  <img
+                    src="/icons/akar-icons_chevron-down-small.png"
+                    alt=""
+                    class="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
+                  />
+                </div>
+                <p
+                  id="specialtyError"
+                  class="text-xs font-medium text-red-500 mt-1 hidden"
+                ></p>
+              </div>
+
+              <!-- Years of experience -->
+              <div>
+                <label
+                  for="experience"
+                  class="block text-sm font-semibold text-gray-900 mb-2"
+                  >Years of experience</label
+                >
+                <input
+                  type="number"
+                  id="experience"
+                  placeholder="2 years"
+                  min="0"
+                  max="60"
+                  class="w-full border border-gray-200 rounded-lg py-3 px-3 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                />
+                <p
+                  id="experienceError"
+                  class="text-xs font-medium text-red-500 mt-1 hidden"
+                ></p>
+              </div>
+
+              <!-- Certifications -->
+              <!-- <div>
+                <label for="certification" class="block text-sm font-semibold text-gray-900 mb-2">Certifications</label>
+                <div class="relative">
+                  <select id="certification" class="w-full appearance-none bg-white border border-gray-200 rounded-lg py-3 pl-3 pr-10 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-200">
+                    <option value="">Select a certification</option>
+                    <option value="mbbs">MBBS (Bachelor of Medicine &amp; Surgery)</option>
+                    <option value="bsc-nursing">BSc in Nursing</option>
+                    <option value="rn">RN (Registered Nurse)</option>
+                    <option value="rm">RM (Registered Midwife)</option>
+                    <option value="bpharm">BPharm (Bachelor of Pharmacy)</option>
+                    <option value="pharmd">PharmD (Doctor of Pharmacy)</option>
+                    <option value="bmls">BMLS (Medical Laboratory Science)</option>
+                    <option value="bls">BLS (Basic Life Support)</option>
+                    <option value="acls">ACLS (Advanced Cardiac Life Support)</option>
+                    <option value="other">Other</option>
+                  </select>
+                  <img src="/icons/akar-icons_chevron-down-small.png" alt="" class="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                </div>
+                <p id="certificationError" class="text-xs font-medium text-red-500 mt-1 hidden"></p>
+              </div> -->
+            </div>
+
+            <!-- Back (to step 1) and Continue: same width, pushed to opposite sides -->
+            <div class="flex justify-between gap-3 mt-5">
+              <button
+                type="button"
+                id="stepTwoBack"
+                class="w-1/3 border border-blue-600 text-blue-600 text-sm font-semibold py-3 rounded-lg hover:bg-blue-50"
+              >
+                Back
+              </button>
+              <button
+                type="submit"
+                class="w-1/3 bg-blue-600 text-white text-sm font-semibold py-3 rounded-lg hover:bg-blue-700"
+              >
+                Continue
+              </button>
+            </div>
+          </form>
+        </section>
+
+        <!-- ==================== STEP 3: LOCATION / AREA (hidden at the start) ==================== -->
+        <section id="step3" class="hidden">
+          <!-- Back arrow: goes back to step 2 -->
+          <button
+            type="button"
+            id="stepThreeArrow"
+            class="w-7 h-7 rounded-full bg-blue-50 flex items-center justify-center mt-5"
+          >
+            <img src="/icons/BackButton.png" alt="Go back" class="w-4 h-4" />
+          </button>
+          <p class="text-xs font-semibold text-blue-600 mt-3">STEP 3 OF 3</p>
+          <h2 class="text-2xl font-semibold text-gray-900 mt-3">
+            Location / Area
+          </h2>
+          <p class="text-xs font-medium text-gray-700 mt-3">
+            Where are you based?
+          </p>
+
+          <!-- Progress bar: all 3 pieces are blue -->
+          <div class="flex gap-1 mt-3">
+            <div class="flex-1 h-1 bg-blue-600 rounded-full"></div>
+            <div class="flex-1 h-1 bg-blue-600 rounded-full"></div>
+            <div class="flex-1 h-1 bg-blue-600 rounded-full"></div>
+          </div>
+
+          <form id="stepThreeForm" class="mt-5" novalidate>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <!-- Address -->
+              <div>
+                <label
+                  for="address"
+                  class="block text-sm font-semibold text-gray-900 mb-2"
+                  >Address</label
+                >
+                <input
+                  type="text"
+                  id="address"
+                  placeholder="Enter your street address"
+                  class="w-full border border-gray-200 rounded-lg py-3 px-3 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                />
+                <p
+                  id="addressError"
+                  class="text-xs font-medium text-red-500 mt-1 hidden"
+                ></p>
+              </div>
+
+              <!-- City -->
+              <div>
+                <label
+                  for="city"
+                  class="block text-sm font-semibold text-gray-900 mb-2"
+                  >City</label
+                >
+                <input
+                  type="text"
+                  id="city"
+                  placeholder="Enter your city"
+                  class="w-full border border-gray-200 rounded-lg py-3 px-3 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                />
+                <p
+                  id="cityError"
+                  class="text-xs font-medium text-red-500 mt-1 hidden"
+                ></p>
+              </div>
+
+              <!-- State -->
+              <div>
+                <label
+                  for="state"
+                  class="block text-sm font-semibold text-gray-900 mb-2"
+                  >State</label
+                >
+                <input
+                  type="text"
+                  id="state"
+                  placeholder="Enter your state"
+                  class="w-full border border-gray-200 rounded-lg py-3 px-3 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                />
+                <p
+                  id="stateError"
+                  class="text-xs font-medium text-red-500 mt-1 hidden"
+                ></p>
+              </div>
+
+              <!-- Country (filled in with Nigeria at the start) -->
+              <div>
+                <label
+                  for="country"
+                  class="block text-sm font-semibold text-gray-900 mb-2"
+                  >Country</label
+                >
+                <input
+                  type="text"
+                  id="country"
+                  value="Nigeria"
+                  class="w-full border border-gray-200 rounded-lg py-3 px-3 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                />
+                <p
+                  id="countryError"
+                  class="text-xs font-medium text-red-500 mt-1 hidden"
+                ></p>
+              </div>
+            </div>
+
+            <!-- Terms checkbox (on the last step, right before creating the account) -->
+            <div class="mt-5">
+              <label
+                class="flex items-center gap-2 text-xs font-medium text-gray-900"
+              >
+                <input
+                  type="checkbox"
+                  id="terms"
+                  class="w-4 h-4 accent-blue-600"
+                />
+                <span
+                  >I agree to the
+                  <a href="#" class="hover:underline"
+                    >terms and conditions</a
+                  ></span
+                >
+              </label>
+              <p
+                id="termsError"
+                class="text-xs font-medium text-red-500 mt-1 hidden"
+              ></p>
+            </div>
+
+            <!-- Back (to step 2) and Create account: same width, pushed to opposite sides -->
+            <div class="flex justify-between gap-3 mt-5">
+              <button
+                type="button"
+                id="stepThreeBack"
+                class="w-1/3 border border-blue-600 text-blue-600 text-sm font-semibold py-3 rounded-lg hover:bg-blue-50"
+              >
+                Back
+              </button>
+              <button
+                type="submit"
+                class="w-1/3 bg-blue-600 text-white text-sm font-semibold py-3 rounded-lg hover:bg-blue-700"
+              >
+                Create account
+              </button>
+            </div>
+          </form>
+        </section>
+      </div>
+    </main>
+
+    <!-- Our JavaScript for this page -->
+    <script src="/js/professionalProfile.js"></script>
+  </body>
+</html>

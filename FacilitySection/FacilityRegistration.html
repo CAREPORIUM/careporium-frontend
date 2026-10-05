@@ -1,0 +1,646 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Careporium - Facility Registration</title>
+
+    <!-- Tailwind CSS from the CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Use SF Pro (the Apple system font) for the whole page -->
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [
+                "-apple-system",
+                "BlinkMacSystemFont",
+                '"SF Pro Text"',
+                '"Segoe UI"',
+                "Roboto",
+                "sans-serif",
+              ],
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+
+  <body class="bg-slate-50 min-h-screen text-gray-900">
+    <!-- Full width with space on the sides (no max-w, so it does not sit in a centered box) -->
+    <div class="px-5 md:px-20 py-8">
+      <!-- Logo at the top left -->
+      <img
+        src="/images/logo-blue.png"
+        alt="Careporium logo"
+        class="w-48 md:w-56 h-auto"
+      />
+
+      <!-- Sidebar on the left, white card on the right -->
+      <div class="flex gap-16 mt-8">
+        <!-- ==================== SIDEBAR (hidden on mobile) ==================== -->
+        <aside class="hidden md:block w-60 flex-shrink-0 mt-16">
+          <p class="text-xs font-medium text-blue-600 uppercase">
+            Facility registration
+          </p>
+
+          <!-- The 4 steps. JS changes their colors as the user moves through the steps. -->
+          <div class="space-y-8 mt-5">
+            <div
+              id="nav1"
+              class="flex items-center gap-3 p-3 rounded-lg bg-blue-50"
+            >
+              <span
+                id="navCircle1"
+                class="w-5 h-5 rounded-full bg-blue-600 text-white text-xs flex items-center justify-center"
+                >1</span
+              >
+              <span class="text-xs font-medium">Basic information</span>
+            </div>
+            <div id="nav2" class="flex items-center gap-3 p-3 rounded-lg">
+              <span
+                id="navCircle2"
+                class="w-5 h-5 rounded-full border border-gray-300 text-gray-700 text-xs flex items-center justify-center"
+                >2</span
+              >
+              <span class="text-xs font-medium">Location &amp; address</span>
+            </div>
+            <div id="nav3" class="flex items-center gap-3 p-3 rounded-lg">
+              <span
+                id="navCircle3"
+                class="w-5 h-5 rounded-full border border-gray-300 text-gray-700 text-xs flex items-center justify-center"
+                >3</span
+              >
+              <span class="text-xs font-medium">Facility documents</span>
+            </div>
+            <div id="nav4" class="flex items-center gap-3 p-3 rounded-lg">
+              <span
+                id="navCircle4"
+                class="w-5 h-5 rounded-full border border-gray-300 text-gray-700 text-xs flex items-center justify-center"
+                >4</span
+              >
+              <span class="text-xs font-medium">Review &amp; submit</span>
+            </div>
+            <button
+              type="button"
+              id="logoutButton"
+              data-login="/AuthenticationSection/login.html"
+              class="mt-auto flex items-center gap-3 px-3 py-2 rounded-lg border border-red-600 text-red-600 text-sm font-medium hover:bg-red-50"
+            >
+              <img src="/icons/logout.png" alt="" class="w-4 h-4" />
+              Log out
+            </button>
+          </div>
+        </aside>
+
+        <!-- ==================== MAIN AREA ==================== -->
+        <!-- md:min-h-[80vh] makes the card at least 80% of the screen height on desktop -->
+        <main
+          class="flex-1 bg-white border border-gray-200 p-5 md:p-12 md:min-h-[80vh]"
+        >
+          <!-- ==================== STEP 1: BASIC INFORMATION ==================== -->
+          <section id="step1">
+            <!-- Back arrow: data-step="0" means "leave this page" -->
+            <!-- <button type="button" class="back-arrow w-7 h-7 rounded-full bg-blue-50 flex items-center justify-center" data-step="0">
+              <img src="/icons/BackButton.png" alt="Go back" class="w-4 h-4" />
+            </button> -->
+            <p class="text-xs font-medium text-blue-600 uppercase mt-3">
+              Step 1 of 4
+            </p>
+            <h2 class="text-2xl font-semibold mt-3">Basic information</h2>
+            <p class="text-sm text-gray-700 mt-3">
+              Tell us about your healthcare facility.
+            </p>
+
+            <!-- Progress bar: 4 pieces, the first is blue -->
+            <div class="flex gap-1 mt-3">
+              <div class="flex-1 h-1 bg-blue-600 rounded-full"></div>
+              <div class="flex-1 h-1 bg-gray-100 rounded-full"></div>
+              <div class="flex-1 h-1 bg-gray-100 rounded-full"></div>
+              <div class="flex-1 h-1 bg-gray-100 rounded-full"></div>
+            </div>
+
+            <!-- Two columns on desktop, one on mobile -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mt-3">
+              <div>
+                <label
+                  for="facilityName"
+                  class="block text-sm font-semibold text-gray-900 mb-2"
+                  >Facility name</label
+                >
+                <input
+                  type="text"
+                  id="facilityName"
+                  placeholder="Enter facility name"
+                  class="w-full border border-gray-200 rounded-lg py-3 px-3 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                />
+                <!-- Error message (hidden until there is a mistake) -->
+                <p
+                  id="facilityNameError"
+                  class="text-xs font-medium text-red-500 mt-1 hidden"
+                ></p>
+              </div>
+
+              <div>
+                <label
+                  for="facilityType"
+                  class="block text-sm font-semibold text-gray-900 mb-2"
+                  >Facility type</label
+                >
+                <div class="relative">
+                  <!-- appearance-none hides the browser's arrow so we can use our own -->
+                  <select
+                    id="facilityType"
+                    class="w-full appearance-none bg-white border border-gray-200 rounded-lg py-3 pl-3 pr-10 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                  >
+                    <option value="">Select facility type</option>
+                    <option value="Private">Private</option>
+                    <option value="Public">Public</option>
+                    <option value="Faith-based">Faith-based</option>
+                    <option value="NGO">NGO</option>
+                  </select>
+                  <img
+                    src="/icons/akar-icons_chevron-down-small.png"
+                    alt=""
+                    class="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
+                  />
+                </div>
+                <p
+                  id="facilityTypeError"
+                  class="text-xs font-medium text-red-500 mt-1 hidden"
+                ></p>
+              </div>
+
+              <div>
+                <label
+                  for="facilityEmail"
+                  class="block text-sm font-semibold text-gray-900 mb-2"
+                  >Email address</label
+                >
+                <!-- The @ sign sits inside the box -->
+                <div class="relative">
+                  <span
+                    class="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-gray-500"
+                    >@</span
+                  >
+                  <input
+                    type="email"
+                    id="facilityEmail"
+                    placeholder="Enter facility email address"
+                    class="w-full border border-gray-200 rounded-lg py-3 pl-8 pr-3 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                  />
+                </div>
+                <p
+                  id="facilityEmailError"
+                  class="text-xs font-medium text-red-500 mt-1 hidden"
+                ></p>
+              </div>
+
+              <div>
+                <label
+                  for="facilityPhone"
+                  class="block text-sm font-semibold text-gray-900 mb-2"
+                  >Phone number</label
+                >
+                <input
+                  type="tel"
+                  id="facilityPhone"
+                  placeholder="+234 812 345 6789"
+                  class="w-full border border-gray-200 rounded-lg py-3 px-3 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                />
+                <p
+                  id="facilityPhoneError"
+                  class="text-xs font-medium text-red-500 mt-1 hidden"
+                ></p>
+              </div>
+            </div>
+
+            <!-- Only a Next button on the first step (on the right) -->
+            <div class="flex justify-end mt-5">
+              <button
+                type="button"
+                id="step1Next"
+                class="w-1/3 bg-blue-600 text-white text-sm font-medium py-3 rounded-lg hover:bg-blue-700"
+              >
+                Next
+              </button>
+            </div>
+          </section>
+
+          <!-- ==================== STEP 2: LOCATION & ADDRESS ==================== -->
+          <section id="step2" class="hidden">
+            <!-- Back arrow: data-step="1" goes back to step 1 -->
+            <button
+              type="button"
+              class="back-arrow w-7 h-7 rounded-full bg-blue-50 flex items-center justify-center"
+              data-step="1"
+            >
+              <img src="/icons/BackButton.png" alt="Go back" class="w-4 h-4" />
+            </button>
+            <p class="text-xs font-medium text-blue-600 uppercase mt-3">
+              Step 2 of 4
+            </p>
+            <h2 class="text-2xl font-semibold mt-3">Location &amp; address</h2>
+            <p class="text-sm text-gray-700 mt-3">
+              Where is your facility located?
+            </p>
+
+            <!-- Progress bar: the first 2 pieces are blue -->
+            <div class="flex gap-1 mt-3">
+              <div class="flex-1 h-1 bg-blue-600 rounded-full"></div>
+              <div class="flex-1 h-1 bg-blue-600 rounded-full"></div>
+              <div class="flex-1 h-1 bg-gray-100 rounded-full"></div>
+              <div class="flex-1 h-1 bg-gray-100 rounded-full"></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mt-3">
+              <div>
+                <label
+                  for="street"
+                  class="block text-sm font-semibold text-gray-900 mb-2"
+                  >Street address</label
+                >
+                <input
+                  type="text"
+                  id="street"
+                  placeholder="Enter facility address"
+                  class="w-full border border-gray-200 rounded-lg py-3 px-3 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                />
+                <p
+                  id="streetError"
+                  class="text-xs font-medium text-red-500 mt-1 hidden"
+                ></p>
+              </div>
+
+              <div>
+                <label
+                  for="city"
+                  class="block text-sm font-semibold text-gray-900 mb-2"
+                  >City</label
+                >
+                <input
+                  type="text"
+                  id="city"
+                  placeholder="Enter facility city"
+                  class="w-full border border-gray-200 rounded-lg py-3 px-3 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                />
+                <p
+                  id="cityError"
+                  class="text-xs font-medium text-red-500 mt-1 hidden"
+                ></p>
+              </div>
+
+              <div>
+                <label
+                  for="state"
+                  class="block text-sm font-semibold text-gray-900 mb-2"
+                  >State</label
+                >
+                <input
+                  type="text"
+                  id="state"
+                  placeholder="Enter facility state"
+                  class="w-full border border-gray-200 rounded-lg py-3 px-3 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                />
+                <p
+                  id="stateError"
+                  class="text-xs font-medium text-red-500 mt-1 hidden"
+                ></p>
+              </div>
+
+              <div>
+                <label
+                  for="country"
+                  class="block text-sm font-semibold text-gray-900 mb-2"
+                  >Country</label
+                >
+                <!-- Filled in with Nigeria at the start, like in the design -->
+                <input
+                  type="text"
+                  id="country"
+                  value="Nigeria"
+                  class="w-full border border-gray-200 rounded-lg py-3 px-3 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                />
+                <p
+                  id="countryError"
+                  class="text-xs font-medium text-red-500 mt-1 hidden"
+                ></p>
+              </div>
+            </div>
+
+            <div class="flex justify-between gap-3 mt-5">
+              <button
+                type="button"
+                id="step2Back"
+                class="w-1/3 border border-blue-600 text-blue-600 text-sm font-medium py-3 rounded-lg hover:bg-blue-50"
+              >
+                Back
+              </button>
+              <button
+                type="button"
+                id="step2Next"
+                class="w-1/3 bg-blue-600 text-white text-sm font-medium py-3 rounded-lg hover:bg-blue-700"
+              >
+                Next
+              </button>
+            </div>
+          </section>
+
+          <!-- ==================== STEP 3: FACILITY DOCUMENTS ==================== -->
+          <section id="step3" class="hidden">
+            <!-- Back arrow: data-step="2" goes back to step 2 -->
+            <button
+              type="button"
+              class="back-arrow w-7 h-7 rounded-full bg-blue-50 flex items-center justify-center"
+              data-step="2"
+            >
+              <img src="/icons/BackButton.png" alt="Go back" class="w-4 h-4" />
+            </button>
+            <p class="text-xs font-medium text-blue-600 uppercase mt-3">
+              Step 3 of 4
+            </p>
+            <h2 class="text-2xl font-semibold mt-3">Facility documents</h2>
+            <p class="text-sm text-gray-700 mt-3">
+              Upload documents to verify your healthcare facility.
+            </p>
+
+            <!-- Progress bar: the first 3 pieces are blue -->
+            <div class="flex gap-1 mt-3">
+              <div class="flex-1 h-1 bg-blue-600 rounded-full"></div>
+              <div class="flex-1 h-1 bg-blue-600 rounded-full"></div>
+              <div class="flex-1 h-1 bg-blue-600 rounded-full"></div>
+              <div class="flex-1 h-1 bg-gray-100 rounded-full"></div>
+            </div>
+
+            <!-- Info banner -->
+            <div class="flex items-center gap-3 bg-blue-50 rounded-lg p-3 mt-3">
+              <img src="/icons/info.png" alt="" class="w-4 h-4" />
+              <p class="text-xs text-gray-700">
+                PDF, JPG, JPEG or PNG · Maximum 5 MB per document
+              </p>
+            </div>
+
+            <!-- The real file pickers are hidden. The "Choose file" buttons open them. -->
+            <input
+              type="file"
+              id="registrationDocInput"
+              accept=".pdf,.jpg,.jpeg,.png"
+              class="hidden"
+            />
+            <input
+              type="file"
+              id="licenseDocInput"
+              accept=".pdf,.jpg,.jpeg,.png"
+              class="hidden"
+            />
+            <input
+              type="file"
+              id="tinDocInput"
+              accept=".pdf,.jpg,.jpeg,.png"
+              class="hidden"
+            />
+
+            <div class="space-y-3 mt-3">
+              <!-- Document 1 -->
+              <div class="border border-gray-200 rounded-lg p-5">
+                <div class="flex items-center justify-between gap-3">
+                  <div>
+                    <p class="text-sm font-semibold">
+                      Business registration certificate
+                    </p>
+                    <p class="text-xs text-gray-700 mt-1">
+                      Official facility registration document
+                    </p>
+                    <!-- The picked file name shows here -->
+                    <p
+                      id="registrationDocFileText"
+                      class="text-xs font-medium text-green-600 mt-1"
+                    ></p>
+                  </div>
+                  <button
+                    type="button"
+                    id="registrationDocButton"
+                    class="flex-shrink-0 bg-blue-50 text-blue-600 text-xs font-medium px-5 py-2 rounded hover:bg-blue-100"
+                  >
+                    ↑ Choose file
+                  </button>
+                </div>
+                <p
+                  id="registrationDocError"
+                  class="text-xs font-medium text-red-500 mt-1 hidden"
+                ></p>
+              </div>
+
+              <!-- Document 2 -->
+              <div class="border border-gray-200 rounded-lg p-5">
+                <div class="flex items-center justify-between gap-3">
+                  <div>
+                    <p class="text-sm font-semibold">Facility license</p>
+                    <p class="text-xs text-gray-700 mt-1">
+                      Valid operating license or permit
+                    </p>
+                    <p
+                      id="licenseDocFileText"
+                      class="text-xs font-medium text-green-600 mt-1"
+                    ></p>
+                  </div>
+                  <button
+                    type="button"
+                    id="licenseDocButton"
+                    class="flex-shrink-0 bg-blue-50 text-blue-600 text-xs font-medium px-5 py-2 rounded hover:bg-blue-100"
+                  >
+                    ↑ Choose file
+                  </button>
+                </div>
+                <p
+                  id="licenseDocError"
+                  class="text-xs font-medium text-red-500 mt-1 hidden"
+                ></p>
+              </div>
+
+              <!-- Document 3 -->
+              <div class="border border-gray-200 rounded-lg p-5">
+                <div class="flex items-center justify-between gap-3">
+                  <div>
+                    <p class="text-sm font-semibold">
+                      Tax identification number (TIN)
+                    </p>
+                    <p class="text-xs text-gray-700 mt-1">
+                      Facility tax identification document
+                    </p>
+                    <p
+                      id="tinDocFileText"
+                      class="text-xs font-medium text-green-600 mt-1"
+                    ></p>
+                  </div>
+                  <button
+                    type="button"
+                    id="tinDocButton"
+                    class="flex-shrink-0 bg-blue-50 text-blue-600 text-xs font-medium px-5 py-2 rounded hover:bg-blue-100"
+                  >
+                    ↑ Choose file
+                  </button>
+                </div>
+                <p
+                  id="tinDocError"
+                  class="text-xs font-medium text-red-500 mt-1 hidden"
+                ></p>
+              </div>
+            </div>
+
+            <div class="flex justify-between gap-3 mt-3">
+              <button
+                type="button"
+                id="step3Back"
+                class="w-1/3 border border-blue-600 text-blue-600 text-sm font-medium py-3 rounded-lg hover:bg-blue-50"
+              >
+                Back
+              </button>
+              <button
+                type="button"
+                id="step3Next"
+                class="w-1/3 bg-blue-600 text-white text-sm font-medium py-3 rounded-lg hover:bg-blue-700"
+              >
+                Next
+              </button>
+            </div>
+          </section>
+
+          <!-- ==================== STEP 4: REVIEW & SUBMIT ==================== -->
+          <section id="step4" class="hidden">
+            <!-- Back arrow: data-step="3" goes back to step 3 -->
+            <button
+              type="button"
+              class="back-arrow w-7 h-7 rounded-full bg-blue-50 flex items-center justify-center"
+              data-step="3"
+            >
+              <img src="/icons/BackButton.png" alt="Go back" class="w-4 h-4" />
+            </button>
+            <p class="text-xs font-medium text-blue-600 uppercase mt-3">
+              Step 4 of 4
+            </p>
+            <h2 class="text-2xl font-semibold mt-3">Review &amp; submit</h2>
+            <p class="text-sm text-gray-700 mt-3">
+              Please review your information before submitting.
+            </p>
+
+            <!-- Progress bar: all 4 pieces are blue -->
+            <div class="flex gap-1 mt-3">
+              <div class="flex-1 h-1 bg-blue-600 rounded-full"></div>
+              <div class="flex-1 h-1 bg-blue-600 rounded-full"></div>
+              <div class="flex-1 h-1 bg-blue-600 rounded-full"></div>
+              <div class="flex-1 h-1 bg-blue-600 rounded-full"></div>
+            </div>
+
+            <!-- Summary cards. JS fills in the details from the earlier steps. -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
+              <!-- Basic information -->
+              <div class="bg-blue-50 rounded-lg p-3 min-h-[8rem]">
+                <div class="flex justify-between">
+                  <p class="text-sm font-semibold">Basic information</p>
+                  <!-- data-step tells the JS which step to open -->
+                  <button
+                    type="button"
+                    class="edit-button text-xs font-medium text-blue-600"
+                    data-step="1"
+                  >
+                    Edit
+                  </button>
+                </div>
+                <div class="space-y-2 mt-3 text-xs text-gray-700">
+                  <p id="reviewNameType"></p>
+                  <p id="reviewEmail"></p>
+                  <p id="reviewPhone"></p>
+                </div>
+              </div>
+
+              <!-- Facility documents -->
+              <div class="bg-blue-50 rounded-lg p-3 min-h-[8rem]">
+                <div class="flex justify-between">
+                  <p class="text-sm font-semibold">Facility documents</p>
+                  <button
+                    type="button"
+                    class="edit-button text-xs font-medium text-blue-600"
+                    data-step="3"
+                  >
+                    Edit
+                  </button>
+                </div>
+                <div class="space-y-2 mt-3 text-xs text-gray-700">
+                  <p>Business registration certificate ✓</p>
+                  <p>Facility license ✓</p>
+                  <p>Tax identification document ✓</p>
+                </div>
+              </div>
+
+              <!-- Location & address -->
+              <div class="bg-blue-50 rounded-lg p-3 min-h-[8rem]">
+                <div class="flex justify-between">
+                  <p class="text-sm font-semibold">Location &amp; address</p>
+                  <button
+                    type="button"
+                    class="edit-button text-xs font-medium text-blue-600"
+                    data-step="2"
+                  >
+                    Edit
+                  </button>
+                </div>
+                <div class="space-y-2 mt-3 text-xs text-gray-700">
+                  <p id="reviewStreet"></p>
+                  <p id="reviewCityLine"></p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Terms checkbox -->
+            <label
+              class="flex items-center gap-2 text-xs font-medium text-gray-900 mt-5"
+            >
+              <input
+                type="checkbox"
+                id="terms"
+                class="w-4 h-4 accent-blue-600"
+              />
+              I agree to the Terms &amp; Conditions and Privacy Policy
+            </label>
+            <p
+              id="termsError"
+              class="text-xs font-medium text-red-500 mt-1 hidden"
+            ></p>
+
+            <!-- Info banner -->
+            <div class="flex items-center gap-3 bg-blue-50 rounded-lg p-3 mt-3">
+              <img src="/icons/info.png" alt="" class="w-4 h-4" />
+              <p class="text-xs text-gray-700">
+                I confirm the information and documents belong to this facility.
+              </p>
+            </div>
+
+            <div class="flex justify-between gap-3 mt-3">
+              <button
+                type="button"
+                id="step4Back"
+                class="w-1/3 border border-blue-600 text-blue-600 text-sm font-medium py-3 rounded-lg hover:bg-blue-50"
+              >
+                Back
+              </button>
+              <button
+                type="button"
+                id="submitButton"
+                class="w-1/3 bg-blue-600 text-white text-sm font-medium py-3 rounded-lg hover:bg-blue-700"
+              >
+                Submit registration
+              </button>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <!-- Our JavaScript for this page -->
+    <script src="/js/FacilityRegistration.js"></script>
+  </body>
+</html>

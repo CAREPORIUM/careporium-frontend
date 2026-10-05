@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Careporium - Facility Reviews</title>
+
+    <!-- Tailwind CSS from the CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Use SF Pro (the Apple system font) for the whole page -->
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [
+                "-apple-system",
+                "BlinkMacSystemFont",
+                '"SF Pro Text"',
+                '"Segoe UI"',
+                "Roboto",
+                "sans-serif",
+              ],
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+
+  <body class="bg-slate-50 text-gray-900">
+    <!-- Sidebar on the left, page on the right -->
+    <div class="flex min-h-screen">
+      <!-- ==================== SIDEBAR ==================== -->
+      <!-- On desktop it always shows (md:flex). On mobile it's hidden until the menu button opens it. -->
+      <aside
+        id="sidebar"
+        class="hidden md:flex fixed md:static inset-y-0 left-0 z-20 w-56 flex-shrink-0 flex-col bg-white border-r border-gray-200 p-5"
+      >
+        <!-- Logo, with a close button next to it (the close button only shows on mobile) -->
+        <div class="flex items-center justify-between">
+          <img
+            src="/images/logo-blue.png"
+            alt="Careporium logo"
+            class="w-36 h-auto"
+          />
+          <button type="button" id="closeMenuButton" class="md:hidden">
+            <img src="/icons/close.png" alt="Close menu" class="w-6 h-6" />
+          </button>
+        </div>
+
+        <!-- Menu links -->
+        <nav class="space-y-2 mt-10">
+          <a
+            href="dashboard.html"
+            class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50"
+          >
+            <img src="/icons/nav-dashboard.png" alt="" class="w-4 h-4" />
+            Dashboard
+          </a>
+          <!-- Active page: light blue -->
+          <a
+            href="findShifts.html"
+            class="flex items-center gap-3 px-3 py-2 rounded-lg bg-blue-50 text-blue-600 text-sm font-medium"
+          >
+            <img src="/icons/nav-find-shifts.png" alt="" class="w-4 h-4" />
+            Find shifts
+          </a>
+          <a
+            href="myApplications.html"
+            class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50"
+          >
+            <img src="/icons/nav-applications.png" alt="" class="w-4 h-4" />
+            My applications
+          </a>
+          <a
+            href="upcomingShifts.html"
+            class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50"
+          >
+            <img src="/icons/nav-upcoming.png" alt="" class="w-4 h-4" />
+            Upcoming shifts
+          </a>
+          <a
+            href="profile.html"
+            class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50"
+          >
+            <img src="/icons/nav-profile.png" alt="" class="w-4 h-4" />
+            Profile
+          </a>
+            <button
+            type="button"
+            id="logoutButton"
+            data-login="/AuthenticationSection/login.html"
+            class="mt-auto flex items-center gap-3 px-3 py-2 rounded-lg border border-red-600 text-red-600 text-sm font-medium hover:bg-red-50"
+          >
+            <img src="/icons/logout.png" alt="" class="w-4 h-4" />
+            Log out
+          </button>
+        </nav>
+      </aside>
+
+      <!-- ==================== RIGHT SIDE ==================== -->
+      <div class="flex-1 min-w-0">
+        <!-- Top bar: where you are on the left, user on the right -->
+        <header
+          class="bg-white border-b border-gray-200 px-5 md:px-8 py-4 flex items-center justify-between"
+        >
+          <div class="flex items-center gap-3">
+            <!-- Menu button (only on mobile) -->
+            <button type="button" id="menuButton" class="md:hidden">
+              <img src="/icons/menu.png" alt="Open menu" class="w-6 h-6" />
+            </button>
+            <p class="text-xs font-medium text-gray-500 uppercase">
+              Worker workspace / Mainland Care Hospital
+            </p>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <img src="/icons/bell.png" alt="Notifications" class="w-4 h-4" />
+            <p class="hidden sm:block text-sm font-medium">Amara Okafor</p>
+            <!-- Initials in a light blue circle -->
+            <span
+              class="w-8 h-8 rounded-full bg-blue-50 text-blue-600 text-xs font-semibold flex items-center justify-center"
+              >AO</span
+            >
+          </div>
+        </header>
+
+        <!-- ==================== PAGE CONTENT ==================== -->
+        <main class="p-5 md:p-8 max-w-6xl">
+          <!-- Page heading -->
+          <h1 class="text-3xl font-semibold">Mainland Care Hospital</h1>
+          <p class="text-sm text-gray-700 mt-2">
+            Verified healthcare facility · Ikeja, Lagos
+          </p>
+
+          <div class="grid grid-cols-1 md:grid-cols-5 gap-5 mt-5">
+            <!-- ===== Overall rating (left) ===== -->
+            <section
+              class="bg-white border border-gray-200 rounded-2xl p-6 md:col-span-2 self-start"
+            >
+              <span
+                class="inline-block bg-green-50 text-green-700 text-xs font-semibold uppercase px-3 py-1 rounded"
+                >Verified facility</span
+              >
+              <p class="text-3xl font-semibold mt-3">4.8 / 5</p>
+              <p class="text-sm text-amber-700 mt-1">
+                ★★★★★ · 42 worker reviews
+              </p>
+              <p class="text-xs text-gray-700 mt-3">
+                Reviews from completed, verified shifts.
+              </p>
+              <div class="space-y-5 mt-5">
+                <div class="flex gap-5 text-xs">
+                  <span class="w-32 text-gray-700">Work environment</span
+                  ><span class="font-semibold">4.8</span>
+                </div>
+                <div class="flex gap-5 text-xs">
+                  <span class="w-32 text-gray-700">Shift accuracy</span
+                  ><span class="font-semibold">4.7</span>
+                </div>
+                <div class="flex gap-5 text-xs">
+                  <span class="w-32 text-gray-700">Staff support</span
+                  ><span class="font-semibold">4.9</span>
+                </div>
+                <div class="flex gap-5 text-xs">
+                  <span class="w-32 text-gray-700">Payment experience</span
+                  ><span class="font-semibold">4.8</span>
+                </div>
+              </div>
+              <p class="text-xs text-gray-500 mt-5">
+                Sample ratings and reviews for this design.
+              </p>
+            </section>
+
+            <!-- ===== Reviews (right) ===== -->
+            <section class="md:col-span-3">
+              <h2 class="text-lg font-semibold">What healthcare workers say</h2>
+              <div class="w-full sm:w-48 mt-3">
+                <div>
+                  <label
+                    for="sortReviews"
+                    class="block text-sm font-semibold mb-2"
+                    >Sort reviews</label
+                  >
+                  <div class="relative">
+                    <select
+                      id="sortReviews"
+                      class="w-full appearance-none bg-white border border-gray-200 rounded-lg py-3 pl-3 pr-10 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                    >
+                      <option>Most recent</option>
+                      <option>Highest rated</option>
+                    </select>
+                    <img
+                      src="/icons/akar-icons_chevron-down-small.png"
+                      alt=""
+                      class="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <!-- The JS moves these cards around when sorting -->
+              <div id="reviewList" class="space-y-3 mt-3">
+                <!-- data-rating and data-date are used by "Sort reviews" -->
+                <div
+                  class="review-card bg-white border border-gray-200 rounded-2xl p-5"
+                  data-rating="5"
+                  data-date="2026-09-28"
+                >
+                  <p class="text-base font-semibold">
+                    Amara O. · Registered nurse
+                  </p>
+                  <p class="text-xs font-medium text-teal-700 mt-3">
+                    ★★★★★ · 28 Sep 2026 · Verified completed shift
+                  </p>
+                  <p class="text-xs text-gray-700 mt-3">
+                    Clear handover and a supportive ward team. The shift matched
+                    the posted details.
+                  </p>
+                </div>
+                <!-- data-rating and data-date are used by "Sort reviews" -->
+                <div
+                  class="review-card bg-white border border-gray-200 rounded-2xl p-5"
+                  data-rating="4"
+                  data-date="2026-09-24"
+                >
+                  <p class="text-base font-semibold">
+                    Tunde A. · Medical laboratory scientist
+                  </p>
+                  <p class="text-xs font-medium text-teal-700 mt-3">
+                    ★★★★☆ · 24 Sep 2026 · Verified completed shift
+                  </p>
+                  <p class="text-xs text-gray-700 mt-3">
+                    The coordinator was helpful and equipment was ready. Arrival
+                    instructions could be clearer.
+                  </p>
+                </div>
+              </div>
+
+              <a
+                href="/WorkerShiftMarket/FindShifts.html"
+                class="inline-block bg-blue-600 text-white text-sm font-medium text-center py-3 rounded-lg hover:bg-blue-700 px-8 mt-3"
+                >View available shifts</a
+              >
+            </section>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <!-- Shared JavaScript for this workspace -->
+    <script src="/js/workerDashboard.js"></script>
+  </body>
+</html>

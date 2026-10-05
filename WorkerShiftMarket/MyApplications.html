@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Careporium - My Applications</title>
+
+    <!-- Tailwind CSS from the CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Use SF Pro (the Apple system font) for the whole page -->
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ["-apple-system", "BlinkMacSystemFont", '"SF Pro Text"', '"Segoe UI"', "Roboto", "sans-serif"],
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+
+  <body class="bg-slate-50 text-gray-900">
+    <!-- Sidebar on the left, page on the right -->
+    <div class="flex min-h-screen">
+
+      <!-- ==================== SIDEBAR ==================== -->
+      <!-- On desktop it always shows (md:flex). On mobile it's hidden until the menu button opens it. -->
+      <aside id="sidebar" class="hidden md:flex fixed md:static inset-y-0 left-0 z-20 w-56 flex-shrink-0 flex-col bg-white border-r border-gray-200 p-5">
+        <!-- Logo, with a close button next to it (the close button only shows on mobile) -->
+        <div class="flex items-center justify-between">
+          <img src="/images/logo-blue.png" alt="Careporium logo" class="w-36 h-auto" />
+          <button type="button" id="closeMenuButton" class="md:hidden">
+            <img src="/icons/close.png" alt="Close menu" class="w-6 h-6" />
+          </button>
+        </div>
+
+        <!-- Menu links -->
+        <nav class="space-y-2 mt-10">
+          <a href="/WorkerShiftMarket/Dashboard.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50">
+            <img src="/icons/nav-dashboard.png" alt="" class="w-4 h-4" />
+            Dashboard
+          </a>
+          <a href="/WorkerShiftMarket/FindShifts.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50">
+            <img src="/icons/nav-find-shifts.png" alt="" class="w-4 h-4" />
+            Find shifts
+          </a>
+  <!-- Active page: light blue -->
+          <a href="/WorkerShiftMarket/MyApplications.html" class="flex items-center gap-3 px-3 py-2 rounded-lg bg-blue-50 text-blue-600 text-sm font-medium">
+            <img src="/icons/nav-applications.png" alt="" class="w-4 h-4" />
+            My applications
+          </a>
+          <a href="/WorkerShiftMarket/UpcomingShifts.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50">
+            <img src="/icons/nav-upcoming.png" alt="" class="w-4 h-4" />
+            Upcoming shifts
+          </a>
+          <a href="/WorkerShiftMarket/Profile.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50">
+            <img src="/icons/nav-profile.png" alt="" class="w-4 h-4" />
+            Profile
+          </a>
+            <button
+            type="button"
+            id="logoutButton"
+            data-login="/AuthenticationSection/login.html"
+            class="mt-auto flex items-center gap-3 px-3 py-2 rounded-lg border border-red-600 text-red-600 text-sm font-medium hover:bg-red-50"
+          >
+            <img src="/icons/logout.png" alt="" class="w-4 h-4" />
+            Log out
+          </button>
+        </nav>
+      </aside>
+
+      <!-- ==================== RIGHT SIDE ==================== -->
+      <div class="flex-1 min-w-0">
+        <!-- Top bar: where you are on the left, user on the right -->
+        <header class="bg-white border-b border-gray-200 px-5 md:px-8 py-4 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <!-- Menu button (only on mobile) -->
+            <button type="button" id="menuButton" class="md:hidden">
+              <img src="/icons/menu.png" alt="Open menu" class="w-6 h-6" />
+            </button>
+            <p class="text-xs font-medium text-gray-500 uppercase">Worker workspace / My applications</p>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <img src="/icons/bell.png" alt="Notifications" class="w-4 h-4" />
+            <p class="hidden sm:block text-sm font-medium">Amara Okafor</p>
+            <!-- Initials in a light blue circle -->
+            <span class="w-8 h-8 rounded-full bg-blue-50 text-blue-600 text-xs font-semibold flex items-center justify-center">AO</span>
+          </div>
+        </header>
+
+        <!-- ==================== PAGE CONTENT ==================== -->
+        <main class="p-5 md:p-8 max-w-6xl">
+          <!-- Page heading -->
+          <p class="text-xs font-medium text-blue-600 uppercase">Applications</p>
+          <h1 class="text-3xl font-semibold mt-2">Keep every application in view.</h1>
+          <p class="text-sm text-gray-700 mt-2">A clear timeline from submission to facility decision.</p>
+
+          <!-- Filter tabs. data-filter says which applications each tab shows. -->
+          <div class="flex flex-wrap gap-2 mt-3">
+            <button type="button" class="filter-tab bg-blue-600 text-white text-xs font-medium px-3 py-1 rounded-full" data-filter="all">All · 4</button>
+            <button type="button" class="filter-tab text-gray-700 text-xs font-medium px-3 py-1 rounded-full hover:bg-gray-100" data-filter="review">Under review · 2</button>
+            <button type="button" class="filter-tab text-gray-700 text-xs font-medium px-3 py-1 rounded-full hover:bg-gray-100" data-filter="accepted">Accepted · 1</button>
+            <button type="button" class="filter-tab text-gray-700 text-xs font-medium px-3 py-1 rounded-full hover:bg-gray-100" data-filter="not-selected">Not selected · 1</button>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mt-5">
+            <section class="bg-white border border-gray-200 rounded-2xl p-6 md:col-span-2">
+              <h2 class="text-lg font-semibold">Recent applications</h2>
+              <div class="space-y-3 mt-3">
+              <!-- data-status is used by the filter tabs -->
+              <div class="application-item border border-gray-200 rounded-xl p-3" data-status="review">
+                <div class="flex justify-between items-center gap-3">
+                  <p class="text-sm font-semibold">Registered Nurse · Acute Care</p>
+                  <span class="inline-block bg-amber-50 text-amber-700 text-xs font-semibold uppercase px-2 py-1 rounded">Under review</span>
+                </div>
+                <p class="text-xs text-gray-700 mt-3">Mainland Care Hospital · 6 Oct · 07:00–19:00 WAT</p>
+                <a href="#" class="inline-block text-xs font-medium text-blue-600 mt-2">View application →</a>
+              </div>
+              <!-- data-status is used by the filter tabs -->
+              <div class="application-item border border-gray-200 rounded-xl p-3" data-status="accepted">
+                <div class="flex justify-between items-center gap-3">
+                  <p class="text-sm font-semibold">Community Nurse</p>
+                  <span class="inline-block bg-green-50 text-green-700 text-xs font-semibold uppercase px-2 py-1 rounded">Accepted</span>
+                </div>
+                <p class="text-xs text-gray-700 mt-3">Yaba Community Clinic · 9 Oct · 08:00–16:00 WAT</p>
+                <a href="#" class="inline-block text-xs font-medium text-blue-600 mt-2">View application →</a>
+              </div>
+              <!-- data-status is used by the filter tabs -->
+              <div class="application-item border border-gray-200 rounded-xl p-3" data-status="review">
+                <div class="flex justify-between items-center gap-3">
+                  <p class="text-sm font-semibold">Theatre Nurse</p>
+                  <span class="inline-block bg-amber-50 text-amber-700 text-xs font-semibold uppercase px-2 py-1 rounded">Under review</span>
+                </div>
+                <p class="text-xs text-gray-700 mt-3">Ikeja Medical Centre · 12 Oct · 10:00–18:00 WAT</p>
+                <a href="#" class="inline-block text-xs font-medium text-blue-600 mt-2">View application →</a>
+              </div>
+              <!-- data-status is used by the filter tabs -->
+              <div class="application-item border border-gray-200 rounded-xl p-3" data-status="not-selected">
+                <div class="flex justify-between items-center gap-3">
+                  <p class="text-sm font-semibold">Emergency Nurse</p>
+                  <span class="inline-block bg-gray-100 text-gray-600 text-xs font-semibold uppercase px-2 py-1 rounded">Not selected</span>
+                </div>
+                <p class="text-xs text-gray-700 mt-3">Surulere Care Hospital · 14 Oct · 18:00–06:00 WAT</p>
+                <a href="#" class="inline-block text-xs font-medium text-blue-600 mt-2">View application →</a>
+              </div>
+              </div>
+            </section>
+
+            <!-- Timeline of one application -->
+            <section class="bg-white border border-gray-200 rounded-2xl p-6 self-start">
+              <span class="inline-block bg-amber-50 text-amber-700 text-xs font-semibold uppercase px-2 py-1 rounded">Under review</span>
+              <h2 class="text-lg font-semibold mt-3">Registered Nurse · Acute Care</h2>
+              <p class="text-xs text-gray-700 mt-1">Mainland Care Hospital</p>
+              <div class="space-y-3 mt-5">
+              <div class="flex gap-3">
+                <span class="w-5 h-5 rounded-full bg-green-100 text-green-600 text-xs flex items-center justify-center flex-shrink-0">✓</span>
+                <div><p class="text-sm font-semibold">Submitted</p><p class="text-xs text-gray-700">29 Sep · Application received</p></div>
+              </div>
+              <div class="flex gap-3">
+                <span class="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0"><span class="w-2 h-2 rounded-full bg-green-600"></span></span>
+                <div><p class="text-sm font-semibold">Facility review</p><p class="text-xs text-gray-700">Credentials and availability in review</p></div>
+              </div>
+              <div class="flex gap-3">
+                <span class="w-5 h-5 rounded-full border border-gray-300 flex-shrink-0"></span>
+                <div><p class="text-sm font-semibold">Decision</p><p class="text-xs text-gray-700">Notification by email and in the app</p></div>
+              </div>
+              </div>
+            </section>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <!-- Shared JavaScript for all worker dashboard pages -->
+    <script src="/js/WorkerDashboard.js"></script>
+  </body>
+</html>

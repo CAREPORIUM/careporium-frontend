@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Careporium - Find the right opportunities</title>
+
+    <!-- Tailwind CSS from the CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+
+  <body class="bg-white">
+    <!-- Main container: stacked on mobile, side by side on desktop (md:flex-row) -->
+    <!-- <div class="min-h-screen flex flex-col md:flex-row"> -->
+    <div class="min-h-screen md:h-screen flex flex-col md:flex-row">
+      <!-- LEFT SIDE: the stethoscope picture -->
+      <!-- <div class="w-full h-64 md:w-2/5 md:h-auto"> -->
+      <div class="hidden md:block w-full h-64 md:w-2/5 md:h-full">
+        <img
+          src="/images/Onboarding-screen-one.png"
+          alt="Stethoscope on a doctor's coat"
+          class="w-full h-full object-cover"
+        />
+      </div>
+
+      <!-- RIGHT SIDE: logo, text and buttons -->
+      <div class="w-full md:w-3/5 flex flex-col items-center px-6 py-10">
+        <!-- Logo at the top -->
+        <img
+          src="/images/logo-blue.png"
+          alt="Careporium logo"
+          class="w-60 h-auto md:mt-10"
+        />
+
+        <!-- This box holds the main content and sits in the middle -->
+        <div
+          class="flex-1 flex flex-col items-center justify-center w-full max-w-md mt-24 md:mt-28"
+        >
+          <!-- Heading -->
+          <h1 class="text-3xl font-semibold text-black text-center">
+            Find the right Opportunities.
+          </h1>
+
+          <!-- Small description -->
+          <p class="text-base font-normal text-gray-700 text-center mt-4">
+            Discover flexible shifts, explore trusted facilities, and take
+            control of your careers.
+          </p>
+
+          <!-- The 3 dots (first one is blue because this is page 1) -->
+          <div class="flex gap-2 mt-6">
+            <span class="w-8 h-2 rounded-full bg-blue-600"></span>
+            <span class="w-8 h-2 rounded-full bg-gray-300"></span>
+            <span class="w-8 h-2 rounded-full bg-gray-300"></span>
+          </div>
+
+          <!-- Next button: goes to onboarding page 2 -->
+          <a
+            href="onboardingTwo.html"
+            class="w-full bg-blue-600 text-white text-sm text-center py-3 rounded-md mt-6 hover:bg-blue-700"
+          >
+            Next
+          </a>
+
+          <!-- Skip button: white with a blue border -->
+          <a
+            href="/AuthenticationSection/signUp.html"
+            class="w-full border border-blue-600 text-blue-600 text-sm text-center py-3 rounded-md mt-3 hover:bg-blue-50"
+          >
+            Skip
+          </a>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

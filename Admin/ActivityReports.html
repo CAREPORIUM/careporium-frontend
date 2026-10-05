@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Careporium - Activity & Reports</title>
+
+    <!-- Tailwind CSS from the CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Use SF Pro (the Apple system font) for the whole page -->
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [
+                "-apple-system",
+                "BlinkMacSystemFont",
+                '"SF Pro Text"',
+                '"Segoe UI"',
+                "Roboto",
+                "sans-serif",
+              ],
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+
+  <body class="bg-slate-50 text-gray-900">
+    <!-- Sidebar on the left, page on the right -->
+    <div class="flex min-h-screen">
+      <!-- ==================== SIDEBAR ==================== -->
+      <!-- On desktop it always shows (md:flex). On mobile it's hidden until the menu button opens it. -->
+      <aside
+        id="sidebar"
+        class="hidden md:flex fixed md:static inset-y-0 left-0 z-20 w-56 flex-shrink-0 flex-col bg-white border-r border-gray-200 p-5"
+      >
+        <!-- Logo, with a close button next to it (the close button only shows on mobile) -->
+        <div class="flex items-center justify-between">
+          <img
+            src="/images/logo-blue.png"
+            alt="Careporium logo"
+            class="w-36 h-auto"
+          />
+          <button type="button" id="closeMenuButton" class="md:hidden">
+            <img src="/icons/close.png" alt="Close menu" class="w-6 h-6" />
+          </button>
+        </div>
+
+        <!-- Menu links -->
+        <nav class="space-y-2 mt-10">
+          <a
+            href="/Admin/AdminOverview.html"
+            class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50"
+          >
+            <img src="/icons/nav-dashboard.png" alt="" class="w-4 h-4" />
+            Overview
+          </a>
+          <a
+            href="/Admin/VerificationQueue.html"
+            class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50"
+          >
+            <img src="/icons/nav-find-shifts.png" alt="" class="w-4 h-4" />
+            Verifications
+          </a>
+          <a
+            href="/Admin/ManageUsers.html"
+            class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50"
+          >
+            <img src="/icons/nav-profile.png" alt="" class="w-4 h-4" />
+            Users
+          </a>
+          <a
+            href="/Admin/ManageAdmins.html"
+            class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50"
+          >
+            <img src="/icons/nav-profile.png" alt="" class="w-4 h-4" />
+            Admins
+          </a>
+          <a
+            href="/Admin/Disputes.html"
+            class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50"
+          >
+            <img src="/icons/nav-upcoming.png" alt="" class="w-4 h-4" />
+            Disputes
+          </a>
+          <!-- Active page: light blue -->
+          <a
+            href="/Admin/ActivityReports.html"
+            class="flex items-center gap-3 px-3 py-2 rounded-lg bg-blue-50 text-blue-600 text-sm font-medium"
+          >
+            <img src="/icons/nav-applications.png" alt="" class="w-4 h-4" />
+            Activity &amp; reports
+          </a>
+          <button
+            type="button"
+            id="logoutButton"
+            data-login="Admin/AdminLogin.html"
+            class="mt-auto flex items-center gap-3 px-3 py-2 rounded-lg border border-red-600 text-red-600 text-sm font-medium hover:bg-red-50"
+          >
+            <img src="/icons/logout.png" alt="" class="w-4 h-4" />
+            Log out
+          </button>
+        </nav>
+      </aside>
+
+      <!-- ==================== RIGHT SIDE ==================== -->
+      <div class="flex-1 min-w-0">
+        <!-- Top bar: where you are on the left, user on the right -->
+        <header
+          class="bg-white border-b border-gray-200 px-5 md:px-8 py-4 flex items-center justify-between"
+        >
+          <div class="flex items-center gap-3">
+            <!-- Menu button (only on mobile) -->
+            <button type="button" id="menuButton" class="md:hidden">
+              <img src="/icons/menu.png" alt="Open menu" class="w-6 h-6" />
+            </button>
+            <p class="text-xs font-medium text-gray-500 uppercase">
+              Admin workspace / Activity &amp; reports
+            </p>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <img src="/icons/bell.png" alt="Notifications" class="w-4 h-4" />
+            <p class="hidden sm:block text-sm font-medium">Platform admin</p>
+            <!-- Initials in a light blue circle -->
+            <span
+              class="w-8 h-8 rounded-full bg-blue-50 text-blue-600 text-xs font-semibold flex items-center justify-center"
+              >PA</span
+            >
+          </div>
+        </header>
+
+        <!-- ==================== PAGE CONTENT ==================== -->
+        <main class="p-5 md:p-8 max-w-6xl">
+          <!-- Page heading -->
+          <h1 class="text-3xl font-semibold">Activity &amp; reports</h1>
+          <p class="text-sm text-gray-700 mt-2">
+            Monitor verification, marketplace and payment events.
+          </p>
+
+          <!-- Filters and export -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-5 items-end mt-5">
+            <div>
+              <label for="dateRange" class="block text-sm font-semibold mb-2"
+                >Date range</label
+              >
+              <div class="relative">
+                <select
+                  id="dateRange"
+                  class="w-full appearance-none bg-white border border-gray-200 rounded-lg py-3 pl-3 pr-10 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                >
+                  <option>26 Sep – 2 Oct 2026</option>
+                  <option>19 – 25 Sep 2026</option>
+                  <option>12 – 18 Sep 2026</option>
+                </select>
+                <img
+                  src="/icons/akar-icons_chevron-down-small.png"
+                  alt=""
+                  class="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
+                />
+              </div>
+              <p
+                id="dateRangeError"
+                class="text-xs font-medium text-red-500 mt-1 hidden"
+              ></p>
+            </div>
+            <div>
+              <label for="eventType" class="block text-sm font-semibold mb-2"
+                >Event type</label
+              >
+              <div class="relative">
+                <select
+                  id="eventType"
+                  class="w-full appearance-none bg-white border border-gray-200 rounded-lg py-3 pl-3 pr-10 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                >
+                  <option>All activity</option>
+                  <option>Verifications</option>
+                  <option>Shifts</option>
+                  <option>Payments</option>
+                </select>
+                <img
+                  src="/icons/akar-icons_chevron-down-small.png"
+                  alt=""
+                  class="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
+                />
+              </div>
+              <p
+                id="eventTypeError"
+                class="text-xs font-medium text-red-500 mt-1 hidden"
+              ></p>
+            </div>
+            <button
+              type="button"
+              id="exportReport"
+              class="border border-blue-600 text-blue-600 text-sm font-medium text-center py-3 rounded-lg hover:bg-blue-50 md:mb-1"
+            >
+              Export report
+            </button>
+          </div>
+
+          <section class="bg-white border border-gray-200 rounded-2xl p-6 mt-5">
+            <h2 class="text-base font-semibold">Recent activity</h2>
+            <!-- overflow-x-auto lets the table scroll sideways on small screens -->
+            <div class="overflow-x-auto mt-3">
+              <table class="w-full text-left text-xs">
+                <thead>
+                  <tr>
+                    <th class="py-3 pr-5 font-medium text-gray-700">Time</th>
+                    <th class="py-3 pr-5 font-medium text-gray-700">Event</th>
+                    <th class="py-3 pr-5 font-medium text-gray-700">
+                      Account / actor
+                    </th>
+                    <th class="py-3 pr-5 font-medium text-gray-700">Result</th>
+                    <th class="py-3 pr-5 font-medium text-gray-700">
+                      Reference
+                    </th>
+                  </tr>
+                </thead>
+                <tbody id="activityBody">
+                  <!-- data-category is used by "Event type" -->
+                  <tr
+                    class="activity-row border-t border-gray-100"
+                    data-category="Verifications"
+                  >
+                    <td class="py-3 pr-5">09:40</td>
+                    <td class="py-3 pr-5">Worker approved</td>
+                    <td class="py-3 pr-5">Platform admin</td>
+                    <td class="py-3 pr-5">Success</td>
+                    <td class="py-3 pr-5">
+                      <a href="#" class="text-blue-600 hover:underline"
+                        >WK-1048</a
+                      >
+                    </td>
+                  </tr>
+                  <!-- data-category is used by "Event type" -->
+                  <tr
+                    class="activity-row border-t border-gray-100"
+                    data-category="Shifts"
+                  >
+                    <td class="py-3 pr-5">09:32</td>
+                    <td class="py-3 pr-5">Shift published</td>
+                    <td class="py-3 pr-5">Mainland Care</td>
+                    <td class="py-3 pr-5">Urgent</td>
+                    <td class="py-3 pr-5">
+                      <a href="#" class="text-blue-600 hover:underline"
+                        >SH-0824</a
+                      >
+                    </td>
+                  </tr>
+                  <!-- data-category is used by "Event type" -->
+                  <tr
+                    class="activity-row border-t border-gray-100"
+                    data-category="Payments"
+                  >
+                    <td class="py-3 pr-5">09:15</td>
+                    <td class="py-3 pr-5">Payment release</td>
+                    <td class="py-3 pr-5">Yaba Clinic</td>
+                    <td class="py-3 pr-5">Failed</td>
+                    <td class="py-3 pr-5">
+                      <a href="#" class="text-blue-600 hover:underline"
+                        >PY-0321</a
+                      >
+                    </td>
+                  </tr>
+                  <!-- data-category is used by "Event type" -->
+                  <tr
+                    class="activity-row border-t border-gray-100"
+                    data-category="Verifications"
+                  >
+                    <td class="py-3 pr-5">08:50</td>
+                    <td class="py-3 pr-5">Facility submitted</td>
+                    <td class="py-3 pr-5">Ikeja Centre</td>
+                    <td class="py-3 pr-5">Pending</td>
+                    <td class="py-3 pr-5">
+                      <a href="#" class="text-blue-600 hover:underline"
+                        >FC-0220</a
+                      >
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="bg-white border border-gray-200 rounded-2xl p-6 mt-5">
+            <h2 class="text-base font-semibold">Reporting summary</h2>
+            <p class="text-xs text-gray-700 mt-3">
+              18 approvals · 3 rejections · 24 shifts published · 3 payment
+              failures
+            </p>
+            <p class="text-xs text-gray-700 mt-1">
+              Report includes event time, actor, account, action, outcome and
+              reference.
+            </p>
+            <p class="text-xs text-amber-700 mt-3">
+              Issues to review: 3 payment failures and 2 repeated sign-in
+              failures.
+            </p>
+          </section>
+
+          <p class="text-xs text-gray-700 mt-5">
+            All figures and account details are illustrative sample data.
+          </p>
+        </main>
+      </div>
+    </div>
+
+    <!-- Shared JavaScript for all admin pages -->
+    <script src="/js/AdminDashboard.js"></script>
+  </body>
+</html>

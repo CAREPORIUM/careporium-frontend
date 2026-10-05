@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Careporium - Verification</title>
+
+    <!-- Tailwind CSS from the CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Use SF Pro (the Apple system font) for the whole page -->
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [
+                "-apple-system",
+                "BlinkMacSystemFont",
+                '"SF Pro Text"',
+                '"Segoe UI"',
+                "Roboto",
+                "sans-serif",
+              ],
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+
+  <body class="bg-slate-50 text-gray-900">
+    <!-- Sidebar on the left, page on the right -->
+    <div class="flex min-h-screen">
+      <!-- ==================== SIDEBAR ==================== -->
+      <!-- On desktop it always shows (md:flex). On mobile it's hidden until the menu button opens it. -->
+      <aside
+        id="sidebar"
+        class="hidden md:flex fixed md:static inset-y-0 left-0 z-20 w-56 flex-shrink-0 flex-col bg-white border-r border-gray-200 p-5"
+      >
+        <!-- Logo, with a close button next to it (the close button only shows on mobile) -->
+        <div class="flex items-center justify-between">
+          <img
+            src="/images/logo-blue.png"
+            alt="Careporium logo"
+            class="w-36 h-auto"
+          />
+          <button type="button" id="closeMenuButton" class="md:hidden">
+            <img src="/icons/close.png" alt="Close menu" class="w-6 h-6" />
+          </button>
+        </div>
+
+        <!-- Menu links -->
+        <nav class="space-y-2 mt-10">
+          <a
+            href="dashboard.html"
+            class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50"
+          >
+            <img src="/icons/nav-dashboard.png" alt="" class="w-4 h-4" />
+            Dashboard
+          </a>
+          <a
+            href="findShifts.html"
+            class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50"
+          >
+            <img src="/icons/nav-find-shifts.png" alt="" class="w-4 h-4" />
+            Find shifts
+          </a>
+          <a
+            href="myApplications.html"
+            class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50"
+          >
+            <img src="/icons/nav-applications.png" alt="" class="w-4 h-4" />
+            My applications
+          </a>
+          <a
+            href="upcomingShifts.html"
+            class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50"
+          >
+            <img src="/icons/nav-upcoming.png" alt="" class="w-4 h-4" />
+            Upcoming shifts
+          </a>
+          <!-- Active page: light blue -->
+          <a
+            href="profile.html"
+            class="flex items-center gap-3 px-3 py-2 rounded-lg bg-blue-50 text-blue-600 text-sm font-medium"
+          >
+            <img src="/icons/nav-profile.png" alt="" class="w-4 h-4" />
+            Profile
+          </a>
+          <button
+            type="button"
+            id="logoutButton"
+            data-login="/AuthenticationSection/login.html"
+            class="mt-auto flex items-center gap-3 px-3 py-2 rounded-lg border border-red-600 text-red-600 text-sm font-medium hover:bg-red-50"
+          >
+            <img src="/icons/logout.png" alt="" class="w-4 h-4" />
+            Log out
+          </button>
+        </nav>
+      </aside>
+
+      <!-- ==================== RIGHT SIDE ==================== -->
+      <div class="flex-1 min-w-0">
+        <!-- Top bar: where you are on the left, user on the right -->
+        <header
+          class="bg-white border-b border-gray-200 px-5 md:px-8 py-4 flex items-center justify-between"
+        >
+          <div class="flex items-center gap-3">
+            <!-- Menu button (only on mobile) -->
+            <button type="button" id="menuButton" class="md:hidden">
+              <img src="/icons/menu.png" alt="Open menu" class="w-6 h-6" />
+            </button>
+            <p class="text-xs font-medium text-gray-500 uppercase">
+              Worker workspace / Profile
+            </p>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <img src="/icons/bell.png" alt="Notifications" class="w-4 h-4" />
+            <p class="hidden sm:block text-sm font-medium">Amara Okafor</p>
+            <!-- Initials in a light blue circle -->
+            <span
+              class="w-8 h-8 rounded-full bg-blue-50 text-blue-600 text-xs font-semibold flex items-center justify-center"
+              >AO</span
+            >
+          </div>
+        </header>
+
+        <!-- ==================== PAGE CONTENT ==================== -->
+        <main class="p-5 md:p-8 max-w-6xl">
+          <!-- Page heading -->
+          <p class="text-xs font-medium text-blue-600 uppercase">
+            Trust and verification
+          </p>
+          <h1 class="text-3xl font-semibold mt-2">Verification at a glance.</h1>
+          <p class="text-sm text-gray-700 mt-2">
+            Clear status labels help professionals know what is ready and what
+            needs attention.
+          </p>
+
+          <!-- 3 status cards -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mt-5 items-start">
+            <section class="bg-white border border-gray-200 rounded-2xl p-6">
+              <span
+                class="inline-block bg-green-50 text-green-700 text-xs font-semibold uppercase px-2 py-1 rounded"
+                >✓ Verified</span
+              >
+              <h2 class="text-lg font-semibold mt-3">Verified</h2>
+              <p class="text-xs text-gray-700 mt-3">
+                Identity and active professional licence were reviewed. Ready to
+                apply for eligible shifts.
+              </p>
+              <a
+                href="/StatusSection/Verificationstatus.html"
+                class="block border border-blue-600 text-blue-600 text-sm font-medium text-center px-8 py-3 rounded-lg hover:bg-blue-50 mt-3"
+                >View credentials</a
+              >
+            </section>
+            <section class="bg-white border border-gray-200 rounded-2xl p-6">
+              <span
+                class="inline-block bg-amber-50 text-amber-700 text-xs font-semibold uppercase px-2 py-1 rounded"
+                >● In review</span
+              >
+              <h2 class="text-lg font-semibold mt-3">Under review</h2>
+              <p class="text-xs text-gray-700 mt-3">
+                Documents are submitted. Some opportunities may require approval
+                first.
+              </p>
+              <a
+                href="/StatusSection/Verificationstatus.html"
+                class="block border border-blue-600 text-blue-600 text-sm font-medium text-center px-8 py-3 rounded-lg hover:bg-blue-50 mt-3"
+                >Track verification</a
+              >
+            </section>
+            <section class="bg-white border border-gray-200 rounded-2xl p-6">
+              <span
+                class="inline-block bg-red-50 text-red-600 text-xs font-semibold uppercase px-2 py-1 rounded"
+                >! Action required</span
+              >
+              <h2 class="text-lg font-semibold mt-3">Action required</h2>
+              <p class="text-xs text-gray-700 mt-3">
+                An expired or unclear document needs updating before restricted
+                shifts.
+              </p>
+              <a
+                href="#"
+                class="block border border-blue-600 text-blue-600 text-sm font-medium text-center px-8 py-3 rounded-lg hover:bg-blue-50 mt-3"
+                >Update document</a
+              >
+            </section>
+          </div>
+
+          <section class="bg-white border border-gray-200 rounded-2xl p-6 mt-5">
+            <h2 class="text-lg font-semibold">A badge that earns trust</h2>
+            <p class="text-xs text-gray-700 mt-3">
+              Show verification beside a professional's name, on applications,
+              and in facility review. Pair color with a readable label and keep
+              documents private.
+            </p>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <!-- Shared JavaScript for all worker dashboard pages -->
+    <script src="/js/WorkerDashboard.js"></script>
+  </body>
+</html>

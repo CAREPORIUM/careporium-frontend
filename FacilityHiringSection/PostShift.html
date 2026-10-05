@@ -1,0 +1,482 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Careporium - Post a Shift</title>
+
+    <!-- Tailwind CSS from the CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Use SF Pro (the Apple system font) for the whole page -->
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [
+                "-apple-system",
+                "BlinkMacSystemFont",
+                '"SF Pro Text"',
+                '"Segoe UI"',
+                "Roboto",
+                "sans-serif",
+              ],
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+
+  <body class="bg-slate-50 text-gray-900">
+    <!-- Sidebar on the left, page on the right -->
+    <div class="flex min-h-screen">
+      <!-- ==================== SIDEBAR ==================== -->
+      <!-- On desktop it always shows (md:flex). On mobile it's hidden until the menu button opens it. -->
+      <aside
+        id="sidebar"
+        class="hidden md:flex fixed md:static inset-y-0 left-0 z-20 w-56 flex-shrink-0 flex-col bg-white border-r border-gray-200 p-5"
+      >
+        <!-- Logo, with a close button next to it (the close button only shows on mobile) -->
+        <div class="flex items-center justify-between">
+          <img
+            src="/images/logo-blue.png"
+            alt="Careporium logo"
+            class="w-36 h-auto"
+          />
+          <button type="button" id="closeMenuButton" class="md:hidden">
+            <img src="/icons/close.png" alt="Close menu" class="w-6 h-6" />
+          </button>
+        </div>
+
+        <!-- Menu links -->
+        <nav class="space-y-2 mt-10">
+          <!-- <a
+            href="#"
+            class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50"
+          >
+            <img src="/icons/nav-dashboard.png" alt="" class="w-4 h-4" />
+            Dashboard
+          </a> -->
+          <!-- Active page: light blue -->
+          <a
+            href="/FacilityHiringSection/PostShift.html"
+            class="flex items-center gap-3 px-3 py-2 rounded-lg bg-blue-50 text-blue-600 text-sm font-medium"
+          >
+            <img src="/icons/nav-post-shift.png" alt="" class="w-4 h-4" />
+            Post a shift
+          </a>
+          <a
+            href="/FacilityHiringSection/Applicants.html"
+            class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50"
+          >
+            <img src="/icons/nav-applicants.png" alt="" class="w-4 h-4" />
+            Applicants
+          </a>
+          <!-- <a
+            href="#"
+            class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50"
+          >
+            <img src="/icons/nav-my-shifts.png" alt="" class="w-4 h-4" />
+            My shifts
+          </a> -->
+          <!-- <a
+            href="/FacilityHiringSection/"
+            class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50"
+          >
+            <img src="/icons/nav-facility-profile.png" alt="" class="w-4 h-4" />
+            Facility profile
+          </a> -->
+          <!-- Log out button. mt-auto pushes it to the bottom of the sidebar on desktop. -->
+          <!-- data-login says which sign-in page to go to after logging out. -->
+          <button
+            type="button"
+            id="logoutButton"
+            data-login="/AuthenticationSection/login.html"
+            class="mt-auto flex items-center gap-3 px-3 py-2 rounded-lg border border-red-600 text-red-600 text-sm font-medium hover:bg-red-50"
+          >
+            <img src="/icons/logout.png" alt="" class="w-4 h-4" />
+            Log out
+          </button>
+        </nav>
+      </aside>
+
+      <!-- ==================== RIGHT SIDE ==================== -->
+      <div class="flex-1 min-w-0">
+        <!-- Top bar: where you are on the left, user on the right -->
+        <header
+          class="bg-white border-b border-gray-200 px-5 md:px-8 py-4 flex items-center justify-between"
+        >
+          <div class="flex items-center gap-3">
+            <!-- Menu button (only on mobile) -->
+            <button type="button" id="menuButton" class="md:hidden">
+              <img src="/icons/menu.png" alt="Open menu" class="w-6 h-6" />
+            </button>
+            <p class="text-xs font-medium text-gray-500 uppercase">
+              Facility workspace / Post a shift
+            </p>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <img src="/icons/bell.png" alt="Notifications" class="w-4 h-4" />
+            <p class="hidden sm:block text-sm font-medium">Mainland Care</p>
+            <!-- Initials in a light blue circle -->
+            <span
+              class="w-8 h-8 rounded-full bg-blue-50 text-blue-600 text-xs font-semibold flex items-center justify-center"
+              >MC</span
+            >
+          </div>
+        </header>
+
+        <!-- ==================== PAGE CONTENT ==================== -->
+        <main class="p-5 md:p-8 max-w-6xl">
+          <!-- Page heading -->
+          <h1 class="text-3xl font-semibold">Post a shift</h1>
+          <p class="text-sm text-gray-700 mt-2">
+            Tell verified professionals what you need. Review the details before
+            publishing.
+          </p>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mt-5">
+            <!-- ===== Form (left) ===== -->
+            <section
+              class="bg-white border border-gray-200 rounded-2xl p-6 md:col-span-2"
+            >
+              <h2 class="text-lg font-semibold">Shift requirements</h2>
+
+              <!-- Two columns on desktop, one on mobile -->
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mt-5">
+                <div>
+                  <label
+                    for="profession"
+                    class="block text-sm font-semibold mb-2"
+                    >Profession</label
+                  >
+                  <div class="relative">
+                    <select
+                      id="profession"
+                      class="w-full appearance-none bg-white border border-gray-200 rounded-lg py-3 pl-3 pr-10 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                    >
+                      <option>Registered nurse</option>
+                      <option>Midwife</option>
+                      <option>Pharmacist</option>
+                      <option>Laboratory scientist</option>
+                    </select>
+                    <img
+                      src="/icons/akar-icons_chevron-down-small.png"
+                      alt=""
+                      class="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label
+                    for="specialty"
+                    class="block text-sm font-semibold mb-2"
+                    >Specialty</label
+                  >
+                  <div class="relative">
+                    <select
+                      id="specialty"
+                      class="w-full appearance-none bg-white border border-gray-200 rounded-lg py-3 pl-3 pr-10 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                    >
+                      <option>Acute care</option>
+                      <option>Community nursing</option>
+                      <option>Emergency care</option>
+                      <option>Pediatrics</option>
+                    </select>
+                    <img
+                      src="/icons/akar-icons_chevron-down-small.png"
+                      alt=""
+                      class="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label
+                    for="shiftDate"
+                    class="block text-sm font-semibold mb-2"
+                    >Shift date</label
+                  >
+                  <input
+                    type="date"
+                    id="shiftDate"
+                    value="2026-10-06"
+                    class="w-full border border-gray-200 rounded-lg py-3 px-3 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                  />
+                  <p
+                    id="shiftDateError"
+                    class="text-xs font-medium text-red-500 mt-1 hidden"
+                  ></p>
+                </div>
+                <div>
+                  <label
+                    for="shiftType"
+                    class="block text-sm font-semibold mb-2"
+                    >Shift type</label
+                  >
+                  <div class="relative">
+                    <select
+                      id="shiftType"
+                      class="w-full appearance-none bg-white border border-gray-200 rounded-lg py-3 pl-3 pr-10 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                    >
+                      <option>Day shift</option>
+                      <option>Night shift</option>
+                    </select>
+                    <img
+                      src="/icons/akar-icons_chevron-down-small.png"
+                      alt=""
+                      class="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label
+                    for="startTime"
+                    class="block text-sm font-semibold mb-2"
+                    >Start time (WAT)</label
+                  >
+                  <input
+                    type="time"
+                    id="startTime"
+                    value="07:00"
+                    class="w-full border border-gray-200 rounded-lg py-3 px-3 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                  />
+                  <p
+                    id="startTimeError"
+                    class="text-xs font-medium text-red-500 mt-1 hidden"
+                  ></p>
+                </div>
+                <div>
+                  <label for="endTime" class="block text-sm font-semibold mb-2"
+                    >End time (WAT)</label
+                  >
+                  <input
+                    type="time"
+                    id="endTime"
+                    value="19:00"
+                    class="w-full border border-gray-200 rounded-lg py-3 px-3 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                  />
+                  <p
+                    id="endTimeError"
+                    class="text-xs font-medium text-red-500 mt-1 hidden"
+                  ></p>
+                </div>
+                <div>
+                  <label
+                    for="workersNeeded"
+                    class="block text-sm font-semibold mb-2"
+                    >Professionals needed</label
+                  >
+                  <div class="relative">
+                    <select
+                      id="workersNeeded"
+                      class="w-full appearance-none bg-white border border-gray-200 rounded-lg py-3 pl-3 pr-10 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                    >
+                      <option>1</option>
+                      <option selected>2</option>
+                      <option>3</option>
+                      <option>4</option>
+                      <option>5</option>
+                    </select>
+                    <img
+                      src="/icons/akar-icons_chevron-down-small.png"
+                      alt=""
+                      class="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label
+                    for="experience"
+                    class="block text-sm font-semibold mb-2"
+                    >Minimum experience</label
+                  >
+                  <input
+                    type="text"
+                    id="experience"
+                    value="2 years"
+                    placeholder="e.g., 2 years"
+                    class="w-full border border-gray-200 rounded-lg py-3 px-3 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                  />
+                  <p
+                    id="experienceError"
+                    class="text-xs font-medium text-red-500 mt-1 hidden"
+                  ></p>
+                </div>
+                <div>
+                  <label for="location" class="block text-sm font-semibold mb-2"
+                    >Location</label
+                  >
+                  <div class="relative">
+                    <select
+                      id="location"
+                      class="w-full appearance-none bg-white border border-gray-200 rounded-lg py-3 pl-3 pr-10 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                    >
+                      <option>Ikeja, Lagos</option>
+                      <option>Yaba, Lagos</option>
+                      <option>Surulere, Lagos</option>
+                      <option>Lekki, Lagos</option>
+                    </select>
+                    <img
+                      src="/icons/akar-icons_chevron-down-small.png"
+                      alt=""
+                      class="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label
+                    for="hourlyPay"
+                    class="block text-sm font-semibold mb-2"
+                    >Hourly pay (₦)</label
+                  >
+                  <input
+                    type="number"
+                    id="hourlyPay"
+                    value="3000"
+                    placeholder="e.g., 3000"
+                    class="w-full border border-gray-200 rounded-lg py-3 px-3 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                  />
+                  <p
+                    id="hourlyPayError"
+                    class="text-xs font-medium text-red-500 mt-1 hidden"
+                  ></p>
+                </div>
+              </div>
+
+              <!-- Full-width fields -->
+              <div class="space-y-5 mt-5">
+                <div>
+                  <label
+                    for="responsibilities"
+                    class="block text-sm font-semibold mb-2"
+                    >Responsibilities</label
+                  >
+                  <input
+                    type="text"
+                    id="responsibilities"
+                    value="Patient care, documentation and clinical handover"
+                    class="w-full border border-gray-200 rounded-lg py-3 px-3 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                  />
+                  <p
+                    id="responsibilitiesError"
+                    class="text-xs font-medium text-red-500 mt-1 hidden"
+                  ></p>
+                </div>
+                <div>
+                  <label
+                    for="credentials"
+                    class="block text-sm font-semibold mb-2"
+                    >Required credentials</label
+                  >
+                  <input
+                    type="text"
+                    id="credentials"
+                    value="Active NMCN licence · BLS certification"
+                    class="w-full border border-gray-200 rounded-lg py-3 px-3 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                  />
+                  <p
+                    id="credentialsError"
+                    class="text-xs font-medium text-red-500 mt-1 hidden"
+                  ></p>
+                </div>
+                <div>
+                  <label for="arrival" class="block text-sm font-semibold mb-2"
+                    >Arrival instructions</label
+                  >
+                  <input
+                    type="text"
+                    id="arrival"
+                    value="Report to reception 15 minutes before the shift"
+                    class="w-full border border-gray-200 rounded-lg py-3 px-3 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                  />
+                  <p
+                    id="arrivalError"
+                    class="text-xs font-medium text-red-500 mt-1 hidden"
+                  ></p>
+                </div>
+              </div>
+
+              <!-- Urgent box -->
+              <div class="border border-gray-200 rounded-xl p-5 mt-5">
+                <span
+                  id="urgentBadge"
+                  class="inline-block bg-amber-50 text-amber-700 text-xs font-semibold uppercase px-3 py-1 rounded"
+                  >Urgent shift · Enabled</span
+                >
+                <label class="flex items-center gap-2 text-sm mt-3">
+                  <input
+                    type="checkbox"
+                    id="urgent"
+                    class="w-4 h-4 accent-blue-600"
+                    checked
+                  />
+                  Mark this shift as urgent
+                </label>
+                <p class="text-xs text-gray-700 mt-3">
+                  Highlighted in search results so available qualified workers
+                  can identify it quickly.
+                </p>
+              </div>
+
+              <div class="flex flex-wrap gap-3 mt-5">
+                <button
+                  type="button"
+                  id="saveDraft"
+                  class="border border-blue-600 text-blue-600 text-sm font-medium text-center py-3 rounded-lg hover:bg-blue-50 px-10"
+                >
+                  Save draft
+                </button>
+                <button
+                  type="button"
+                  id="reviewShift"
+                  class="bg-blue-600 text-white text-sm font-medium text-center py-3 rounded-lg hover:bg-blue-700 px-10"
+                >
+                  Review shift
+                </button>
+              </div>
+              <!-- Shown after "Save draft" is clicked -->
+              <p
+                id="draftMessage"
+                class="text-xs font-medium text-green-700 mt-3 hidden"
+              >
+                Draft saved.
+              </p>
+            </section>
+
+            <!-- ===== Live summary (right). The JS updates it as the form changes. ===== -->
+            <section
+              class="bg-white border border-gray-200 rounded-2xl p-6 self-start"
+            >
+              <h2 class="text-lg font-semibold">Shift summary</h2>
+              <div class="space-y-1 mt-3 text-xs text-gray-700">
+                <p id="summaryRole">2 registered nurses · Acute care</p>
+                <p id="summaryWhen">6 Oct · 07:00–19:00 WAT</p>
+                <p id="summaryPlace">Mainland Care Hospital, Ikeja</p>
+              </div>
+              <p id="summaryEach" class="text-base font-semibold mt-3">
+                ₦36,000 per professional
+              </p>
+              <p id="summaryTotal" class="text-base font-semibold">
+                ₦72,000 total shift pay
+              </p>
+              <p id="summaryMath" class="text-xs text-gray-700 mt-3">
+                12 hours × ₦3,000/hour × 2 workers. Any platform fees are shown
+                before confirmation.
+              </p>
+              <p class="text-xs text-gray-700 mt-3">
+                Only workers with approved credentials can apply. Funding is
+                required before shift confirmation.
+              </p>
+            </section>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <!-- Shared JavaScript for this workspace -->
+    <script src="/js/facilityDashboard.js"></script>
+  </body>
+</html>

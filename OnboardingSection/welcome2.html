@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Careporium</title>
+
+    <!-- Tailwind CSS from the CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+
+  <body class="bg-white">
+    <!-- Main container: stacked on mobile, side by side on desktop (md:flex-row) -->
+    <div class="min-h-screen md:h-screen flex flex-col md:flex-row">
+      <!-- LEFT SIDE: photo with a blue layer on top (hidden on mobile) -->
+      <div class="hidden md:block relative md:w-1/2 md:h-full">
+        <!-- The photo at the back -->
+        <img
+          src="/images/Onboarding-screen-two.png"
+          alt="Nurse at work"
+          class="w-full h-full object-cover"
+        />
+
+        <!-- Blue layer on top of the photo (80% see-through) -->
+        <div
+          class="absolute inset-0 bg-blue-600/80 flex flex-col items-center justify-center px-6 text-center"
+        >
+          <img
+            src="/images/logo-white.png"
+            alt="Careporium logo"
+            class="w-72 h-auto"
+          />
+          <p class="text-white text-lg mt-4">Healthcare shifts, made simple.</p>
+        </div>
+      </div>
+
+      <!-- RIGHT SIDE: welcome text, benefits and buttons -->
+      <div
+        class="flex-1 w-full md:w-1/2 flex flex-col items-center justify-center px-6 py-12"
+      >
+        <!-- Logo at the top, only on mobile -->
+        <img
+          src="/images/logo-blue.png"
+          alt="Careporium logo"
+          class="w-40 h-auto md:hidden"
+        />
+
+        <!-- This box keeps the content from getting too wide -->
+        <div
+          class="w-full max-w-md flex-1 md:flex-none flex flex-col justify-center"
+        >
+          <!-- Heading -->
+          <h1
+            class="text-3xl font-semibold text-black text-center text-blue-600"
+          >
+            Welcome to Careporium
+          </h1>
+
+          <!-- Small description -->
+          <p class="text-sm text-gray-700 mt-3 text-center">
+            Find healthcare shifts that fit your schedule, all in one place.
+          </p>
+
+          <!-- 3 short benefits -->
+          <div class="mt-8 space-y-4">
+            <div class="flex items-center gap-3">
+              <span
+                class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-sm"
+                >✓</span
+              >
+              <p class="text-sm text-gray-800">Pick flexible shifts near you</p>
+            </div>
+
+            <div class="flex items-center gap-3">
+              <span
+                class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-sm"
+                >✓</span
+              >
+              <p class="text-sm text-gray-800">Work with trusted facilities</p>
+            </div>
+
+            <div class="flex items-center gap-3">
+              <span
+                class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-sm"
+                >✓</span
+              >
+              <p class="text-sm text-gray-800">Take control of your career</p>
+            </div>
+          </div>
+
+          <!-- Get started button: for new users, goes to onboarding page 1 -->
+          <a
+            href="onboardingOne.html"
+            class="block w-full bg-blue-600 text-white text-sm text-center py-3 rounded-md mt-10 hover:bg-blue-700"
+          >
+            Get started
+          </a>
+
+          <!-- Log in button: for people who already have an account -->
+          <a
+            href="/AuthenticationSection/login.html"
+            class="block w-full border border-blue-600 text-blue-600 text-sm text-center py-3 rounded-md mt-3 hover:bg-blue-50"
+          >
+            Log in
+          </a>
+
+          <!-- Small line under the buttons -->
+          <p class="text-xs text-gray-500 text-center mt-6">
+            By continuing, you agree to our Terms and Privacy Policy.
+          </p>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

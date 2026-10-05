@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Careporium - Amara Okafor</title>
+
+    <!-- Tailwind CSS from the CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Use SF Pro (the Apple system font) for the whole page -->
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [
+                "-apple-system",
+                "BlinkMacSystemFont",
+                '"SF Pro Text"',
+                '"Segoe UI"',
+                "Roboto",
+                "sans-serif",
+              ],
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+
+  <body class="bg-slate-50 text-gray-900">
+    <!-- Sidebar on the left, page on the right -->
+    <div class="flex min-h-screen">
+      <!-- ==================== SIDEBAR ==================== -->
+      <!-- On desktop it always shows (md:flex). On mobile it's hidden until the menu button opens it. -->
+      <aside
+        id="sidebar"
+        class="hidden md:flex fixed md:static inset-y-0 left-0 z-20 w-56 flex-shrink-0 flex-col bg-white border-r border-gray-200 p-5"
+      >
+        <!-- Logo, with a close button next to it (the close button only shows on mobile) -->
+        <div class="flex items-center justify-between">
+          <img
+            src="/images/logo-blue.png"
+            alt="Careporium logo"
+            class="w-36 h-auto"
+          />
+          <button type="button" id="closeMenuButton" class="md:hidden">
+            <img src="/icons/close.png" alt="Close menu" class="w-6 h-6" />
+          </button>
+        </div>
+
+        <!-- Menu links -->
+        <nav class="space-y-2 mt-10">
+          <!-- <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50">
+            <img src="/icons/nav-dashboard.png" alt="" class="w-4 h-4" />
+            Dashboard
+          </a> -->
+          <a
+            href="/FacilityHiringSection/PostShift.html"
+            class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50"
+          >
+            <img src="/icons/nav-post-shift.png" alt="" class="w-4 h-4" />
+            Post a shift
+          </a>
+          <!-- Active page: light blue -->
+          <a
+            href="/FacilityHiringSection/Applicants.html"
+            class="flex items-center gap-3 px-3 py-2 rounded-lg bg-blue-50 text-blue-600 text-sm font-medium"
+          >
+            <img src="/icons/nav-applicants.png" alt="" class="w-4 h-4" />
+            Applicants
+          </a>
+          <!-- <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50">
+            <img src="/icons/nav-my-shifts.png" alt="" class="w-4 h-4" />
+            My shifts
+          </a> -->
+          <!-- <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50">
+            <img src="/icons/nav-facility-profile.png" alt="" class="w-4 h-4" />
+            Facility profile
+          </a> -->
+          <!-- Log out button. mt-auto pushes it to the bottom of the sidebar on desktop. -->
+          <!-- data-login says which sign-in page to go to after logging out. -->
+          <button
+            type="button"
+            id="logoutButton"
+            data-login="/AuthenticationSection/login.html"
+            class="mt-auto flex items-center gap-3 px-3 py-2 rounded-lg border border-red-600 text-red-600 text-sm font-medium hover:bg-red-50"
+          >
+            <img src="/icons/logout.png" alt="" class="w-4 h-4" />
+            Log out
+          </button>
+        </nav>
+      </aside>
+
+      <!-- ==================== RIGHT SIDE ==================== -->
+      <div class="flex-1 min-w-0">
+        <!-- Top bar: where you are on the left, user on the right -->
+        <header
+          class="bg-white border-b border-gray-200 px-5 md:px-8 py-4 flex items-center justify-between"
+        >
+          <div class="flex items-center gap-3">
+            <!-- Menu button (only on mobile) -->
+            <button type="button" id="menuButton" class="md:hidden">
+              <img src="/icons/menu.png" alt="Open menu" class="w-6 h-6" />
+            </button>
+            <p class="text-xs font-medium text-gray-500 uppercase">
+              Facility workspace / Amara Okafor
+            </p>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <img src="/icons/bell.png" alt="Notifications" class="w-4 h-4" />
+            <p class="hidden sm:block text-sm font-medium">Mainland Care</p>
+            <!-- Initials in a light blue circle -->
+            <span
+              class="w-8 h-8 rounded-full bg-blue-50 text-blue-600 text-xs font-semibold flex items-center justify-center"
+              >MC</span
+            >
+          </div>
+        </header>
+
+        <!-- ==================== PAGE CONTENT ==================== -->
+        <main class="p-5 md:p-8 max-w-6xl">
+          <!-- Page heading -->
+          <h1 class="text-3xl font-semibold">Amara Okafor</h1>
+          <p class="text-sm text-gray-700 mt-2">
+            Registered nurse · Acute care · Lagos · Available for the full shift
+          </p>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mt-5">
+            <!-- ===== Credentials (left) ===== -->
+            <section
+              class="bg-white border border-gray-200 rounded-2xl p-6 md:col-span-2"
+            >
+              <span
+                class="inline-block bg-green-50 text-green-700 text-xs font-semibold uppercase px-3 py-1 rounded"
+                >Verified license · Active</span
+              >
+              <h2 class="text-lg font-semibold mt-5">
+                Qualifications &amp; credentials
+              </h2>
+
+              <h3 class="text-base font-semibold mt-5">Professional licence</h3>
+              <div class="space-y-1 text-xs text-gray-700 mt-3">
+                <p>Nursing and Midwifery Council of Nigeria (NMCN)</p>
+                <p>Status: Verified and active · Valid until 31 Dec 2026</p>
+                <p>Licence number: NMCN •••• 4821</p>
+              </div>
+              <a
+                href="#"
+                class="inline-block border border-blue-600 text-blue-600 text-sm font-medium text-center py-3 rounded-lg hover:bg-blue-50 px-8 mt-5"
+                >View verified credential</a
+              >
+
+              <h3 class="text-base font-semibold mt-5">Certifications</h3>
+              <div class="space-y-1 text-xs text-gray-700 mt-3">
+                <p>Basic Life Support (BLS) · Verified · Expires Jun 2027</p>
+                <p>
+                  Infection Prevention &amp; Control · Verified · Completed Apr
+                  2026
+                </p>
+              </div>
+
+              <h3 class="text-base font-semibold mt-5">
+                Specialty &amp; experience
+              </h3>
+              <div class="space-y-1 text-xs text-gray-700 mt-3">
+                <p>Acute care and community nursing · 5 years of experience</p>
+                <p>Staff Nurse — Mainland Care Hospital (2023–present)</p>
+                <p>Registered Nurse — Community Health Centre (2021–2023)</p>
+              </div>
+
+              <h3 class="text-base font-semibold mt-5">Education</h3>
+              <p class="text-xs text-gray-700 mt-3">
+                Bachelor of Nursing Science · 2021
+              </p>
+
+              <h3 class="text-base font-semibold mt-5">Worker reviews</h3>
+              <div class="space-y-1 text-xs text-gray-700 mt-3">
+                <p>★★★★★ · “Punctual, prepared and clear during handover.”</p>
+                <p>Facility review from a verified completed shift.</p>
+              </div>
+            </section>
+
+            <!-- ===== Reliability and actions (right) ===== -->
+            <section
+              class="bg-white border border-gray-200 rounded-2xl p-6 self-start"
+            >
+              <h2 class="text-lg font-semibold">Reliability at a glance</h2>
+              <div class="space-y-1 text-sm text-gray-700 mt-3">
+                <p>★ 4.9 / 5 · 24 reviews</p>
+                <p>32 completed shifts</p>
+                <p>98% attendance</p>
+                <p>0 recorded no-shows in the last 90 days</p>
+              </div>
+              <p class="text-xs text-gray-500 mt-3">
+                Based on facility-confirmed shifts. Sample data for this design.
+              </p>
+
+              <h2 class="text-lg font-semibold mt-5">Availability</h2>
+              <p class="text-xs text-gray-700 mt-3">6 Oct · 07:00–19:00 WAT</p>
+              <p class="text-xs text-gray-700 mt-1">
+                Matches this shift's full schedule.
+              </p>
+
+              <!-- The JS changes these buttons when clicked -->
+              <button
+                type="button"
+                id="shortlistWorker"
+                class="w-full border border-blue-600 text-blue-600 text-sm font-medium text-center py-3 rounded-lg hover:bg-blue-50 mt-5"
+              >
+                Shortlist worker
+              </button>
+              <button
+                type="button"
+                id="offerShift"
+                class="w-full bg-blue-600 text-white text-sm font-medium text-center py-3 rounded-lg hover:bg-blue-700 mt-3"
+              >
+                Offer shift
+              </button>
+              <p class="text-xs text-gray-700 mt-3">
+                Credential documents are shared only with authorised facility
+                reviewers.
+              </p>
+            </section>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <!-- Shared JavaScript for this workspace -->
+    <script src="/js/facilityDashboard.js"></script>
+  </body>
+</html>

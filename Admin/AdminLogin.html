@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Careporium - Admin Sign In</title>
+
+    <!-- Tailwind CSS from the CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Use SF Pro (the Apple system font) for the whole page -->
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [
+                "-apple-system",
+                "BlinkMacSystemFont",
+                '"SF Pro Text"',
+                '"Segoe UI"',
+                "Roboto",
+                "sans-serif",
+              ],
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+
+  <body class="bg-slate-50 text-gray-900">
+    <!-- Everything in the middle of the screen -->
+    <main
+      class="min-h-screen flex flex-col items-center justify-center px-5 py-10"
+    >
+      <img
+        src="/images/logo-blue.png"
+        alt="Careporium logo"
+        class="w-36 h-auto"
+      />
+      <h1 class="text-2xl font-semibold mt-3">Admin sign in</h1>
+      <p class="text-xs text-gray-700 mt-3">
+        Authorised platform administrators only.
+      </p>
+
+      <!-- White card -->
+      <div
+        class="w-full max-w-md bg-white border border-gray-200 rounded-2xl p-6 mt-5"
+      >
+        <h2 class="text-lg font-semibold">Sign in to Careporium</h2>
+
+        <!-- The form. "novalidate" turns off the browser's own popups so our JS messages show instead -->
+        <form id="adminLoginForm" class="space-y-3 mt-3" novalidate>
+          <div>
+            <label for="adminEmail" class="block text-sm font-semibold mb-2"
+              >Work email</label
+            >
+            <input
+              type="email"
+              id="adminEmail"
+              placeholder="admin@careporium.com"
+              class="w-full border border-gray-200 rounded-lg py-3 px-3 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+            />
+            <!-- Error message (hidden until there is a mistake) -->
+            <p
+              id="adminEmailError"
+              class="text-xs font-medium text-red-500 mt-1 hidden"
+            ></p>
+          </div>
+
+          <div>
+            <label for="adminPassword" class="block text-sm font-semibold mb-2"
+              >Password</label
+            >
+            <!-- "relative" lets the eye button sit on top of the input, on the right -->
+            <div class="relative">
+              <input
+                type="password"
+                id="adminPassword"
+                placeholder="••••••••••••"
+                class="w-full border border-gray-200 rounded-lg py-3 pl-3 pr-10 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+              />
+              <!-- Eye button to show or hide the password -->
+              <button
+                type="button"
+                id="togglePassword"
+                class="absolute right-3 top-1/2 -translate-y-1/2"
+              >
+                <span id="passwordEyeOff"
+                  ><img
+                    src="/icons/famicons_eye-off-sharp.png"
+                    alt=""
+                    class="w-4 h-4"
+                /></span>
+                <span id="passwordEyeOn" class="hidden"
+                  ><img src="/icons/eye.png" alt="" class="w-4 h-4"
+                /></span>
+              </button>
+            </div>
+            <p
+              id="adminPasswordError"
+              class="text-xs font-medium text-red-500 mt-1 hidden"
+            ></p>
+          </div>
+
+          <button
+            type="submit"
+            class="w-full bg-blue-600 text-white text-sm font-medium text-center py-3 rounded-lg hover:bg-blue-700"
+          >
+            Continue securely
+          </button>
+        </form>
+
+        <div class="text-center mt-3">
+          <a
+            href="/AuthenticationSection/resetPassword.html"
+            class="inline-block border border-blue-600 text-blue-600 text-sm font-medium text-center py-3 rounded-lg hover:bg-blue-50 px-8"
+            >Forgot password?</a
+          >
+        </div>
+        <p class="text-xs text-gray-700 text-center mt-3">
+          A verification code is required after your password. Access and
+          verification decisions are recorded in the audit log.
+        </p>
+      </div>
+
+      <!-- There is no admin sign-up page on purpose: admins are invited by another admin -->
+      <p class="text-xs text-gray-500 text-center mt-5 max-w-md">
+        No admin account? Admin accounts are created by invitation only. Ask an
+        admin on your team to invite you.
+      </p>
+    </main>
+
+    <!-- JavaScript for the two admin sign-in pages -->
+    <script src="/js/AdminAuth.js"></script>
+  </body>
+</html>

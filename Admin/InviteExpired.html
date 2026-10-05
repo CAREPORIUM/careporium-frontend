@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Careporium - Invitation Not Valid</title>
+
+    <!-- Tailwind CSS from the CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Use SF Pro (the Apple system font) for the whole page -->
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [
+                "-apple-system",
+                "BlinkMacSystemFont",
+                '"SF Pro Text"',
+                '"Segoe UI"',
+                "Roboto",
+                "sans-serif",
+              ],
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+
+  <body class="bg-slate-50 text-gray-900">
+    <!-- Everything in the middle of the screen -->
+    <main
+      class="min-h-screen flex flex-col items-center justify-center px-5 py-10"
+    >
+      <img
+        src="/images/logo-blue.png"
+        alt="Careporium logo"
+        class="w-36 h-auto"
+      />
+
+      <div
+        class="w-full max-w-md bg-white border border-gray-200 rounded-2xl p-6 mt-5 text-center"
+      >
+        <span
+          class="inline-block bg-red-50 text-red-600 text-xs font-semibold uppercase px-3 py-1 rounded"
+          >Link not valid</span
+        >
+        <h1 class="text-2xl font-semibold mt-3">
+          This invitation can't be used
+        </h1>
+        <p class="text-xs text-gray-700 mt-3">
+          Invitation links expire after 48 hours and can only be used once. Ask
+          an admin on your team to send you a new invitation.
+        </p>
+        <a
+          href="/Admin/AdminLogin.html"
+          class="block border border-blue-600 text-blue-600 text-sm font-medium text-center py-3 rounded-lg hover:bg-blue-50 mt-5"
+          >Go to admin sign in</a
+        >
+      </div>
+    </main>
+  </body>
+</html>

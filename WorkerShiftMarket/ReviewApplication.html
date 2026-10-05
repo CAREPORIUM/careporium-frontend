@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Careporium - Review Application</title>
+
+    <!-- Tailwind CSS from the CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Use SF Pro (the Apple system font) for the whole page -->
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ["-apple-system", "BlinkMacSystemFont", '"SF Pro Text"', '"Segoe UI"', "Roboto", "sans-serif"],
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+
+  <body class="bg-slate-50 text-gray-900">
+    <!-- Sidebar on the left, page on the right -->
+    <div class="flex min-h-screen">
+
+      <!-- ==================== SIDEBAR ==================== -->
+      <!-- On desktop it always shows (md:flex). On mobile it's hidden until the menu button opens it. -->
+      <aside id="sidebar" class="hidden md:flex fixed md:static inset-y-0 left-0 z-20 w-56 flex-shrink-0 flex-col bg-white border-r border-gray-200 p-5">
+        <!-- Logo, with a close button next to it (the close button only shows on mobile) -->
+        <div class="flex items-center justify-between">
+          <img src="/images/logo-blue.png" alt="Careporium logo" class="w-36 h-auto" />
+          <button type="button" id="closeMenuButton" class="md:hidden">
+            <img src="/icons/close.png" alt="Close menu" class="w-6 h-6" />
+          </button>
+        </div>
+
+        <!-- Menu links -->
+        <nav class="space-y-2 mt-10">
+          <a href="/WorkerShiftMarket/Dashboard.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50">
+            <img src="/icons/nav-dashboard.png" alt="" class="w-4 h-4" />
+            Dashboard
+          </a>
+          <a href="/WorkerShiftMarket/FindShifts.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50">
+            <img src="/icons/nav-find-shifts.png" alt="" class="w-4 h-4" />
+            Find shifts
+          </a>
+  <!-- Active page: light blue -->
+          <a href="/WorkerShiftMarket/MyApplications.html" class="flex items-center gap-3 px-3 py-2 rounded-lg bg-blue-50 text-blue-600 text-sm font-medium">
+            <img src="/icons/nav-applications.png" alt="" class="w-4 h-4" />
+            My applications
+          </a>
+          <a href="/WorkerShiftMarket/UpcomingShifts.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50">
+            <img src="/icons/nav-upcoming.png" alt="" class="w-4 h-4" />
+            Upcoming shifts
+          </a>
+          <a href="/WorkerShiftMarket/Profile.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50">
+            <img src="/icons/nav-profile.png" alt="" class="w-4 h-4" />
+            Profile
+          </a>
+            <button
+            type="button"
+            id="logoutButton"
+            data-login="/AuthenticationSection/login.html"
+            class="mt-auto flex items-center gap-3 px-3 py-2 rounded-lg border border-red-600 text-red-600 text-sm font-medium hover:bg-red-50"
+          >
+            <img src="/icons/logout.png" alt="" class="w-4 h-4" />
+            Log out
+          </button>
+        </nav>
+      </aside>
+
+      <!-- ==================== RIGHT SIDE ==================== -->
+      <div class="flex-1 min-w-0">
+        <!-- Top bar: where you are on the left, user on the right -->
+        <header class="bg-white border-b border-gray-200 px-5 md:px-8 py-4 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <!-- Menu button (only on mobile) -->
+            <button type="button" id="menuButton" class="md:hidden">
+              <img src="/icons/menu.png" alt="Open menu" class="w-6 h-6" />
+            </button>
+            <p class="text-xs font-medium text-gray-500 uppercase">Worker workspace / My applications</p>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <img src="/icons/bell.png" alt="Notifications" class="w-4 h-4" />
+            <p class="hidden sm:block text-sm font-medium">Amara Okafor</p>
+            <!-- Initials in a light blue circle -->
+            <span class="w-8 h-8 rounded-full bg-blue-50 text-blue-600 text-xs font-semibold flex items-center justify-center">AO</span>
+          </div>
+        </header>
+
+        <!-- ==================== PAGE CONTENT ==================== -->
+        <main class="p-5 md:p-8 max-w-6xl">
+          <!-- Page heading -->
+          <p class="text-xs font-medium text-blue-600 uppercase">Application</p>
+          <h1 class="text-3xl font-semibold mt-2">Review before you apply</h1>
+          <p class="text-sm text-gray-700 mt-2">Confirm your availability and verified credentials before sharing with the facility.</p>
+
+          <!-- The 3 steps of applying (step 1 is the current one) -->
+          <div class="flex flex-wrap gap-3 mt-3 text-xs font-medium uppercase">
+            <span class="bg-blue-50 text-blue-600 px-2 py-1 rounded">1 Review</span>
+            <span class="text-gray-700 px-2 py-1">2 Submit</span>
+            <span class="text-gray-700 px-2 py-1">3 Facility decision</span>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mt-5">
+            <section class="bg-white border border-gray-200 rounded-2xl p-6 md:col-span-2">
+              <h2 class="text-lg font-semibold">Shift summary</h2>
+              <div class="mt-3">
+              <div class="shift-card border border-gray-200 rounded-xl p-5">
+                <div class="flex justify-between items-start gap-3">
+                  <p class="text-base font-semibold">Registered Nurse · Acute Care</p>
+                  <span class="inline-block bg-green-50 text-green-700 text-xs font-semibold uppercase px-2 py-1 rounded">94% match</span>
+                </div>
+                <p class="text-xs text-gray-700 mt-1">Mainland Care Hospital · Verified facility</p>
+                <p class="text-xs text-gray-700 mt-3">Tue, 6 Oct · 07:00–19:00 WAT · Ikeja, Lagos</p>
+                <div class="flex justify-between items-center gap-3 mt-1">
+                  <p class="text-sm font-semibold">₦3,000/hr · ₦36,000 estimated</p>
+                  <a href="/WorkerShiftMarket/ShiftDetails.html" class="bg-blue-600 text-white text-sm font-medium px-8 py-3 rounded-lg hover:bg-blue-700">View shift</a>
+                </div>
+              </div>
+              </div>
+
+              <h2 class="text-lg font-semibold mt-5">Your details</h2>
+              <!-- Label on the left, value next to it -->
+              <div class="space-y-3 mt-3 text-xs">
+                <div class="flex gap-3"><span class="w-32 flex-shrink-0 text-gray-700">Professional</span><span class="font-semibold">Amara Okafor · RN</span></div>
+                <div class="flex gap-3"><span class="w-32 flex-shrink-0 text-gray-700">Professional licence</span><span class="font-semibold">Verified and active</span></div>
+                <div class="flex gap-3"><span class="w-32 flex-shrink-0 text-gray-700">Availability</span><span class="font-semibold">Full 07:00–19:00 WAT shift</span></div>
+              </div>
+
+              <!-- Message (checked by the JS before submitting) -->
+              <label for="message" class="block text-sm font-semibold mt-5 mb-2">Message to the facility</label>
+              <input type="text" id="message" value="I'm available for the full shift and have acute care experience." class="w-full border border-gray-200 rounded-lg py-3 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200" />
+              <p id="messageError" class="text-xs font-medium text-red-500 mt-1 hidden"></p>
+
+              <div class="flex flex-wrap gap-3 mt-5">
+                <a href="/WorkerShiftMarket/ShiftDetails.html" class="inline-block border border-blue-600 text-blue-600 text-sm font-medium text-center px-8 py-3 rounded-lg hover:bg-blue-50">Back to shift</a>
+                <button type="button" id="submitApplication" class="bg-blue-600 text-white text-sm font-medium px-14 py-3 rounded-lg hover:bg-blue-700">Submit application</button>
+              </div>
+            </section>
+
+            <!-- What happens next -->
+            <section class="bg-white border border-gray-200 rounded-2xl p-6 self-start">
+              <span class="inline-block bg-blue-50 text-blue-600 text-xs font-semibold uppercase px-2 py-1 rounded">Next steps</span>
+              <h2 class="text-lg font-semibold mt-3">What happens next</h2>
+              <div class="space-y-3 mt-3">
+                <div class="flex gap-3"><span class="text-xs font-semibold text-blue-600 bg-blue-50 px-2 py-1 rounded h-fit">01</span><div><p class="text-sm font-semibold">Facility reviews</p><p class="text-xs text-gray-700">Your verified profile and availability</p></div></div>
+                <div class="flex gap-3"><span class="text-xs font-semibold text-blue-600 bg-blue-50 px-2 py-1 rounded h-fit">02</span><div><p class="text-sm font-semibold">Decision arrives</p><p class="text-xs text-gray-700">Track it in My applications</p></div></div>
+                <div class="flex gap-3"><span class="text-xs font-semibold text-blue-600 bg-blue-50 px-2 py-1 rounded h-fit">03</span><div><p class="text-sm font-semibold">Shift confirmed</p><p class="text-xs text-gray-700">Instructions appear once accepted</p></div></div>
+              </div>
+              <p class="text-xs text-gray-700 mt-3">Submitting does not reserve the shift. The facility confirms the worker it selects.</p>
+            </section>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <!-- Shared JavaScript for all worker dashboard pages -->
+    <script src="/js/WorkerDashboard.js"></script>
+  </body>
+</html>

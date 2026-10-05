@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Careporium - Professional Profile (Step 1)</title>
+
+    <!-- Tailwind CSS from the CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Use SF Pro (the Apple system font) for the whole page -->
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [
+                "-apple-system",
+                "BlinkMacSystemFont",
+                '"SF Pro Text"',
+                '"Segoe UI"',
+                "Roboto",
+                "sans-serif",
+              ],
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+
+  <body class="bg-slate-50 min-h-screen relative overflow-x-hidden">
+    <!-- Soft blue circles in the background -->
+    <div
+      class="absolute top-20 left-10 w-72 h-72 bg-blue-100 rounded-full blur-3xl"
+    ></div>
+    <div
+      class="absolute bottom-10 right-10 w-80 h-80 bg-blue-100 rounded-full blur-3xl"
+    ></div>
+
+    <!-- This puts the white card in the middle of the screen -->
+    <main
+      class="relative min-h-screen flex items-center justify-center px-5 py-10"
+    >
+      <!-- White card -->
+      <div class="w-full max-w-4xl bg-white rounded-xl shadow-sm p-5 md:p-10">
+        <!-- Logo (stays in the middle) -->
+        <img
+          src="/images/logo-blue.png"
+          alt="Careporium logo"
+          class="w-44 h-auto mx-auto"
+        />
+
+        <!-- Step number and title (on the left now) -->
+        <p class="text-xs font-semibold text-blue-600 mt-5">STEP 1 OF 2</p>
+        <h2 class="text-2xl font-semibold text-gray-900 mt-3">
+          Professional profile
+        </h2>
+        <p class="text-xs font-medium text-gray-700 mt-3">
+          Tell us the basics about you.
+        </p>
+
+        <!-- Progress bar: 2 pieces, the first is blue because this is step 1 -->
+        <div class="flex gap-1 mt-3">
+          <div class="flex-1 h-1 bg-blue-600 rounded-full"></div>
+          <div class="flex-1 h-1 bg-gray-100 rounded-full"></div>
+        </div>
+
+        <!-- The form. "novalidate" turns off the browser's own popups so our JS messages show instead -->
+        <form id="stepOneForm" class="mt-5" novalidate>
+          <!-- Two columns on desktop (md:grid-cols-2), one column on mobile -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <!-- Full name -->
+            <div>
+              <label
+                for="fullName"
+                class="block text-sm font-semibold text-gray-900 mb-2"
+                >Full name</label
+              >
+              <input
+                type="text"
+                id="fullName"
+                placeholder="Luke Marcus"
+                class="w-full border border-gray-200 rounded-lg py-3 px-3 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+              />
+              <!-- Error message (hidden until there is a mistake) -->
+              <p
+                id="fullNameError"
+                class="text-xs font-medium text-red-500 mt-1 hidden"
+              ></p>
+            </div>
+
+            <!-- Email address (with an @ sign inside the box) -->
+            <div>
+              <label
+                for="email"
+                class="block text-sm font-semibold text-gray-900 mb-2"
+                >Email address</label
+              >
+              <div class="relative">
+                <span
+                  class="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-gray-500"
+                  >@</span
+                >
+                <input
+                  type="email"
+                  id="email"
+                  placeholder="you@gmail.com"
+                  class="w-full border border-gray-200 rounded-lg py-3 pl-8 pr-3 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                />
+              </div>
+              <p
+                id="emailError"
+                class="text-xs font-medium text-red-500 mt-1 hidden"
+              ></p>
+            </div>
+
+            <!-- Professional role -->
+            <div>
+              <label
+                for="role"
+                class="block text-sm font-semibold text-gray-900 mb-2"
+                >Professional role</label
+              >
+              <div class="relative">
+                <!-- appearance-none hides the browser's arrow so we can use our own -->
+                <select
+                  id="role"
+                  class="w-full appearance-none bg-white border border-gray-200 rounded-lg py-3 pl-3 pr-10 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                >
+                  <option value="">Doctor</option>
+                  <option value="doctor">Doctor</option>
+                  <option value="nurse">Nurse</option>
+                  <option value="pharmacist">Pharmacist</option>
+                  <option value="lab-technician">Lab Technician</option>
+                  <option value="caregiver">Caregiver</option>
+                </select>
+                <img
+                  src="/icons/akar-icons_chevron-down-small.png"
+                  alt=""
+                  class="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
+                />
+              </div>
+              <p
+                id="roleError"
+                class="text-xs font-medium text-red-500 mt-1 hidden"
+              ></p>
+            </div>
+
+            <!-- Password -->
+            <div>
+              <label
+                for="password"
+                class="block text-sm font-semibold text-gray-900 mb-2"
+                >Password</label
+              >
+              <input
+                type="password"
+                id="password"
+                placeholder="••••••••••••"
+                class="w-full border border-gray-200 rounded-lg py-3 px-3 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+              />
+              <p
+                id="passwordError"
+                class="text-xs font-medium text-red-500 mt-1 hidden"
+              ></p>
+            </div>
+
+            <!-- Confirm password (the space next to it on the right stays empty) -->
+            <div>
+              <label
+                for="confirmPassword"
+                class="block text-sm font-semibold text-gray-900 mb-2"
+                >Confirm password</label
+              >
+              <input
+                type="password"
+                id="confirmPassword"
+                placeholder="••••••••••••"
+                class="w-full border border-gray-200 rounded-lg py-3 px-3 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+              />
+              <p
+                id="confirmPasswordError"
+                class="text-xs font-medium text-red-500 mt-1 hidden"
+              ></p>
+            </div>
+          </div>
+
+          <!-- Continue button (outside the grid, so it goes across both columns) -->
+          <button
+            type="submit"
+            class="w-full bg-blue-600 text-white text-sm font-semibold py-3 rounded-lg mt-5 hover:bg-blue-700"
+          >
+            Continue
+          </button>
+        </form>
+      </div>
+    </main>
+
+    <!-- Our JavaScript for this page -->
+    <script src="/js/profileOne.js"></script>
+  </body>
+</html>

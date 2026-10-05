@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Careporium - Professional Profile (Step 2)</title>
+
+    <!-- Tailwind CSS from the CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Use SF Pro (the Apple system font) for the whole page -->
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [
+                "-apple-system",
+                "BlinkMacSystemFont",
+                '"SF Pro Text"',
+                '"Segoe UI"',
+                "Roboto",
+                "sans-serif",
+              ],
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+
+  <body class="bg-slate-50 min-h-screen relative overflow-x-hidden">
+    <!-- Soft blue circles in the background -->
+    <div
+      class="absolute top-20 left-10 w-72 h-72 bg-blue-100 rounded-full blur-3xl"
+    ></div>
+    <div
+      class="absolute bottom-10 right-10 w-80 h-80 bg-blue-100 rounded-full blur-3xl"
+    ></div>
+
+    <!-- This puts the white card in the middle of the screen -->
+    <main
+      class="relative min-h-screen flex items-center justify-center px-5 py-10"
+    >
+      <!-- White card -->
+      <div class="w-full max-w-4xl bg-white rounded-xl shadow-sm p-5 md:p-10">
+        <!-- Logo (stays in the middle) -->
+        <img
+          src="/images/logo-blue.png"
+          alt="Careporium logo"
+          class="w-44 h-auto mx-auto"
+        />
+
+        <!-- Step number and title (on the left) -->
+        <p class="text-xs font-semibold text-blue-600 mt-5">STEP 2 OF 2</p>
+        <h2 class="text-2xl font-semibold text-gray-900 mt-3">
+          Your experience
+        </h2>
+        <p class="text-xs font-medium text-gray-700 mt-3">
+          Add your credentials and availability.
+        </p>
+
+        <!-- Progress bar: 2 pieces, both blue because this is the last step -->
+        <div class="flex gap-1 mt-3">
+          <div class="flex-1 h-1 bg-blue-600 rounded-full"></div>
+          <div class="flex-1 h-1 bg-blue-600 rounded-full"></div>
+        </div>
+
+        <!-- The form. "novalidate" turns off the browser's own popups so our JS messages show instead -->
+        <form id="stepTwoForm" class="mt-5" novalidate>
+          <!-- Two columns on desktop (md:grid-cols-2), one column on mobile -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <!-- Years of experience -->
+            <div>
+              <label
+                for="experience"
+                class="block text-sm font-semibold text-gray-900 mb-2"
+                >Years of experience</label
+              >
+              <input
+                type="number"
+                id="experience"
+                placeholder="2 years"
+                min="0"
+                max="60"
+                class="w-full border border-gray-200 rounded-lg py-3 px-3 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+              />
+              <!-- Error message (hidden until there is a mistake) -->
+              <p
+                id="experienceError"
+                class="text-xs font-medium text-red-500 mt-1 hidden"
+              ></p>
+            </div>
+
+            <!-- Specialty -->
+            <div>
+              <label
+                for="specialty"
+                class="block text-sm font-semibold text-gray-900 mb-2"
+                >Specialty</label
+              >
+              <div class="relative">
+                <!-- appearance-none hides the browser's arrow so we can use our own -->
+                <select
+                  id="specialty"
+                  class="w-full appearance-none bg-white border border-gray-200 rounded-lg py-3 pl-3 pr-10 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                >
+                  <option value="">Pediatrics</option>
+                  <option value="general-practice">General Practice</option>
+                  <option value="pediatrics">Pediatrics</option>
+                  <option value="surgery">Surgery</option>
+                  <option value="emergency">Emergency Medicine</option>
+                  <option value="cardiology">Cardiology</option>
+                </select>
+                <img
+                  src="/icons/akar-icons_chevron-down-small.png"
+                  alt=""
+                  class="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
+                />
+              </div>
+              <p
+                id="specialtyError"
+                class="text-xs font-medium text-red-500 mt-1 hidden"
+              ></p>
+            </div>
+
+            <!-- Certifications -->
+            <div>
+              <label
+                for="certification"
+                class="block text-sm font-semibold text-gray-900 mb-2"
+                >Certifications</label
+              >
+              <div class="relative">
+                <select
+                  id="certification"
+                  class="w-full appearance-none bg-white border border-gray-200 rounded-lg py-3 pl-3 pr-10 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                >
+                  <option value="">BSc in Nursing</option>
+                  <option value="bsc-nursing">BSc in Nursing</option>
+                  <option value="mbbs">MBBS</option>
+                  <option value="rn-license">RN License</option>
+                  <option value="bls">BLS</option>
+                  <option value="acls">ACLS</option>
+                </select>
+                <img
+                  src="/icons/akar-icons_chevron-down-small.png"
+                  alt=""
+                  class="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
+                />
+              </div>
+              <p
+                id="certificationError"
+                class="text-xs font-medium text-red-500 mt-1 hidden"
+              ></p>
+            </div>
+
+            <!-- Location -->
+            <div>
+              <label
+                for="location"
+                class="block text-sm font-semibold text-gray-900 mb-2"
+                >Location</label
+              >
+              <input
+                type="text"
+                id="location"
+                placeholder="e.g., New York, NY"
+                class="w-full border border-gray-200 rounded-lg py-3 px-3 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+              />
+              <!-- <div class="relative">
+                <select id="language"
+                  class="w-full appearance-none bg-white border border-gray-200 rounded-lg py-3 pl-3 pr-10 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-200">
+                  <option value="">English</option>
+                  <option value="english">English</option>
+                  <option value="spanish">Spanish</option>
+                  <option value="french">French</option>
+                  <option value="other">Other</option>
+                </select>
+                <img src="/icons/akar-icons_chevron-down-small.png" alt="" class="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+              </div> -->
+              <p
+                id="locationError"
+                class="text-xs font-medium text-red-500 mt-1 hidden"
+              ></p>
+            </div>
+
+            <!-- Availability (the space next to it on the right stays empty) -->
+            <div>
+              <label
+                for="availability"
+                class="block text-sm font-semibold text-gray-900 mb-2"
+                >Availability</label
+              >
+              <input
+                type="text"
+                id="availability"
+                placeholder="e.g., evening shifts"
+                class="w-full border border-gray-200 rounded-lg py-3 px-3 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+              />
+              <p
+                id="availabilityError"
+                class="text-xs font-medium text-red-500 mt-1 hidden"
+              ></p>
+            </div>
+          </div>
+
+          <!-- Terms checkbox -->
+          <div class="mt-5">
+            <label
+              class="flex items-center gap-2 text-xs font-medium text-gray-900"
+            >
+              <input
+                type="checkbox"
+                id="terms"
+                class="w-4 h-4 accent-blue-600"
+              />
+              <span
+                >I agree to the
+                <a href="#" class="hover:underline"
+                  >terms and conditions</a
+                ></span
+              >
+            </label>
+            <p
+              id="termsError"
+              class="text-xs font-medium text-red-500 mt-1 hidden"
+            ></p>
+          </div>
+
+          <!-- Create account button (outside the grid, so it goes across both columns) -->
+          <button
+            type="submit"
+            class="w-full bg-blue-600 text-white text-sm font-semibold py-3 rounded-lg mt-5 hover:bg-blue-700"
+          >
+            Create account
+          </button>
+        </form>
+      </div>
+    </main>
+
+    <!-- Our JavaScript for this page -->
+    <script src="/js/profileTwo.js"></script>
+  </body>
+</html>

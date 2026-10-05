@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Careporium - Health Facility Registration</title>
+
+    <!-- Tailwind CSS from the CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Use SF Pro (the Apple system font) for the whole page -->
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [
+                "-apple-system",
+                "BlinkMacSystemFont",
+                '"SF Pro Text"',
+                '"Segoe UI"',
+                "Roboto",
+                "sans-serif",
+              ],
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+
+  <body class="bg-slate-50 min-h-screen relative overflow-x-hidden">
+    <!-- Soft blue circles in the background -->
+    <div
+      class="absolute top-20 left-10 w-72 h-72 bg-blue-100 rounded-full blur-3xl"
+    ></div>
+    <div
+      class="absolute bottom-10 right-10 w-80 h-80 bg-blue-100 rounded-full blur-3xl"
+    ></div>
+
+    <!-- This puts the white card in the middle of the screen -->
+    <main
+      class="relative min-h-screen flex items-center justify-center px-5 py-10"
+    >
+      <!-- White card -->
+      <div class="w-full max-w-4xl bg-white rounded-xl shadow-sm p-5 md:p-10">
+        <!-- Logo (stays in the middle) -->
+        <img
+          src="/images/logo-blue.png"
+          alt="Careporium logo"
+          class="w-44 h-auto mx-auto"
+        />
+
+        <!-- Title (on the left) -->
+        <h2 class="text-2xl font-semibold text-gray-900 mt-5">
+          Health facility registration
+        </h2>
+        <p class="text-xs font-medium text-gray-700 mt-3">
+          Tell us about your facility and set up your account.
+        </p>
+
+        <!-- The form. "novalidate" turns off the browser's own popups so our JS messages show instead -->
+        <form id="facilityForm" class="mt-5" novalidate>
+          <!-- Two columns on desktop (md:grid-cols-2), one column on mobile -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <!-- Facility legal name -->
+            <div>
+              <label
+                for="facilityName"
+                class="block text-sm font-semibold text-gray-900 mb-2"
+                >Facility legal name</label
+              >
+              <input
+                type="text"
+                id="facilityName"
+                placeholder="Northside Regional Medical Center"
+                class="w-full border border-gray-200 rounded-lg py-3 px-3 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+              />
+              <!-- Error message (hidden until there is a mistake) -->
+              <p
+                id="facilityNameError"
+                class="text-xs font-medium text-red-500 mt-1 hidden"
+              ></p>
+            </div>
+
+            <!-- Facility type -->
+            <div>
+              <label
+                for="facilityType"
+                class="block text-sm font-semibold text-gray-900 mb-2"
+                >Facility type</label
+              >
+              <div class="relative">
+                <!-- appearance-none hides the browser's arrow so we can use our own -->
+                <select
+                  id="facilityType"
+                  class="w-full appearance-none bg-white border border-gray-200 rounded-lg py-3 pl-3 pr-10 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                >
+                  <option value="">Medical lab</option>
+                  <option value="hospital">Hospital</option>
+                  <option value="clinic">Clinic</option>
+                  <option value="medical-lab">Medical Lab</option>
+                  <option value="nursing-home">Nursing Home</option>
+                  <option value="pharmacy">Pharmacy</option>
+                </select>
+                <img
+                  src="/icons/akar-icons_chevron-down-small.png"
+                  alt=""
+                  class="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
+                />
+              </div>
+              <p
+                id="facilityTypeError"
+                class="text-xs font-medium text-red-500 mt-1 hidden"
+              ></p>
+            </div>
+
+            <!-- Tax ID / EIN -->
+            <div>
+              <label
+                for="taxId"
+                class="block text-sm font-semibold text-gray-900 mb-2"
+                >Tax ID / EIN</label
+              >
+              <input
+                type="text"
+                id="taxId"
+                placeholder="XX-XXXXXXX"
+                maxlength="10"
+                class="w-full border border-gray-200 rounded-lg py-3 px-3 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+              />
+              <p
+                id="taxIdError"
+                class="text-xs font-medium text-red-500 mt-1 hidden"
+              ></p>
+            </div>
+
+            <!-- Business email (with an @ sign inside the box) -->
+            <div>
+              <label
+                for="businessEmail"
+                class="block text-sm font-semibold text-gray-900 mb-2"
+                >Business email</label
+              >
+              <div class="relative">
+                <span
+                  class="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-gray-500"
+                  >@</span
+                >
+                <input
+                  type="email"
+                  id="businessEmail"
+                  placeholder="admin@facility.com"
+                  class="w-full border border-gray-200 rounded-lg py-3 pl-8 pr-3 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                />
+              </div>
+              <p
+                id="businessEmailError"
+                class="text-xs font-medium text-red-500 mt-1 hidden"
+              ></p>
+            </div>
+
+            <!-- Phone number -->
+            <div>
+              <label
+                for="phone"
+                class="block text-sm font-semibold text-gray-900 mb-2"
+                >Phone number</label
+              >
+              <input
+                type="tel"
+                id="phone"
+                placeholder="0812 345 6789"
+                class="w-full border border-gray-200 rounded-lg py-3 px-3 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+              />
+              <p
+                id="phoneError"
+                class="text-xs font-medium text-red-500 mt-1 hidden"
+              ></p>
+            </div>
+
+            <!-- Secondary phone number (optional) -->
+            <div>
+              <label
+                for="secondaryPhone"
+                class="block text-sm font-semibold text-gray-900 mb-2"
+              >
+                Secondary phone number
+                <span class="font-normal text-gray-500">(optional)</span>
+              </label>
+              <input
+                type="tel"
+                id="secondaryPhone"
+                placeholder="0812 345 6789"
+                class="w-full border border-gray-200 rounded-lg py-3 px-3 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+              />
+              <p
+                id="secondaryPhoneError"
+                class="text-xs font-medium text-red-500 mt-1 hidden"
+              ></p>
+            </div>
+
+            <!-- Password -->
+            <div>
+              <label
+                for="password"
+                class="block text-sm font-semibold text-gray-900 mb-2"
+                >Password</label
+              >
+              <div class="relative">
+                <input
+                  type="password"
+                  id="password"
+                  placeholder="••••••••••••"
+                  class="w-full border border-gray-200 rounded-lg py-3 pl-3 pr-10 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                />
+                <!-- Eye button to show or hide the password -->
+                <button
+                  type="button"
+                  id="passwordToggle"
+                  class="absolute right-3 top-1/2 -translate-y-1/2"
+                >
+                  <img
+                    id="passwordEyeOff"
+                    src="/icons/famicons_eye-off-sharp.png"
+                    alt="Show password"
+                    class="w-4 h-4"
+                  />
+                  <img
+                    id="passwordEyeOn"
+                    src="/icons/eye.png"
+                    alt="Hide password"
+                    class="w-4 h-4 hidden"
+                  />
+                </button>
+              </div>
+              <p
+                id="passwordError"
+                class="text-xs font-medium text-red-500 mt-1 hidden"
+              ></p>
+            </div>
+
+            <!-- Confirm password -->
+            <div>
+              <label
+                for="confirmPassword"
+                class="block text-sm font-semibold text-gray-900 mb-2"
+                >Confirm password</label
+              >
+              <div class="relative">
+                <input
+                  type="password"
+                  id="confirmPassword"
+                  placeholder="••••••••••••"
+                  class="w-full border border-gray-200 rounded-lg py-3 pl-3 pr-10 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                />
+                <!-- Eye button to show or hide the password -->
+                <button
+                  type="button"
+                  id="confirmPasswordToggle"
+                  class="absolute right-3 top-1/2 -translate-y-1/2"
+                >
+                  <img
+                    id="confirmPasswordEyeOff"
+                    src="/icons/famicons_eye-off-sharp.png"
+                    alt="Show password"
+                    class="w-4 h-4"
+                  />
+                  <img
+                    id="confirmPasswordEyeOn"
+                    src="/icons/eye.png"
+                    alt="Hide password"
+                    class="w-4 h-4 hidden"
+                  />
+                </button>
+              </div>
+              <p
+                id="confirmPasswordError"
+                class="text-xs font-medium text-red-500 mt-1 hidden"
+              ></p>
+            </div>
+          </div>
+
+          <!-- Terms checkbox -->
+          <div class="mt-5">
+            <label
+              class="flex items-center gap-2 text-xs font-medium text-gray-900"
+            >
+              <input
+                type="checkbox"
+                id="terms"
+                class="w-4 h-4 accent-blue-600"
+              />
+              <span
+                >I agree to the
+                <a href="#" class="hover:underline"
+                  >terms and conditions</a
+                ></span
+              >
+            </label>
+            <p
+              id="termsError"
+              class="text-xs font-medium text-red-500 mt-1 hidden"
+            ></p>
+          </div>
+
+          <!-- Create account button (outside the grid, so it goes across both columns) -->
+          <button
+            type="submit"
+            class="w-full bg-blue-600 text-white text-sm font-semibold py-3 rounded-lg mt-5 hover:bg-blue-700"
+          >
+            Create account
+          </button>
+        </form>
+
+        <!-- Small note under the button -->
+        <p class="text-xs font-medium text-gray-700 mt-3">
+          Your application will be reviewed before facility access is enabled.
+        </p>
+      </div>
+    </main>
+
+    <!-- Our JavaScript for this page -->
+    <script src="/js/facilityProfile.js"></script>
+  </body>
+</html>

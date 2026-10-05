@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Careporium - Disputes</title>
+
+    <!-- Tailwind CSS from the CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Use SF Pro (the Apple system font) for the whole page -->
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [
+                "-apple-system",
+                "BlinkMacSystemFont",
+                '"SF Pro Text"',
+                '"Segoe UI"',
+                "Roboto",
+                "sans-serif",
+              ],
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+
+  <body class="bg-slate-50 text-gray-900">
+    <!-- Sidebar on the left, page on the right -->
+    <div class="flex min-h-screen">
+      <!-- ==================== SIDEBAR ==================== -->
+      <!-- On desktop it always shows (md:flex). On mobile it's hidden until the menu button opens it. -->
+      <aside
+        id="sidebar"
+        class="hidden md:flex fixed md:static inset-y-0 left-0 z-20 w-56 flex-shrink-0 flex-col bg-white border-r border-gray-200 p-5"
+      >
+        <!-- Logo, with a close button next to it (the close button only shows on mobile) -->
+        <div class="flex items-center justify-between">
+          <img
+            src="/images/logo-blue.png"
+            alt="Careporium logo"
+            class="w-36 h-auto"
+          />
+          <button type="button" id="closeMenuButton" class="md:hidden">
+            <img src="/icons/close.png" alt="Close menu" class="w-6 h-6" />
+          </button>
+        </div>
+
+        <!-- Menu links -->
+        <nav class="space-y-2 mt-10">
+          <a
+            href="/Admin/AdminOverview.html"
+            class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50"
+          >
+            <img src="/icons/nav-dashboard.png" alt="" class="w-4 h-4" />
+            Overview
+          </a>
+          <a
+            href="/Admin/VerificationQueue.html"
+            class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50"
+          >
+            <img src="/icons/nav-find-shifts.png" alt="" class="w-4 h-4" />
+            Verifications
+          </a>
+          <a
+            href="/Admin/ManageUsers.html"
+            class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50"
+          >
+            <img src="/icons/nav-profile.png" alt="" class="w-4 h-4" />
+            Users
+          </a>
+          <a
+            href="/Admin/ManageAdmins.html"
+            class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50"
+          >
+            <img src="/icons/nav-profile.png" alt="" class="w-4 h-4" />
+            Admins
+          </a>
+          <a
+            href="/Admin/Disputes.html"
+            class="flex items-center gap-3 px-3 py-2 rounded-lg bg-blue-50 text-blue-600 text-sm font-medium hover:bg-gray-50"
+          >
+            <img src="/icons/nav-upcoming.png" alt="" class="w-4 h-4" />
+            Disputes
+          </a>
+          <!-- Active page: light blue -->
+          <a
+            href="/Admin/ActivityReports.html"
+            class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium"
+          >
+            <img src="/icons/nav-applications.png" alt="" class="w-4 h-4" />
+            Activity &amp; reports
+          </a>
+          <button
+            type="button"
+            id="logoutButton"
+            data-login="Admin/AdminLogin.html"
+            class="mt-auto flex items-center gap-3 px-3 py-2 rounded-lg border border-red-600 text-red-600 text-sm font-medium hover:bg-red-50"
+          >
+            <img src="/icons/logout.png" alt="" class="w-4 h-4" />
+            Log out
+          </button>
+        </nav>
+      </aside>
+
+      <!-- ==================== RIGHT SIDE ==================== -->
+      <div class="flex-1 min-w-0">
+        <!-- Top bar: where you are on the left, user on the right -->
+        <header
+          class="bg-white border-b border-gray-200 px-5 md:px-8 py-4 flex items-center justify-between"
+        >
+          <div class="flex items-center gap-3">
+            <!-- Menu button (only on mobile) -->
+            <button type="button" id="menuButton" class="md:hidden">
+              <img src="/icons/menu.png" alt="Open menu" class="w-6 h-6" />
+            </button>
+            <p class="text-xs font-medium text-gray-500 uppercase">
+              Admin workspace / Disputes
+            </p>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <img src="/icons/bell.png" alt="Notifications" class="w-4 h-4" />
+            <p class="hidden sm:block text-sm font-medium">Platform admin</p>
+            <!-- Initials in a light blue circle -->
+            <span
+              class="w-8 h-8 rounded-full bg-blue-50 text-blue-600 text-xs font-semibold flex items-center justify-center"
+              >PA</span
+            >
+          </div>
+        </header>
+
+        <!-- ==================== PAGE CONTENT ==================== -->
+        <main class="p-5 md:p-8 max-w-6xl">
+          <!-- Page heading -->
+          <h1 class="text-3xl font-semibold">Disputes</h1>
+          <p class="text-sm text-gray-700 mt-2">
+            Review open cases and track their resolution.
+          </p>
+          <!-- Search box -->
+          <div class="mt-5">
+            <label for="disputeSearch" class="block text-sm font-semibold mb-2"
+              >Search disputes</label
+            >
+            <input
+              type="text"
+              id="disputeSearch"
+              placeholder="Case ID, worker or facility"
+              class="w-full border border-gray-200 rounded-lg py-3 px-3 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+            />
+          </div>
+          <!-- Filter links. data-filter says what each one shows. The JS underlines the active one. -->
+          <div class="flex flex-wrap gap-5 mt-5">
+            <button
+              type="button"
+              class="filter-link text-xs font-medium text-blue-600 font-semibold underline"
+              data-filter="open"
+            >
+              Open (8)
+            </button>
+            <button
+              type="button"
+              class="filter-link text-xs font-medium text-blue-600"
+              data-filter="review"
+            >
+              In review
+            </button>
+            <button
+              type="button"
+              class="filter-link text-xs font-medium text-blue-600"
+              data-filter="resolved"
+            >
+              Resolved
+            </button>
+          </div>
+
+          <section class="bg-white border border-gray-200 rounded-2xl p-6 mt-5">
+            <h2 id="disputeTitle" class="text-base font-semibold">
+              Open cases
+            </h2>
+            <!-- overflow-x-auto lets the table scroll sideways on small screens -->
+            <div class="overflow-x-auto mt-3">
+              <table class="w-full text-left text-xs">
+                <thead>
+                  <tr>
+                    <th class="py-3 pr-5 font-medium text-gray-700">Case</th>
+                    <th class="py-3 pr-5 font-medium text-gray-700">Parties</th>
+                    <th class="py-3 pr-5 font-medium text-gray-700">Issue</th>
+                    <th class="py-3 pr-5 font-medium text-gray-700">Status</th>
+                    <th class="py-3 pr-5 font-medium text-gray-700">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="disputeBody">
+                  <!-- data-status is used by the filter links -->
+                  <tr
+                    class="dispute-row border-t border-gray-100"
+                    data-status="open"
+                  >
+                    <td class="py-3 pr-5">DP-0128</td>
+                    <td class="py-3 pr-5">Amara / Mainland Care</td>
+                    <td class="py-3 pr-5">Shift completion</td>
+                    <td class="py-3 pr-5">Open</td>
+                    <td class="py-3 pr-5">
+                      <a
+                        href="/Admin/DisputeDetail.html"
+                        class="text-blue-600 hover:underline"
+                        >Review case</a
+                      >
+                    </td>
+                  </tr>
+                  <!-- data-status is used by the filter links -->
+                  <tr
+                    class="dispute-row border-t border-gray-100"
+                    data-status="review"
+                  >
+                    <td class="py-3 pr-5">DP-0129</td>
+                    <td class="py-3 pr-5">Tunde / Yaba Clinic</td>
+                    <td class="py-3 pr-5">Payment delay</td>
+                    <td class="py-3 pr-5">In review</td>
+                    <td class="py-3 pr-5">
+                      <a
+                        href="/Admin/DisputeDetail.html"
+                        class="text-blue-600 hover:underline"
+                        >Review case</a
+                      >
+                    </td>
+                  </tr>
+                  <!-- data-status is used by the filter links -->
+                  <tr
+                    class="dispute-row border-t border-gray-100"
+                    data-status="open"
+                  >
+                    <td class="py-3 pr-5">DP-0130</td>
+                    <td class="py-3 pr-5">Chidinma / Ikeja Centre</td>
+                    <td class="py-3 pr-5">Attendance</td>
+                    <td class="py-3 pr-5">Open</td>
+                    <td class="py-3 pr-5">
+                      <a
+                        href="/Admin/DisputeDetail.html"
+                        class="text-blue-600 hover:underline"
+                        >Review case</a
+                      >
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p
+              id="disputeEmpty"
+              class="hidden text-xs text-gray-700 text-center py-5"
+            >
+              No cases to show.
+            </p>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <!-- Shared JavaScript for all admin pages -->
+    <script src="/js/AdminDashboard.js"></script>
+  </body>
+</html>

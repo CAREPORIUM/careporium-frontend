@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Careporium - Log In</title>
+
+    <!-- Tailwind CSS from the CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Use SF Pro (the Apple system font) for the whole page -->
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [
+                "-apple-system",
+                "BlinkMacSystemFont",
+                '"SF Pro Text"',
+                '"Segoe UI"',
+                "Roboto",
+                "sans-serif",
+              ],
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+
+  <body class="bg-slate-50 min-h-screen relative overflow-x-hidden">
+    <!-- Soft blue circles in the background -->
+    <div
+      class="absolute top-20 left-10 w-72 h-72 bg-blue-100 rounded-full blur-3xl"
+    ></div>
+    <div
+      class="absolute bottom-10 right-10 w-80 h-80 bg-blue-100 rounded-full blur-3xl"
+    ></div>
+
+    <!-- This puts the white card in the middle of the screen -->
+    <main
+      class="relative min-h-screen flex items-center justify-center px-5 py-10"
+    >
+      <!-- White card -->
+      <div class="w-full max-w-xl bg-white rounded-xl shadow-sm p-5 md:p-10">
+        <!-- Logo -->
+        <img
+          src="/images/logo-blue.png"
+          alt="Careporium logo"
+          class="w-44 h-auto mx-auto"
+        />
+
+        <!-- Title -->
+        <h2 class="text-2xl font-semibold text-gray-900 text-center mt-5">
+          Welcome Back
+        </h2>
+        <p class="text-xs font-medium text-gray-400 text-center mt-1">
+          Log in to your Careporium account.
+        </p>
+
+        <!-- The form. "novalidate" turns off the browser's own popups so our JS messages show instead -->
+        <form id="loginForm" class="space-y-5 mt-5" novalidate>
+          <!-- Email Address -->
+          <div>
+            <label
+              for="email"
+              class="block text-sm font-semibold text-gray-900 mb-2"
+              >Email Address</label
+            >
+            <div class="relative">
+              <img
+                src="/icons/clarity_email-solid.png"
+                alt=""
+                class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2"
+              />
+              <input
+                type="email"
+                id="email"
+                placeholder="you@gmail.com"
+                class="w-full border border-blue-400 rounded-lg py-3 pl-10 pr-4 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-200"
+              />
+            </div>
+            <!-- Error message (hidden until there is a mistake) -->
+            <p
+              id="emailError"
+              class="text-xs font-medium text-red-500 mt-1 hidden"
+            ></p>
+          </div>
+
+          <!-- Password -->
+          <div>
+            <label
+              for="password"
+              class="block text-sm font-semibold text-gray-900 mb-2"
+              >Password</label
+            >
+            <div class="relative">
+              <img
+                src="/icons/boxicons_lock-keyhole.png"
+                alt=""
+                class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2"
+              />
+              <input
+                type="password"
+                id="password"
+                placeholder="••••••••••••••••"
+                class="w-full border border-blue-400 rounded-lg py-3 pl-10 pr-10 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-200"
+              />
+              <!-- Eye button to show or hide the password -->
+              <button
+                type="button"
+                id="togglePassword"
+                class="absolute right-3 top-1/2 -translate-y-1/2"
+              >
+                <span id="passwordEyeOff"
+                  ><img
+                    src="/icons/famicons_eye-off-sharp.png"
+                    alt=""
+                    class="w-4 h-4"
+                /></span>
+                <span id="passwordEyeOn" class="hidden"
+                  ><img src="/icons/eye.png" alt="" class="w-4 h-4"
+                /></span>
+              </button>
+            </div>
+            <p
+              id="passwordError"
+              class="text-xs font-medium text-red-500 mt-1 hidden"
+            ></p>
+
+            <!-- Forgot password link, on the right -->
+            <div class="text-right mt-2">
+              <a
+                href="/AuthenticationSection/resetPassword.html"
+                class="text-xs font-medium text-blue-600"
+                >Forgot Password?</a
+              >
+            </div>
+          </div>
+
+          <!-- Log in button -->
+          <button
+            type="submit"
+            class="w-full bg-blue-600 text-white text-sm font-semibold py-3 rounded-lg hover:bg-blue-700"
+          >
+            Log in
+          </button>
+        </form>
+
+        <!-- "Or continue with" with a line on each side -->
+        <div class="flex items-center gap-3 mt-5">
+          <div class="flex-1 h-px bg-gray-300"></div>
+          <p class="text-sm font-medium text-gray-900">Or continue with</p>
+          <div class="flex-1 h-px bg-gray-300"></div>
+        </div>
+
+        <!-- Social buttons (will work once there is a backend) -->
+        <div class="space-y-3 mt-5">
+          <button
+            type="button"
+            class="w-full flex items-center justify-center gap-2 border border-blue-400 rounded-lg py-3 text-sm font-medium text-gray-900 hover:bg-gray-50"
+          >
+            <img src="/icons/Google Icon.png" alt="" class="w-4 h-4" />
+            Continue with Google
+          </button>
+          <button
+            type="button"
+            class="w-full flex items-center justify-center gap-2 border border-blue-400 rounded-lg py-3 text-sm font-medium text-gray-900 hover:bg-gray-50"
+          >
+            <img src="/icons/Apple Icon.png" alt="" class="w-4 h-4" />
+            Continue with Apple
+          </button>
+        </div>
+
+        <!-- Sign up link -->
+        <p class="text-sm font-semibold text-gray-900 text-center mt-5">
+          Don't have an account?
+          <a href="/AuthenticationSection/signUp.html" class="text-blue-600"
+            >Sign up</a
+          >
+        </p>
+      </div>
+    </main>
+
+    <!-- Our JavaScript for this page -->
+    <script src="/js/login.js"></script>
+  </body>
+</html>

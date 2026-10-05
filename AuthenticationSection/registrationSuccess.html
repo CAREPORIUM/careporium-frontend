@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Careporium - Registration Submitted</title>
+
+    <!-- Tailwind CSS from the CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Use SF Pro (the Apple system font) for the whole page -->
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [
+                "-apple-system",
+                "BlinkMacSystemFont",
+                '"SF Pro Text"',
+                '"Segoe UI"',
+                "Roboto",
+                "sans-serif",
+              ],
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+
+  <body class="bg-slate-50 min-h-screen relative overflow-x-hidden">
+    <!-- Soft blue circles in the background -->
+    <div
+      class="absolute top-20 left-10 w-72 h-72 bg-blue-100 rounded-full blur-3xl"
+    ></div>
+    <div
+      class="absolute bottom-10 right-10 w-80 h-80 bg-blue-100 rounded-full blur-3xl"
+    ></div>
+
+    <!-- This puts the white card in the middle of the screen -->
+    <main
+      class="relative min-h-screen flex items-center justify-center px-5 py-10"
+    >
+      <!-- White card -->
+      <div class="w-full max-w-xl bg-white rounded-xl shadow-sm p-5 md:p-10">
+        <!-- Logo -->
+        <img
+          src="/images/logo-blue.png"
+          alt="Careporium logo"
+          class="w-44 h-auto mx-auto"
+        />
+
+        <!-- Check icon in a light green circle -->
+        <div
+          class="w-14 h-14 rounded-full bg-green-100 flex items-center justify-center mx-auto mt-5"
+        >
+          <img src="/icons/blue-success.png" alt="" class="w-6 h-6" />
+        </div>
+
+        <!-- Title -->
+        <h2 class="text-2xl font-semibold text-gray-900 text-center mt-5">
+          Registration Submitted
+        </h2>
+        <p class="text-xs font-medium text-gray-400 text-center mt-1">
+          Your facility registration has been successfully submitted. Our team
+          will review your information and documents. You will receive an email
+          notification once your facility has been approved. Review usually
+          takes 1–3 business days.
+        </p>
+
+        <!-- Back to Login button -->
+        <a
+          href="/StatusSection/Verificationstatus.html"
+          class="block w-full bg-blue-600 text-white text-sm font-semibold text-center py-3 rounded-lg mt-5 hover:bg-blue-700"
+        >
+          View Status
+        </a>
+      </div>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,406 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Careporium - Search Shifts</title>
+
+    <!-- Tailwind CSS from the CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Use SF Pro (the Apple system font) for the whole page -->
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [
+                "-apple-system",
+                "BlinkMacSystemFont",
+                '"SF Pro Text"',
+                '"Segoe UI"',
+                "Roboto",
+                "sans-serif",
+              ],
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+
+  <body class="bg-slate-50 text-gray-900">
+    <!-- Sidebar on the left, page on the right -->
+    <div class="flex min-h-screen">
+      <!-- ==================== SIDEBAR ==================== -->
+      <!-- On desktop it always shows (md:flex). On mobile it's hidden until the menu button opens it. -->
+      <aside
+        id="sidebar"
+        class="hidden md:flex fixed md:static inset-y-0 left-0 z-20 w-56 flex-shrink-0 flex-col bg-white border-r border-gray-200 p-5"
+      >
+        <!-- Logo, with a close button next to it (the close button only shows on mobile) -->
+        <div class="flex items-center justify-between">
+          <img
+            src="/images/logo-blue.png"
+            alt="Careporium logo"
+            class="w-36 h-auto"
+          />
+          <button type="button" id="closeMenuButton" class="md:hidden">
+            <img src="/icons/close.png" alt="Close menu" class="w-6 h-6" />
+          </button>
+        </div>
+
+        <!-- Menu links -->
+        <nav class="space-y-2 mt-10">
+          <a
+            href="dashboard.html"
+            class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50"
+          >
+            <img src="/icons/nav-dashboard.png" alt="" class="w-4 h-4" />
+            Dashboard
+          </a>
+          <!-- Active page: light blue -->
+          <a
+            href="findShifts.html"
+            class="flex items-center gap-3 px-3 py-2 rounded-lg bg-blue-50 text-blue-600 text-sm font-medium"
+          >
+            <img src="/icons/nav-find-shifts.png" alt="" class="w-4 h-4" />
+            Find shifts
+          </a>
+          <a
+            href="myApplications.html"
+            class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50"
+          >
+            <img src="/icons/nav-applications.png" alt="" class="w-4 h-4" />
+            My applications
+          </a>
+          <a
+            href="upcomingShifts.html"
+            class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50"
+          >
+            <img src="/icons/nav-upcoming.png" alt="" class="w-4 h-4" />
+            Upcoming shifts
+          </a>
+          <a
+            href="profile.html"
+            class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50"
+          >
+            <img src="/icons/nav-profile.png" alt="" class="w-4 h-4" />
+            Profile
+          </a>
+            <button
+            type="button"
+            id="logoutButton"
+            data-login="/AuthenticationSection/login.html"
+            class="mt-auto flex items-center gap-3 px-3 py-2 rounded-lg border border-red-600 text-red-600 text-sm font-medium hover:bg-red-50"
+          >
+            <img src="/icons/logout.png" alt="" class="w-4 h-4" />
+            Log out
+          </button>
+        </nav>
+      </aside>
+
+      <!-- ==================== RIGHT SIDE ==================== -->
+      <div class="flex-1 min-w-0">
+        <!-- Top bar: where you are on the left, user on the right -->
+        <header
+          class="bg-white border-b border-gray-200 px-5 md:px-8 py-4 flex items-center justify-between"
+        >
+          <div class="flex items-center gap-3">
+            <!-- Menu button (only on mobile) -->
+            <button type="button" id="menuButton" class="md:hidden">
+              <img src="/icons/menu.png" alt="Open menu" class="w-6 h-6" />
+            </button>
+            <p class="text-xs font-medium text-gray-500 uppercase">
+              Worker workspace / Find your next healthcare shift
+            </p>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <img src="/icons/bell.png" alt="Notifications" class="w-4 h-4" />
+            <p class="hidden sm:block text-sm font-medium">Amara Okafor</p>
+            <!-- Initials in a light blue circle -->
+            <span
+              class="w-8 h-8 rounded-full bg-blue-50 text-blue-600 text-xs font-semibold flex items-center justify-center"
+              >AO</span
+            >
+          </div>
+        </header>
+
+        <!-- ==================== PAGE CONTENT ==================== -->
+        <main class="p-5 md:p-8 max-w-6xl">
+          <!-- Page heading -->
+          <h1 class="text-3xl font-semibold">
+            Find your next healthcare shift
+          </h1>
+          <p class="text-sm text-gray-700 mt-2">
+            Search verified opportunities by specialty, location, schedule and
+            pay.
+          </p>
+
+          <!-- Search box -->
+          <section class="bg-white border border-gray-200 rounded-2xl p-6 mt-5">
+            <label for="resultSearch" class="block text-sm font-semibold mb-2"
+              >Search shifts</label
+            >
+            <input
+              type="text"
+              id="resultSearch"
+              placeholder="Role, specialty or facility"
+              class="w-full border border-gray-200 rounded-lg py-3 px-3 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+            />
+          </section>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mt-5">
+            <!-- ===== Filters (left) ===== -->
+            <section
+              class="bg-white border border-gray-200 rounded-2xl p-6 self-start"
+            >
+              <h2 class="text-lg font-semibold">Filter shifts</h2>
+              <div class="space-y-5 mt-5">
+                <div>
+                  <label
+                    for="profession"
+                    class="block text-sm font-semibold mb-2"
+                    >Profession</label
+                  >
+                  <div class="relative">
+                    <select
+                      id="profession"
+                      class="w-full appearance-none bg-white border border-gray-200 rounded-lg py-3 pl-3 pr-10 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                    >
+                      <option>Registered nurse</option>
+                      <option>Midwife</option>
+                      <option>Pharmacist</option>
+                      <option>Laboratory scientist</option>
+                    </select>
+                    <img
+                      src="/icons/akar-icons_chevron-down-small.png"
+                      alt=""
+                      class="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label
+                    for="filterSpecialty"
+                    class="block text-sm font-semibold mb-2"
+                    >Specialty</label
+                  >
+                  <div class="relative">
+                    <select
+                      id="filterSpecialty"
+                      class="w-full appearance-none bg-white border border-gray-200 rounded-lg py-3 pl-3 pr-10 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                    >
+                      <option>Acute care</option>
+                      <option>Community nursing</option>
+                      <option>Emergency care</option>
+                      <option>Pediatrics</option>
+                    </select>
+                    <img
+                      src="/icons/akar-icons_chevron-down-small.png"
+                      alt=""
+                      class="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label
+                    for="filterLocation"
+                    class="block text-sm font-semibold mb-2"
+                    >Location</label
+                  >
+                  <div class="relative">
+                    <select
+                      id="filterLocation"
+                      class="w-full appearance-none bg-white border border-gray-200 rounded-lg py-3 pl-3 pr-10 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                    >
+                      <option>Lagos · within 25 km</option>
+                      <option>Lagos · within 10 km</option>
+                      <option>Lagos · within 50 km</option>
+                    </select>
+                    <img
+                      src="/icons/akar-icons_chevron-down-small.png"
+                      alt=""
+                      class="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label
+                    for="filterDate"
+                    class="block text-sm font-semibold mb-2"
+                    >Date</label
+                  >
+                  <div class="relative">
+                    <select
+                      id="filterDate"
+                      class="w-full appearance-none bg-white border border-gray-200 rounded-lg py-3 pl-3 pr-10 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                    >
+                      <option>6–12 October 2026</option>
+                      <option>13–19 October 2026</option>
+                      <option>Any date</option>
+                    </select>
+                    <img
+                      src="/icons/akar-icons_chevron-down-small.png"
+                      alt=""
+                      class="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label
+                    for="shiftType"
+                    class="block text-sm font-semibold mb-2"
+                    >Shift type</label
+                  >
+                  <div class="relative">
+                    <select
+                      id="shiftType"
+                      class="w-full appearance-none bg-white border border-gray-200 rounded-lg py-3 pl-3 pr-10 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                    >
+                      <option>Day shift</option>
+                      <option>Night shift</option>
+                      <option>Any shift</option>
+                    </select>
+                    <img
+                      src="/icons/akar-icons_chevron-down-small.png"
+                      alt=""
+                      class="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label for="minPay" class="block text-sm font-semibold mb-2"
+                    >Minimum pay per hour (₦)</label
+                  >
+                  <input
+                    type="number"
+                    id="minPay"
+                    value="3000"
+                    min="0"
+                    class="w-full border border-gray-200 rounded-lg py-3 px-3 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                  />
+                  <p
+                    id="minPayError"
+                    class="text-xs font-medium text-red-500 mt-1 hidden"
+                  ></p>
+                  <p class="text-xs text-gray-500 mt-3">
+                    Pay is shown in naira per hour.
+                  </p>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                id="applyFilters"
+                class="w-full bg-blue-600 text-white text-sm font-medium text-center py-3 rounded-lg hover:bg-blue-700 mt-5"
+              >
+                Apply filters
+              </button>
+              <button
+                type="button"
+                id="resetFilters"
+                class="w-full border border-blue-600 text-blue-600 text-sm font-medium text-center py-3 rounded-lg hover:bg-blue-50 mt-3"
+              >
+                Reset filters
+              </button>
+            </section>
+
+            <!-- ===== Results (right) ===== -->
+            <section class="md:col-span-2">
+              <h2 id="resultCount" class="text-lg font-semibold">
+                24 shifts match your filters
+              </h2>
+              <!-- The chosen filters, shown as one line (the JS updates it) -->
+              <p
+                id="filterSummary"
+                class="text-xs font-medium text-blue-600 mt-2"
+              >
+                Registered nurse · Acute care · Lagos · Day shift · ₦3,000+/hr
+              </p>
+
+              <div class="space-y-3 mt-3">
+                <!-- data-pay and data-type are used by the filters -->
+                <div
+                  class="result-card bg-white border border-gray-200 rounded-2xl p-5"
+                  data-pay="3000"
+                  data-type="Day shift"
+                >
+                  <div class="flex justify-between items-start gap-3">
+                    <p class="text-base font-semibold">
+                      Registered Nurse · Acute Care
+                    </p>
+                    <span
+                      class="inline-block bg-amber-50 text-amber-700 text-xs font-semibold uppercase px-3 py-1 rounded"
+                      >Urgent</span
+                    >
+                  </div>
+                  <p class="text-xs text-gray-700 mt-1">
+                    <a
+                      href="/WorkerShiftMarket/FacilityRatingReview.html"
+                      class="hover:underline"
+                      >Mainland Care Hospital</a
+                    >
+                    · ★ 4.8 (42 reviews)
+                  </p>
+                  <p class="text-xs text-gray-700 mt-1">
+                    Tue, 6 Oct · 07:00–19:00 WAT · Ikeja, Lagos
+                  </p>
+                  <div class="flex justify-between items-center gap-3 mt-1">
+                    <p class="text-sm font-semibold">
+                      ₦3,000/hr · ₦36,000 total
+                    </p>
+                    <a
+                      href="/WorkerShiftMarket/ShiftDetails.html"
+                      class="bg-blue-600 text-white text-sm font-medium text-center py-3 rounded-lg hover:bg-blue-700 px-8"
+                      >View shift</a
+                    >
+                  </div>
+                </div>
+                <!-- data-pay and data-type are used by the filters -->
+                <div
+                  class="result-card bg-white border border-gray-200 rounded-2xl p-5"
+                  data-pay="3500"
+                  data-type="Day shift"
+                >
+                  <div class="flex justify-between items-start gap-3">
+                    <p class="text-base font-semibold">Community Nurse</p>
+                    <span
+                      class="inline-block bg-amber-50 text-amber-700 text-xs font-semibold uppercase px-3 py-1 rounded"
+                      >94% match</span
+                    >
+                  </div>
+                  <p class="text-xs text-gray-700 mt-1">
+                    Yaba Community Clinic · ★ 4.7 (28 reviews)
+                  </p>
+                  <p class="text-xs text-gray-700 mt-1">
+                    Fri, 9 Oct · 08:00–16:00 WAT · Yaba, Lagos
+                  </p>
+                  <div class="flex justify-between items-center gap-3 mt-1">
+                    <p class="text-sm font-semibold">
+                      ₦3,500/hr · ₦28,000 total
+                    </p>
+                    <a
+                      href="/WorkerShiftMarket/ShiftDetails.html"
+                      class="bg-blue-600 text-white text-sm font-medium text-center py-3 rounded-lg hover:bg-blue-700 px-8"
+                      >View shift</a
+                    >
+                  </div>
+                </div>
+              </div>
+
+              <p class="text-xs text-gray-700 mt-3">
+                No matches? Try a wider radius, another date or a lower minimum
+                pay.
+              </p>
+            </section>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <!-- Shared JavaScript for this workspace -->
+    <script src="/js/workerDashboard.js"></script>
+  </body>
+</html>
