@@ -27,6 +27,15 @@ function clearError(inputId) {
   document.getElementById(inputId).classList.remove("border-red-500");
 }
 
+
+// ==================================================
+// 1. LOGIN PAGE
+// ==================================================
+
+const adminLoginForm = document.getElementById("adminLoginForm");
+
+if (adminLoginForm) {
+
 // ---------- Show / hide password ----------
 
 document
@@ -46,13 +55,7 @@ document
     document.getElementById("passwordEyeOn").classList.toggle("hidden");
   });
 
-// ==================================================
-// 1. LOGIN PAGE
-// ==================================================
 
-const adminLoginForm = document.getElementById("adminLoginForm");
-
-if (adminLoginForm) {
   adminLoginForm.addEventListener("submit", function (event) {
     // Stop the page from reloading
     event.preventDefault();
