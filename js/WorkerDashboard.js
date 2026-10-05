@@ -282,3 +282,26 @@ if (sortReviews) {
     });
   });
 }
+
+// ==================================================
+// LOG OUT (every page)
+// ==================================================
+
+const logoutButton = document.getElementById("logoutButton");
+
+if (logoutButton) {
+  logoutButton.addEventListener("click", function () {
+    // Ask first, so nobody logs out by accident
+    const confirmed = confirm("Are you sure you want to log out?");
+    if (!confirmed) {
+      return;
+    }
+
+    // Forget who was logged in (saved by the login page)
+    localStorage.removeItem("userType");
+
+    // Go to the sign-in page written in the button's data-login="..."
+    // replace() also stops the Back button from returning to the dashboard
+    window.location.replace(logoutButton.getAttribute("data-login"));
+  });
+}
