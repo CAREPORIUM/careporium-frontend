@@ -63,11 +63,7 @@ async function apiFirst(attempts) {
   const body0 = attempts[0][2];
   for (const attempt of attempts) {
     try {
-      return await apiRequest(
-        attempt[0],
-        attempt[1] || method0,
-        attempt.length > 2 ? attempt[2] : body0,
-      );
+      return await apiRequest(attempt[0], attempt[1] || method0, attempt.length > 2 ? attempt[2] : body0);
     } catch (error) {
       if (error.status !== 404 && error.status !== 405) {
         throw error;
@@ -443,74 +439,28 @@ const FACILITY_DOCUMENTS = {
 
 // Other spellings the backend might use for the same document
 const DOCUMENT_ALIASES = {
-  professionalLicense: [
-    "professionalLicense",
-    "professionalLicence",
-    "professional_license",
-  ],
-  idDocument: [
-    "idDocument",
-    "id_document",
-    "identityDocument",
-    "governmentId",
-    "idCard",
-  ],
-  educationCert: [
-    "educationCert",
-    "educationCertificate",
-    "education_cert",
-    "educationalCertificate",
-  ],
-  proofOfLocation: [
-    "proofOfLocation",
-    "proofOfAddress",
-    "proof_of_location",
-    "addressProof",
-  ],
-  businessRegCert: [
-    "businessRegCert",
-    "businessRegistrationCertificate",
-    "business_reg_cert",
-    "cacCertificate",
-  ],
-  facilityLicense: [
-    "facilityLicense",
-    "facilityLicence",
-    "facility_license",
-    "operatingLicense",
-  ],
+  professionalLicense: ["professionalLicense", "professionalLicence", "professional_license"],
+  idDocument: ["idDocument", "id_document", "identityDocument", "governmentId", "idCard"],
+  educationCert: ["educationCert", "educationCertificate", "education_cert", "educationalCertificate"],
+  proofOfLocation: ["proofOfLocation", "proofOfAddress", "proof_of_location", "addressProof"],
+  businessRegCert: ["businessRegCert", "businessRegistrationCertificate", "business_reg_cert", "cacCertificate"],
+  facilityLicense: ["facilityLicense", "facilityLicence", "facility_license", "operatingLicense"],
   taxID: ["taxID", "taxId", "tax_id", "taxIdentification"],
 };
 
 // Where a list or object of documents might sit inside a profile
-const DOCUMENT_CONTAINERS = [
-  "documents",
-  "verificationDocuments",
-  "credentials",
-  "docs",
-  "uploads",
-  "files",
-];
+const DOCUMENT_CONTAINERS = ["documents", "verificationDocuments", "credentials", "docs", "uploads", "files"];
 
 // Does this object look like a worker (or facility) profile?
 function looksLikeProfile(object, kind) {
   if (!object || typeof object !== "object" || Array.isArray(object)) {
     return false;
   }
-  const keys =
-    kind === "facility"
-      ? ["facilityName", "facilityType"].concat(Object.keys(FACILITY_DOCUMENTS))
-      : ["profession", "specialty", "yearsOfExperience"].concat(
-          Object.keys(WORKER_DOCUMENTS),
-        );
-  return (
-    keys.some(function (key) {
-      return key in object;
-    }) ||
-    DOCUMENT_CONTAINERS.some(function (key) {
-      return object[key] && typeof object[key] === "object";
-    })
-  );
+  const keys = kind === "facility"
+    ? ["facilityName", "facilityType"].concat(Object.keys(FACILITY_DOCUMENTS))
+    : ["profession", "specialty", "yearsOfExperience"].concat(Object.keys(WORKER_DOCUMENTS));
+  return keys.some(function (key) { return key in object; }) ||
+    DOCUMENT_CONTAINERS.some(function (key) { return object[key] && typeof object[key] === "object"; });
 }
 
 // Take the profile out of whatever the server wrapped it in, e.g. { worker: {...} } or [ {...} ]
@@ -524,10 +474,9 @@ function unwrapProfile(data, kind) {
   if (looksLikeProfile(data, kind)) {
     return data;
   }
-  const wrappers =
-    kind === "facility"
-      ? ["facility", "facilityProfile", "profile", "data", "result", "user"]
-      : ["worker", "workerProfile", "profile", "data", "result", "user"];
+  const wrappers = kind === "facility"
+    ? ["facility", "facilityProfile", "profile", "data", "result", "user"]
+    : ["worker", "workerProfile", "profile", "data", "result", "user"];
   for (const outer of wrappers) {
     const inner = Array.isArray(data[outer]) ? data[outer][0] : data[outer];
     if (looksLikeProfile(inner, kind)) {
@@ -552,58 +501,21 @@ function idValue(value) {
 
 // "Verified", "approved", "UNDER_REVIEW"... → "verified" | "rejected" | "pending" | "not_submitted" | ""
 function normaliseStatus(value) {
-  const s = String(value || "")
-    .toLowerCase()
-    .replace(/[^a-z]/g, "");
+  const s = String(value || "").toLowerCase().replace(/[^a-z]/g, "");
   if (!s) return "";
-  if (["verified", "approved", "accepted", "valid"].includes(s))
-    return "verified";
-  if (["rejected", "declined", "invalid", "failed"].includes(s))
-    return "rejected";
+  if (["verified", "approved", "accepted", "valid"].includes(s)) return "verified";
+  if (["rejected", "declined", "invalid", "failed"].includes(s)) return "rejected";
   if (["resubmission", "resubmitted"].includes(s)) return "resubmission";
-  if (
-    [
-      "pending",
-      "submitted",
-      "underreview",
-      "inreview",
-      "awaitingreview",
-      "awaitingverification",
-      "processing",
-    ].includes(s)
-  )
-    return "pending";
-  if (
-    [
-      "notsubmitted",
-      "notuploaded",
-      "missing",
-      "unverified",
-      "none",
-      "incomplete",
-    ].includes(s)
-  )
-    return "not_submitted";
+  if (["pending", "submitted", "underreview", "inreview", "awaitingreview", "awaitingverification", "processing"].includes(s)) return "pending";
+  if (["notsubmitted", "notuploaded", "missing", "unverified", "none", "incomplete"].includes(s)) return "not_submitted";
   return "";
 }
 
 // Is this list item the document we're looking for? (e.g. { documentType: "idDocument", url })
 function documentItemMatches(item, aliases) {
   if (!item || typeof item !== "object") return false;
-  const name = String(
-    pick(item, [
-      "documentType",
-      "type",
-      "name",
-      "key",
-      "fieldname",
-      "fieldName",
-      "docType",
-    ]),
-  ).toLowerCase();
-  return aliases.some(function (alias) {
-    return alias.toLowerCase() === name;
-  });
+  const name = String(pick(item, ["documentType", "type", "name", "key", "fieldname", "fieldName", "docType"])).toLowerCase();
+  return aliases.some(function (alias) { return alias.toLowerCase() === name; });
 }
 
 // Find one document's raw value in a profile, wherever it is
@@ -614,26 +526,16 @@ function findRawDocument(profile, key) {
   }
 
   // 1. The usual places: profile.key, profile.documents.key, or a list of documents
-  const containers = [profile].concat(
-    DOCUMENT_CONTAINERS.map(function (c) {
-      return profile[c];
-    }),
-  );
+  const containers = [profile].concat(DOCUMENT_CONTAINERS.map(function (c) { return profile[c]; }));
   for (const container of containers) {
     if (!container || typeof container !== "object") continue;
     if (Array.isArray(container)) {
-      const found = container.find(function (item) {
-        return documentItemMatches(item, aliases);
-      });
+      const found = container.find(function (item) { return documentItemMatches(item, aliases); });
       if (found) return found;
       continue;
     }
     for (const alias of aliases) {
-      if (
-        container[alias] !== undefined &&
-        container[alias] !== null &&
-        container[alias] !== ""
-      ) {
+      if (container[alias] !== undefined && container[alias] !== null && container[alias] !== "") {
         return container[alias];
       }
     }
@@ -642,13 +544,10 @@ function findRawDocument(profile, key) {
   // 2. Anywhere deeper (up to 4 levels), in case the backend nests it differently
   const seen = new Set();
   function search(value, depth) {
-    if (!value || typeof value !== "object" || depth > 4 || seen.has(value))
-      return null;
+    if (!value || typeof value !== "object" || depth > 4 || seen.has(value)) return null;
     seen.add(value);
     if (Array.isArray(value)) {
-      const found = value.find(function (item) {
-        return documentItemMatches(item, aliases);
-      });
+      const found = value.find(function (item) { return documentItemMatches(item, aliases); });
       if (found) return found;
       for (const item of value) {
         const deeper = search(item, depth + 1);
@@ -657,12 +556,7 @@ function findRawDocument(profile, key) {
       return null;
     }
     for (const alias of [key]) {
-      if (
-        value[alias] !== undefined &&
-        value[alias] !== null &&
-        value[alias] !== ""
-      )
-        return value[alias];
+      if (value[alias] !== undefined && value[alias] !== null && value[alias] !== "") return value[alias];
     }
     for (const name of Object.keys(value)) {
       if (name === "password" || name === "otp") continue;
@@ -691,34 +585,14 @@ function documentOf(profile, key) {
     return null;
   }
   let url = "";
-  for (const name of [
-    "url",
-    "documentUrl",
-    "fileUrl",
-    "secure_url",
-    "secureUrl",
-    "link",
-    "path",
-    "location",
-    "file.url",
-    "file.secure_url",
-    "file",
-  ]) {
+  for (const name of ["url", "documentUrl", "fileUrl", "secure_url", "secureUrl", "link", "path", "location", "file.url", "file.secure_url", "file"]) {
     const value = pick(doc, [name]);
     if (typeof value === "string" && value) {
       url = value;
       break;
     }
   }
-  let status = normaliseStatus(
-    pick(doc, [
-      "verificationStatus",
-      "documentVerificationStatus",
-      "status",
-      "verification.status",
-      "reviewStatus",
-    ]),
-  );
+  let status = normaliseStatus(pick(doc, ["verificationStatus", "documentVerificationStatus", "status", "verification.status", "reviewStatus"]));
   if (status === "resubmission") status = "pending";
   const touched = status === "verified" || status === "rejected";
   if (!url && !touched) {
@@ -727,12 +601,7 @@ function documentOf(profile, key) {
   return {
     url: url,
     status: status && status !== "not_submitted" ? status : "pending",
-    comment: pick(doc, [
-      "verificationComment",
-      "comment",
-      "rejectionReason",
-      "reason",
-    ]),
+    comment: pick(doc, ["verificationComment", "comment", "rejectionReason", "reason"]),
     uploaded: true,
   };
 }
@@ -741,46 +610,21 @@ function documentsOf(profile, labels) {
   return Object.keys(labels).map(function (key) {
     return Object.assign(
       { key: key, label: labels[key] },
-      documentOf(profile, key) || {
-        url: "",
-        status: "missing",
-        comment: "",
-        uploaded: false,
-      },
+      documentOf(profile, key) || { url: "", status: "missing", comment: "", uploaded: false },
     );
   });
 }
 
 // The overall status from the profile's own field (if any) and its documents
 function overallStatusOf(profile, docs) {
-  const field = normaliseStatus(
-    pick(profile, [
-      "verificationStatus",
-      "overallVerificationStatus",
-      "overallStatus",
-      "verification.status",
-      "verification.overallStatus",
-      "profileStatus",
-    ]),
-  );
-  const uploaded = docs.filter(function (d) {
-    return d.uploaded;
-  });
-  if (
-    docs.length > 0 &&
-    docs.every(function (d) {
-      return d.status === "verified";
-    })
-  )
-    return "verified";
+  const field = normaliseStatus(pick(profile, [
+    "verificationStatus", "overallVerificationStatus", "overallStatus", "verification.status",
+    "verification.overallStatus", "profileStatus",
+  ]));
+  const uploaded = docs.filter(function (d) { return d.uploaded; });
+  if (docs.length > 0 && docs.every(function (d) { return d.status === "verified"; })) return "verified";
   if (field === "verified") return "verified";
-  if (
-    docs.some(function (d) {
-      return d.status === "rejected";
-    }) ||
-    field === "rejected"
-  )
-    return "rejected";
+  if (docs.some(function (d) { return d.status === "rejected"; }) || field === "rejected") return "rejected";
   if (uploaded.length === 0) return "not_submitted";
   return field === "resubmission" ? "resubmission" : "pending";
 }
@@ -788,30 +632,13 @@ function overallStatusOf(profile, docs) {
 // Do we know anything about this person's verification? (used for applicants, where the
 // backend may not send the documents at all)
 function hasVerificationInfo(profile, docs) {
-  return (
-    docs.some(function (d) {
-      return d.uploaded;
-    }) ||
-    normaliseStatus(
-      pick(profile, [
-        "verificationStatus",
-        "overallVerificationStatus",
-        "overallStatus",
-        "verification.status",
-      ]),
-    ) !== ""
-  );
+  return docs.some(function (d) { return d.uploaded; }) ||
+    normaliseStatus(pick(profile, ["verificationStatus", "overallVerificationStatus", "overallStatus", "verification.status"])) !== "";
 }
 
 // A person's name from a worker profile (or the user inside it)
 function workerNameOf(p) {
-  return String(
-    pick(
-      p,
-      ["fullName", "user.fullName", "name", "user.name", "userId.fullName"],
-      "",
-    ),
-  ).trim();
+  return String(pick(p, ["fullName", "user.fullName", "name", "user.name", "userId.fullName"], "")).trim();
 }
 
 // "Ada Okafor" → "AO"
@@ -819,9 +646,7 @@ function initialsOf(name) {
   return String(name || "")
     .split(/\s+/)
     .filter(Boolean)
-    .map(function (w) {
-      return w.charAt(0);
-    })
+    .map(function (w) { return w.charAt(0); })
     .join("")
     .slice(0, 2)
     .toUpperCase();
@@ -833,18 +658,13 @@ let myProfileRequest = null;
 async function loadMyProfile() {
   const type = sessionGet("userType");
   if (type === "facility") {
-    return unwrapProfile(
-      await apiRequest(ENDPOINTS.facilityProfile),
-      "facility",
-    );
+    return unwrapProfile(await apiRequest(ENDPOINTS.facilityProfile), "facility");
   }
   // get-worker-profile (from the token), or get-worker-profile/{userId} as in one Swagger version.
   // Last resort: get-profile (the account only, without documents).
   let profile = null;
   // (The latest Postman collection uses the address without an id, from the login token.)
-  const addresses = [ENDPOINTS.workerOwnProfile()].concat(
-    myUserId() ? [ENDPOINTS.workerOwnProfile(myUserId())] : [],
-  );
+  const addresses = [ENDPOINTS.workerOwnProfile()].concat(myUserId() ? [ENDPOINTS.workerOwnProfile(myUserId())] : []);
   for (const address of addresses) {
     try {
       profile = await apiRequest(address);
@@ -856,9 +676,7 @@ async function loadMyProfile() {
     }
   }
   if (profile === null) {
-    console.warn(
-      "get-worker-profile isn't available on the server (404), so get-profile is used instead.",
-    );
+    console.warn("get-worker-profile isn't available on the server (404), so get-profile is used instead.");
     profile = await apiRequest(ENDPOINTS.getProfile);
   }
   // Shown in the Console (F12), so we can check the field names the backend really uses
@@ -881,9 +699,7 @@ Backend.displayName = async function () {
   const type = sessionGet("userType");
   const profile = await Backend.myProfile();
   if (type === "facility") {
-    return String(
-      pick(profile, ["facilityName", "name", "user.fullName"], ""),
-    ).trim();
+    return String(pick(profile, ["facilityName", "name", "user.fullName"], "")).trim();
   }
   return workerNameOf(profile);
 };
@@ -892,19 +708,13 @@ Backend.displayName = async function () {
 Backend.verificationStatus = async function () {
   const type = sessionGet("userType");
   const profile = await Backend.myProfile();
-  const docs = documentsOf(
-    profile,
-    type === "facility" ? FACILITY_DOCUMENTS : WORKER_DOCUMENTS,
-  );
+  const docs = documentsOf(profile, type === "facility" ? FACILITY_DOCUMENTS : WORKER_DOCUMENTS);
   const status = overallStatusOf(profile, docs);
-  const rejected = docs.filter(function (d) {
-    return d.status === "rejected";
-  });
+  const rejected = docs.filter(function (d) { return d.status === "rejected"; });
 
-  const name =
-    type === "facility"
-      ? pick(profile, ["facilityName", "name"])
-      : workerNameOf(profile).split(" ")[0];
+  const name = type === "facility"
+    ? pick(profile, ["facilityName", "name"])
+    : workerNameOf(profile).split(" ")[0];
 
   return {
     status: status,
@@ -929,11 +739,7 @@ async function putWorkerProfile(form) {
       throw error;
     }
   }
-  return await apiRequest(
-    ENDPOINTS.workerProfileUpdate(myUserId()),
-    "PUT",
-    form,
-  );
+  return await apiRequest(ENDPOINTS.workerProfileUpdate(myUserId()), "PUT", form);
 }
 
 // Health worker documents (from the credentials page)
@@ -950,11 +756,7 @@ Backend.uploadWorkerDocuments = function (files) {
 Backend.saveWorkerProfile = function (details) {
   const form = new FormData();
   Object.keys(details).forEach(function (key) {
-    if (
-      details[key] !== undefined &&
-      details[key] !== null &&
-      details[key] !== ""
-    ) {
+    if (details[key] !== undefined && details[key] !== null && details[key] !== "") {
       form.append(key, details[key]);
     }
   });
@@ -981,30 +783,18 @@ Backend.workerOwnProfile = async function () {
       ? "Not uploaded"
       : d.status.charAt(0).toUpperCase() + d.status.slice(1);
   };
-  const verifiedCount = docs.filter(function (d) {
-    return d.status === "verified";
-  }).length;
+  const verifiedCount = docs.filter(function (d) { return d.status === "verified"; }).length;
   const loc = pick(p, ["location"], {});
-  const place = [pick(loc, ["city", "street"]), pick(loc, ["state"])]
-    .filter(Boolean)
-    .join(", ");
+  const place = [pick(loc, ["city", "street"]), pick(loc, ["state"])].filter(Boolean).join(", ");
   return {
     status: status,
     raw: p,
     initials: initialsOf(name),
     name: name,
-    headline: [
-      pick(p, ["profession"]),
-      pick(p, ["specialty"]),
-      pick(loc, ["state", "city"]),
-    ]
+    headline: [pick(p, ["profession"]), pick(p, ["specialty"]), pick(loc, ["state", "city"])]
       .filter(Boolean)
       .join(" · "),
-    about: pick(
-      p,
-      ["about", "bio"],
-      "Add a short introduction to your profile.",
-    ),
+    about: pick(p, ["about", "bio"], "Add a short introduction to your profile."),
     licence: "Professional licence · " + docStatus("professionalLicense"),
     specialty: pick(p, ["specialty"], "—"),
     experience:
@@ -1052,100 +842,48 @@ function shiftCard(shift) {
 Backend.searchShifts = async function (filters) {
   filters = filters || {};
   const answers = await Promise.all([
-    apiRequest(
-      ENDPOINTS.searchShifts +
-        "?" +
-        new URLSearchParams({ status: "open" }).toString(),
-    ),
-    Backend.myAppliedShifts().catch(function () {
-      return {};
-    }),
+    apiRequest(ENDPOINTS.searchShifts + "?" + new URLSearchParams({ status: "open" }).toString()),
+    Backend.myAppliedShifts().catch(function () { return {}; }),
   ]);
   const shifts = asList(answers[0], ["shifts", "data"]);
   const applied = answers[1];
   const any = function (value) {
     return !value || /^(all|any)\b/i.test(value);
   };
-  const today = new Date().toLocaleDateString("en-CA", {
-    timeZone: "Africa/Lagos",
-  });
-  const daysAhead = { Today: 0, "Next 7 days": 7, "Next 30 days": 30 }[
-    filters.date
-  ];
+  const today = new Date().toLocaleDateString("en-CA", { timeZone: "Africa/Lagos" });
+  const daysAhead = { "Today": 0, "Next 7 days": 7, "Next 30 days": 30 }[filters.date];
   const now = new Date();
   return shifts
     .filter(function (s) {
       const status = String(pick(s, ["status"], "open")).toLowerCase();
-      if (
-        ["closed", "cancelled", "canceled", "completed", "filled"].includes(
-          status,
-        )
-      )
-        return false;
+      if (["closed", "cancelled", "canceled", "completed", "filled"].includes(status)) return false;
       if (isAwaitingPayment(s)) return false; // not funded yet: not live for workers
       if (shiftTimes(s).end <= now) return false;
-      if (
-        !any(filters.profession) &&
-        String(pick(s, ["profession", "role"])).toLowerCase() !==
-          filters.profession.toLowerCase()
-      )
-        return false;
-      if (
-        !any(filters.specialty) &&
-        String(pick(s, ["specialty"])).toLowerCase() !==
-          filters.specialty.toLowerCase()
-      )
-        return false;
-      if (
-        !any(filters.location) &&
-        !String(pick(s, ["location"]))
-          .toLowerCase()
-          .includes(filters.location.split(" · ")[0].toLowerCase())
-      )
-        return false;
+      if (!any(filters.profession) && String(pick(s, ["profession", "role"])).toLowerCase() !== filters.profession.toLowerCase()) return false;
+      if (!any(filters.specialty) && String(pick(s, ["specialty"])).toLowerCase() !== filters.specialty.toLowerCase()) return false;
+      if (!any(filters.location) && !String(pick(s, ["location"])).toLowerCase().includes(filters.location.split(" · ")[0].toLowerCase())) return false;
       if (daysAhead !== undefined) {
         const day = String(pick(s, ["shiftDate", "date"])).slice(0, 10);
-        const last = new Date(
-          Date.now() + daysAhead * 86400000,
-        ).toLocaleDateString("en-CA", { timeZone: "Africa/Lagos" });
+        const last = new Date(Date.now() + daysAhead * 86400000).toLocaleDateString("en-CA", { timeZone: "Africa/Lagos" });
         if (day < today || day > last) return false;
       }
       return true;
     })
-    .sort(function (a, b) {
-      return shiftTimes(a).start - shiftTimes(b).start;
-    })
+    .sort(function (a, b) { return shiftTimes(a).start - shiftTimes(b).start; })
     .map(function (s) {
       const card = shiftCard(s);
       card.applied = applied[card.id] || "";
       if (card.applied) {
-        card.badge =
-          card.applied === "Accepted"
-            ? "Booked"
-            : card.applied === "Not selected"
-              ? "Not selected"
-              : "Applied";
+        card.badge = card.applied === "Accepted" ? "Booked" : card.applied === "Not selected" ? "Not selected" : "Applied";
         card.badgeColor = card.applied === "Not selected" ? "gray" : "green";
       }
       return card;
     })
     .filter(function (card) {
-      const text = (
-        card.title +
-        " " +
-        card.facility +
-        " " +
-        card.when
-      ).toLowerCase();
-      if (filters.search && !text.includes(filters.search.toLowerCase()))
-        return false;
-      if (
-        !any(filters.type) &&
-        card.type.toLowerCase() !== filters.type.toLowerCase()
-      )
-        return false;
-      if (filters.minPay && card.payPerHour < Number(filters.minPay))
-        return false;
+      const text = (card.title + " " + card.facility + " " + card.when).toLowerCase();
+      if (filters.search && !text.includes(filters.search.toLowerCase())) return false;
+      if (!any(filters.type) && card.type.toLowerCase() !== filters.type.toLowerCase()) return false;
+      if (filters.minPay && card.payPerHour < Number(filters.minPay)) return false;
       return true;
     });
 };
@@ -1215,21 +953,8 @@ Backend.applyToShift = async function (shiftId) {
 // Backend application status → the 4 texts My applications uses
 function applicationStatusText(status) {
   const s = String(status || "").toLowerCase();
-  if (
-    [
-      "accepted",
-      "approved",
-      "hired",
-      "booked",
-      "confirmed",
-      "completed",
-    ].includes(s)
-  )
-    return "Accepted";
-  if (
-    ["rejected", "declined", "cancelled", "canceled", "withdrawn"].includes(s)
-  )
-    return "Not selected";
+  if (["accepted", "approved", "hired", "booked", "confirmed", "completed"].includes(s)) return "Accepted";
+  if (["rejected", "declined", "cancelled", "canceled", "withdrawn"].includes(s)) return "Not selected";
   return "Under review";
 }
 
@@ -1244,18 +969,14 @@ function applicationShift(app) {
 
 // The shift's id, whether the server sent the whole shift or just its id
 function applicationShiftId(app) {
-  return (
-    idOf(applicationShift(app)) || idValue(pick(app, ["shiftId", "shift"]))
-  );
+  return idOf(applicationShift(app)) || idValue(pick(app, ["shiftId", "shift"]));
 }
 
 // If the server sent only shift ids, fetch those shifts (once each) so the pages can show them.
 // knownShifts (optional): shifts we already have, e.g. the facility's own list
 async function withShifts(apps, knownShifts) {
   const byId = {};
-  (knownShifts || []).forEach(function (shift) {
-    byId[idOf(shift)] = shift;
-  });
+  (knownShifts || []).forEach(function (shift) { byId[idOf(shift)] = shift; });
   const missing = [];
   apps.forEach(function (app) {
     if (!idOf(applicationShift(app))) {
@@ -1263,15 +984,13 @@ async function withShifts(apps, knownShifts) {
       if (id && !byId[id] && !missing.includes(id)) missing.push(id);
     }
   });
-  await Promise.all(
-    missing.map(async function (id) {
-      try {
-        byId[id] = unwrapShift(await apiRequest(ENDPOINTS.shift(id)));
-      } catch (error) {
-        // leave it out; the page shows what it can
-      }
-    }),
-  );
+  await Promise.all(missing.map(async function (id) {
+    try {
+      byId[id] = unwrapShift(await apiRequest(ENDPOINTS.shift(id)));
+    } catch (error) {
+      // leave it out; the page shows what it can
+    }
+  }));
   apps.forEach(function (app) {
     if (!idOf(applicationShift(app))) {
       const id = applicationShiftId(app);
@@ -1292,21 +1011,14 @@ function unwrapShift(data) {
 // The start and end of a shift as dates (times are WAT; a night shift can end the next day)
 function shiftTimes(s) {
   const day = String(pick(s, ["shiftDate", "date"])).slice(0, 10);
-  const start = new Date(
-    day + "T" + pick(s, ["startTime"], "00:00").slice(0, 5) + ":00+01:00",
-  );
-  let end = new Date(
-    day + "T" + pick(s, ["endTime"], "00:00").slice(0, 5) + ":00+01:00",
-  );
+  const start = new Date(day + "T" + pick(s, ["startTime"], "00:00").slice(0, 5) + ":00+01:00");
+  let end = new Date(day + "T" + pick(s, ["endTime"], "00:00").slice(0, 5) + ":00+01:00");
   if (end <= start) end = new Date(end.getTime() + 24 * 3600 * 1000);
   return { day: day, start: start, end: end };
 }
 
 async function loadMyApplicationsRaw() {
-  const apps = asList(await apiRequest(ENDPOINTS.myApplications), [
-    "applications",
-    "data",
-  ]);
+  const apps = asList(await apiRequest(ENDPOINTS.myApplications), ["applications", "data"]);
   return await withShifts(apps);
 }
 
@@ -1337,18 +1049,11 @@ Backend.myApplications = async function () {
 Backend.myAppliedShifts = async function () {
   const applied = {};
   try {
-    JSON.parse(sessionStorage.getItem("appliedShifts") || "[]").forEach(
-      function (id) {
-        applied[id] = "Under review";
-      },
-    );
+    JSON.parse(sessionStorage.getItem("appliedShifts") || "[]").forEach(function (id) { applied[id] = "Under review"; });
   } catch (error) {
     // ignore
   }
-  const apps = asList(await apiRequest(ENDPOINTS.myApplications), [
-    "applications",
-    "data",
-  ]);
+  const apps = asList(await apiRequest(ENDPOINTS.myApplications), ["applications", "data"]);
   apps.forEach(function (app) {
     const id = applicationShiftId(app);
     if (id) applied[id] = applicationStatusText(pick(app, ["status"]));
@@ -1370,12 +1075,8 @@ function rememberApplied(shiftId) {
 Backend.workerDashboard = async function () {
   const results = await Promise.all([
     loadMyApplicationsRaw(),
-    Backend.searchShifts({}).catch(function () {
-      return [];
-    }),
-    Backend.myProfile().catch(function () {
-      return {};
-    }),
+    Backend.searchShifts({}).catch(function () { return []; }),
+    Backend.myProfile().catch(function () { return {}; }),
   ]);
   const apps = results[0];
   const openShifts = results[1];
@@ -1383,44 +1084,20 @@ Backend.workerDashboard = async function () {
   const now = new Date();
 
   const booked = apps
-    .filter(function (a) {
-      return applicationStatusText(pick(a, ["status"])) === "Accepted";
-    })
-    .map(function (a) {
-      return applicationShift(a);
-    })
-    .filter(function (s) {
-      return (
-        idOf(s) &&
-        String(pick(s, ["status"])) !== "completed" &&
-        shiftTimes(s).end > now
-      );
-    })
-    .sort(function (a, b) {
-      return shiftTimes(a).start - shiftTimes(b).start;
-    });
+    .filter(function (a) { return applicationStatusText(pick(a, ["status"])) === "Accepted"; })
+    .map(function (a) { return applicationShift(a); })
+    .filter(function (s) { return idOf(s) && String(pick(s, ["status"])) !== "completed" && shiftTimes(s).end > now; })
+    .sort(function (a, b) { return shiftTimes(a).start - shiftTimes(b).start; });
   const next = booked[0] || null;
 
   const appliedIds = apps.map(applicationShiftId);
-  const recommended =
-    openShifts.find(function (card) {
-      return !appliedIds.includes(card.id);
-    }) || null;
+  const recommended = openShifts.find(function (card) { return !appliedIds.includes(card.id); }) || null;
 
-  const hour = Number(
-    now.toLocaleString("en-GB", {
-      hour: "2-digit",
-      hour12: false,
-      timeZone: "Africa/Lagos",
-    }),
-  );
-  const part =
-    hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
+  const hour = Number(now.toLocaleString("en-GB", { hour: "2-digit", hour12: false, timeZone: "Africa/Lagos" }));
+  const part = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
   const firstName = workerNameOf(profile).split(" ")[0];
   const count = function (text) {
-    const n = apps.filter(function (a) {
-      return applicationStatusText(pick(a, ["status"])) === text;
-    }).length;
+    const n = apps.filter(function (a) { return applicationStatusText(pick(a, ["status"])) === text; }).length;
     return n + (n === 1 ? " application" : " applications");
   };
 
@@ -1432,20 +1109,9 @@ Backend.workerDashboard = async function () {
       ? {
           id: idOf(next),
           nextShiftTitle: shiftTitle(next),
-          nextShiftPlace:
-            shiftFacilityName(next) + " · " + pick(next, ["location"]),
-          nextShiftWhen:
-            longDate(pick(next, ["shiftDate", "date"])) +
-            " · " +
-            pick(next, ["startTime"]) +
-            "–" +
-            pick(next, ["endTime"]) +
-            " WAT",
-          nextShiftNote: pick(
-            next,
-            ["arrivalInstructions"],
-            "Your booking is confirmed.",
-          ),
+          nextShiftPlace: shiftFacilityName(next) + " · " + pick(next, ["location"]),
+          nextShiftWhen: longDate(pick(next, ["shiftDate", "date"])) + " · " + pick(next, ["startTime"]) + "–" + pick(next, ["endTime"]) + " WAT",
+          nextShiftNote: pick(next, ["arrivalInstructions"], "Your booking is confirmed."),
         }
       : null,
     recommended: recommended,
@@ -1471,27 +1137,12 @@ function savedAttendance(shiftId) {
 function attendanceFromServer(app) {
   if (!app || typeof app !== "object") return null;
   const names = {
-    clockIn: [
-      "clockInTime",
-      "clockIn",
-      "clockedInAt",
-      "attendance.clockInTime",
-      "attendance.clockIn",
-      "attendance.clockedInAt",
-    ],
-    clockOut: [
-      "clockOutTime",
-      "clockOut",
-      "clockedOutAt",
-      "attendance.clockOutTime",
-      "attendance.clockOut",
-      "attendance.clockedOutAt",
-    ],
+    clockIn: ["clockInTime", "clockIn", "clockedInAt", "attendance.clockInTime", "attendance.clockIn", "attendance.clockedInAt"],
+    clockOut: ["clockOutTime", "clockOut", "clockedOutAt", "attendance.clockOutTime", "attendance.clockOut", "attendance.clockedOutAt"],
   };
   const known = names.clockIn.concat(names.clockOut).some(function (name) {
     let value = app;
-    for (const part of name.split("."))
-      value = value === null || value === undefined ? undefined : value[part];
+    for (const part of name.split(".")) value = value === null || value === undefined ? undefined : value[part];
     return value !== undefined;
   });
   if (!known) return null;
@@ -1518,24 +1169,17 @@ Backend.workerShift = async function (shiftId) {
     : accepted
         .filter(function (a) {
           const sh = applicationShift(a);
-          return (
-            String(pick(sh, ["status"])) !== "completed" &&
-            (!idOf(sh) || shiftTimes(sh).end > now)
-          );
+          return String(pick(sh, ["status"])) !== "completed" && (!idOf(sh) || shiftTimes(sh).end > now);
         })
         .sort(function (a, b) {
-          return (
-            shiftTimes(applicationShift(a)).start -
-            shiftTimes(applicationShift(b)).start
-          );
+          return shiftTimes(applicationShift(a)).start - shiftTimes(applicationShift(b)).start;
         })[0] ||
       // nothing still to come: show the most recent booked shift (so "completed" can be seen)
-      accepted.slice().sort(function (a, b) {
-        return (
-          shiftTimes(applicationShift(b)).start -
-          shiftTimes(applicationShift(a)).start
-        );
-      })[0];
+      accepted
+        .slice()
+        .sort(function (a, b) {
+          return shiftTimes(applicationShift(b)).start - shiftTimes(applicationShift(a)).start;
+        })[0];
   if (!app) {
     return null; // no booked shift
   }
@@ -1546,14 +1190,8 @@ Backend.workerShift = async function (shiftId) {
   const att = Object.assign({}, savedAttendance(id));
   const server = attendanceFromServer(app);
   if (server) {
-    if (server.clockIn) {
-      att.clockIn = server.clockIn;
-      att.clockInAt = server.clockInAt || att.clockInAt;
-    }
-    if (server.clockOut) {
-      att.clockOut = server.clockOut;
-      att.clockOutAt = server.clockOutAt || att.clockOutAt;
-    }
+    if (server.clockIn) { att.clockIn = server.clockIn; att.clockInAt = server.clockInAt || att.clockInAt; }
+    if (server.clockOut) { att.clockOut = server.clockOut; att.clockOutAt = server.clockOutAt || att.clockOutAt; }
   }
 
   // The time rules (clock-in opens 30 minutes before the start, etc.)
@@ -1561,24 +1199,17 @@ Backend.workerShift = async function (shiftId) {
   const day = times.day;
   const start = times.start;
   const end = times.end;
-  const opens = new Date(
-    start.getTime() - SHIFT_RULES_LIVE.clockInOpensBefore * 60000,
-  );
+  const opens = new Date(start.getTime() - SHIFT_RULES_LIVE.clockInOpensBefore * 60000);
 
   let attendance = "none";
   if (att.clockIn) attendance = "working";
   if (att.clockOut) attendance = "completed";
-  if (String(pick(s, ["status"])) === "completed" && att.clockIn)
-    attendance = "completed";
+  if (String(pick(s, ["status"])) === "completed" && att.clockIn) attendance = "completed";
 
   let recorded = "";
   if (att.clockInAt && att.clockOutAt) {
-    const minutes = Math.max(
-      0,
-      Math.round((new Date(att.clockOutAt) - new Date(att.clockInAt)) / 60000),
-    );
-    recorded =
-      Math.floor(minutes / 60) + " hours " + (minutes % 60) + " minutes";
+    const minutes = Math.max(0, Math.round((new Date(att.clockOutAt) - new Date(att.clockInAt)) / 60000));
+    recorded = Math.floor(minutes / 60) + " hours " + (minutes % 60) + " minutes";
   }
 
   return {
@@ -1595,11 +1226,7 @@ Backend.workerShift = async function (shiftId) {
       " WAT · Shift " +
       String(id).slice(-6).toUpperCase(),
     payLine: nairaText(payForShift(s)) + " for the shift",
-    arrival: pick(
-      s,
-      ["arrivalInstructions"],
-      "Please arrive a little before your shift starts.",
-    ),
+    arrival: pick(s, ["arrivalInstructions"], "Please arrive a little before your shift starts."),
     offer: "accepted", // the facility accepted the application, so the shift is booked
     offerExpiresIn: "",
     attendance: attendance,
@@ -1608,13 +1235,8 @@ Backend.workerShift = async function (shiftId) {
     recordedTime: recorded,
     fixReason: "",
     clockInOpensAt:
-      opens.toLocaleTimeString("en-GB", {
-        hour: "2-digit",
-        minute: "2-digit",
-        timeZone: "Africa/Lagos",
-      }) +
-      " WAT, " +
-      shortDate(day),
+      opens.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", timeZone: "Africa/Lagos" }) +
+      " WAT, " + shortDate(day),
     clockInOpen: now >= opens && now < end,
     ended: now >= end || String(pick(s, ["status"])) === "completed",
     clockOutMissing:
@@ -1700,8 +1322,7 @@ Backend.facilityTypeLabel = function (value) {
 function documentStatusText(doc) {
   if (!doc || doc.status === "missing") return "Not uploaded";
   if (doc.status === "verified") return "Verified";
-  if (doc.status === "rejected")
-    return "Rejected" + (doc.comment ? " · " + doc.comment : "");
+  if (doc.status === "rejected") return "Rejected" + (doc.comment ? " · " + doc.comment : "");
   return "Uploaded · waiting for review";
 }
 
@@ -1718,10 +1339,7 @@ Backend.facilityProfileForm = async function () {
     status: overallStatusOf(p, docs),
     facilityName: pick(p, ["facilityName"]),
     facilityType: Backend.facilityTypeLabel(pick(p, ["facilityType"])),
-    cityState: [
-      placeholder(pick(loc, ["city"])),
-      placeholder(pick(loc, ["state"])),
-    ]
+    cityState: [placeholder(pick(loc, ["city"])), placeholder(pick(loc, ["state"]))]
       .filter(Boolean)
       .join(", "),
     address: placeholder(pick(loc, ["address", "street"])),
@@ -1738,14 +1356,13 @@ Backend.facilityProfileForm = async function () {
     registrationStatus: documentStatusText(docs[0]),
     identityStatus: documentStatusText(docs[1]),
     taxStatus: documentStatusText(docs[2]),
-    workplaceLocation:
-      [
-        placeholder(pick(loc, ["city"])),
-        placeholder(pick(loc, ["state"])),
-        pick(loc, ["country"]),
-      ]
-        .filter(Boolean)
-        .join(" · ") || "—",
+    workplaceLocation: [
+      placeholder(pick(loc, ["city"])),
+      placeholder(pick(loc, ["state"])),
+      pick(loc, ["country"]),
+    ]
+      .filter(Boolean)
+      .join(" · ") || "—",
   };
 };
 
@@ -1799,8 +1416,7 @@ Backend.createShift = async function (shift) {
   // The shift only goes live (status "open") once its escrow is funded, so the payment is kept
   // for the Fund shift page, which shows the payment link.
   const created = (result && result.shift) || result || {};
-  const payment =
-    (result && result.payment) || pick(created, ["payment"], null);
+  const payment = (result && result.payment) || pick(created, ["payment"], null);
   const id = idOf(created);
   if (id && payment && typeof payment === "object") {
     saveShiftPayment(id, payment);
@@ -1849,27 +1465,14 @@ function savedShiftPayment(shiftId) {
 // Paystack → authorization_url / authorizationUrl, HarrenaPay → checkoutUrl
 function paymentLinkOf(payment) {
   return pick(payment || {}, [
-    "authorizationUrl",
-    "authorization_url",
-    "checkoutUrl",
-    "checkout_url",
-    "paymentUrl",
-    "paymentLink",
-    "data.authorization_url",
-    "paystack.authorization_url",
-    "providerResponse.authorization_url",
-    "link",
-    "url",
+    "authorizationUrl", "authorization_url", "checkoutUrl", "checkout_url", "paymentUrl", "paymentLink",
+    "data.authorization_url", "paystack.authorization_url", "providerResponse.authorization_url", "link", "url",
   ]);
 }
 
 // "Paystack", "HarrenaPay" or "" (from the payment's provider field or its link)
 function providerName(payment) {
-  const text = (
-    pick(payment || {}, ["provider"]) +
-    " " +
-    paymentLinkOf(payment)
-  ).toLowerCase();
+  const text = (pick(payment || {}, ["provider"]) + " " + paymentLinkOf(payment)).toLowerCase();
   if (text.includes("paystack")) return "Paystack";
   if (text.includes("harrena")) return "HarrenaPay";
   return "";
@@ -1878,9 +1481,7 @@ function providerName(payment) {
 // Is this shift still waiting for its escrow to be funded?
 function isAwaitingPayment(shift) {
   const status = String(pick(shift, ["status"])).toLowerCase();
-  return /pending_payment|awaiting_payment|awaiting_funding|unfunded|payment_pending|pending_funding/.test(
-    status,
-  );
+  return /pending_payment|awaiting_payment|awaiting_funding|unfunded|payment_pending|pending_funding/.test(status);
 }
 
 // Shift status → the facility's payment status
@@ -1888,10 +1489,8 @@ function shiftPaymentStatus(shift, payment) {
   if (isAwaitingPayment(shift)) return "awaiting_funding";
   const status = String(pick(shift, ["status"])).toLowerCase();
   const payout = String(pick(payment || {}, ["payoutStatus"])).toLowerCase();
-  if (status === "completed" && /paid|released|complete/.test(payout))
-    return "paid";
-  if (["cancelled", "canceled", "closed", "deleted"].includes(status))
-    return "cancelled";
+  if (status === "completed" && /paid|released|complete/.test(payout)) return "paid";
+  if (["cancelled", "canceled", "closed", "deleted"].includes(status)) return "cancelled";
   return "funds_secured";
 }
 
@@ -1907,9 +1506,7 @@ function paymentView(s, payment) {
   const workerTotal = perWorker * needed;
   const hasKobo = payment && pick(payment, ["amountKobo"], "") !== "";
   const amount = hasKobo ? Number(payment.amountKobo) / 100 : workerTotal;
-  const commission = hasKobo
-    ? Number(pick(payment, ["platformCommissionAmountKobo"], 0)) / 100
-    : 0;
+  const commission = hasKobo ? Number(pick(payment, ["platformCommissionAmountKobo"], 0)) / 100 : 0;
   const bps = payment ? Number(pick(payment, ["commissionRateBps"], 0)) : 0;
   return {
     id: idOf(s),
@@ -1920,53 +1517,27 @@ function paymentView(s, payment) {
     time: pick(s, ["startTime"]) + "–" + pick(s, ["endTime"]) + " WAT",
     workers: needed,
     perWorker: perWorker,
-    workerTotal: hasKobo
-      ? Number(pick(payment, ["workerPayoutAmountKobo"], workerTotal * 100)) /
-        100
-      : workerTotal,
+    workerTotal: hasKobo ? Number(pick(payment, ["workerPayoutAmountKobo"], workerTotal * 100)) / 100 : workerTotal,
     commission: commission,
     commissionRate: bps ? bps / 100 + "%" : "",
     amount: amount,
     status: shiftPaymentStatus(s, payment),
     shiftStatus: pick(s, ["status"]),
-    reference: payment
-      ? pick(payment, [
-          "providerReference",
-          "reference",
-          "paystackReference",
-          "data.reference",
-          "_id",
-        ])
-      : "",
-    escrowStatus: payment
-      ? pick(payment, ["providerEscrowStatus", "fundingStatus"])
-      : "",
+    reference: payment ? pick(payment, ["providerReference", "reference", "paystackReference", "data.reference", "_id"]) : "",
+    escrowStatus: payment ? pick(payment, ["providerEscrowStatus", "fundingStatus"]) : "",
     // No saved payment (posted on another device, or before this update): HarrenaPay's checkout
     // link always follows the shift's reference, careporium_shift_<shift id>, so it is built from that
     // HarrenaPay's checkout link can be rebuilt from the shift's reference; Paystack's can't
     // (the page asks the backend for a fresh one instead, with "retry")
-    checkoutUrl:
-      (payment && paymentLinkOf(payment)) ||
-      (isAwaitingPayment(s) &&
-      payment &&
-      /harrena/i.test(pick(payment, ["provider"]))
-        ? HARRENAPAY_CHECKOUT + "careporium_shift_" + idOf(s)
-        : ""),
+    checkoutUrl: (payment && paymentLinkOf(payment)) ||
+      (isAwaitingPayment(s) && payment && /harrena/i.test(pick(payment, ["provider"]))
+        ? HARRENAPAY_CHECKOUT + "careporium_shift_" + idOf(s) : ""),
     provider: providerName(payment),
     bankName: payment ? pick(payment, ["bankName"]) : "",
-    accountNumber: payment
-      ? pick(payment, ["virtualAccountNumber", "accountNumber"])
+    accountNumber: payment ? pick(payment, ["virtualAccountNumber", "accountNumber"]) : "",
+    expiresAt: payment && pick(payment, ["expiresAt"])
+      ? new Date(payment.expiresAt).toLocaleString("en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", timeZone: "Africa/Lagos" }) + " WAT"
       : "",
-    expiresAt:
-      payment && pick(payment, ["expiresAt"])
-        ? new Date(payment.expiresAt).toLocaleString("en-GB", {
-            day: "numeric",
-            month: "short",
-            hour: "2-digit",
-            minute: "2-digit",
-            timeZone: "Africa/Lagos",
-          }) + " WAT"
-        : "",
     hasPayment: !!payment,
   };
 }
@@ -1976,45 +1547,27 @@ Backend.shiftPayment = async function (shiftId) {
   const answers = await Promise.all([
     apiRequest(ENDPOINTS.shift(shiftId)),
     // GET /api/payments/v1/shift/{shiftId}: the payment record (status and link); older servers don't have it
-    apiRequest(ENDPOINTS.shiftPayment(shiftId)).catch(function () {
-      return null;
-    }),
+    apiRequest(ENDPOINTS.shiftPayment(shiftId)).catch(function () { return null; }),
   ]);
   const s = unwrapShift(answers[0]);
   let fromServer = answers[1];
-  if (
-    fromServer &&
-    typeof fromServer === "object" &&
-    fromServer.payment &&
-    typeof fromServer.payment === "object"
-  ) {
+  if (fromServer && typeof fromServer === "object" && fromServer.payment && typeof fromServer.payment === "object") {
     fromServer = fromServer.payment;
   }
-  if (Array.isArray(fromServer))
-    fromServer = fromServer[fromServer.length - 1] || null;
+  if (Array.isArray(fromServer)) fromServer = fromServer[fromServer.length - 1] || null;
   const fromShift = pick(s, ["payment"], null);
   // Keep any link this browser saved if the server's record doesn't include one
   const saved = savedShiftPayment(shiftId);
-  let payment =
-    (fromServer && typeof fromServer === "object" ? fromServer : null) ||
-    (fromShift && typeof fromShift === "object" ? fromShift : null) ||
-    saved;
+  let payment = (fromServer && typeof fromServer === "object" ? fromServer : null) ||
+    (fromShift && typeof fromShift === "object" ? fromShift : null) || saved;
   if (payment && saved && !paymentLinkOf(payment) && paymentLinkOf(saved)) {
-    payment = Object.assign({}, saved, payment, {
-      authorizationUrl: paymentLinkOf(saved),
-    });
+    payment = Object.assign({}, saved, payment, { authorizationUrl: paymentLinkOf(saved) });
   }
   if (payment && payment !== saved) saveShiftPayment(shiftId, payment);
   const view = paymentView(s, payment);
   // The payment record may say it's funded before the shift's status catches up
-  if (
-    payment &&
-    /^(funded|success|successful|paid|completed)$/i.test(
-      String(pick(payment, ["fundingStatus", "status"])),
-    )
-  ) {
-    view.status =
-      view.status === "awaiting_funding" ? "funds_secured" : view.status;
+  if (payment && /^(funded|success|successful|paid|completed)$/i.test(String(pick(payment, ["fundingStatus", "status"])))) {
+    view.status = view.status === "awaiting_funding" ? "funds_secured" : view.status;
   }
   return view;
 };
@@ -2023,11 +1576,7 @@ Backend.shiftPayment = async function (shiftId) {
 Backend.retryShiftPayment = async function (shiftId) {
   const result = await apiRequest(ENDPOINTS.retryPayment(shiftId), "POST");
   const payment = (result && result.payment) || result;
-  if (
-    payment &&
-    typeof payment === "object" &&
-    (paymentLinkOf(payment) || pick(payment, ["virtualAccountNumber"]))
-  ) {
+  if (payment && typeof payment === "object" && (paymentLinkOf(payment) || pick(payment, ["virtualAccountNumber"]))) {
     const merged = Object.assign({}, savedShiftPayment(shiftId) || {}, payment);
     saveShiftPayment(shiftId, merged);
   }
@@ -2039,9 +1588,7 @@ Backend.facilityPayments = async function () {
   const results = await Promise.all([
     loadFacilityShiftsRaw(),
     // GET /api/payments/v1/history: the facility's payment records (amounts, status, reference)
-    apiRequest(ENDPOINTS.paymentHistory).catch(function () {
-      return [];
-    }),
+    apiRequest(ENDPOINTS.paymentHistory).catch(function () { return []; }),
   ]);
   const shifts = results[0];
   const history = {};
@@ -2052,34 +1599,19 @@ Backend.facilityPayments = async function () {
   const payments = shifts
     .map(function (s) {
       const fromShift = pick(s, ["payment"], null);
-      const payment =
-        history[idOf(s)] ||
-        (fromShift && typeof fromShift === "object" ? fromShift : null) ||
-        savedShiftPayment(idOf(s));
+      const payment = history[idOf(s)] || (fromShift && typeof fromShift === "object" ? fromShift : null) || savedShiftPayment(idOf(s));
       const view = paymentView(s, payment);
-      if (
-        payment &&
-        /^(funded|success|successful|paid|completed)$/i.test(
-          String(pick(payment, ["fundingStatus", "status"])),
-        ) &&
-        view.status === "awaiting_funding"
-      ) {
+      if (payment && /^(funded|success|successful|paid|completed)$/i.test(String(pick(payment, ["fundingStatus", "status"]))) && view.status === "awaiting_funding") {
         view.status = "funds_secured";
       }
       return view;
     })
-    .filter(function (p) {
-      return p.status !== "cancelled";
-    });
+    .filter(function (p) { return p.status !== "cancelled"; });
   const sum = function (status) {
-    return payments.filter(function (p) {
-      return p.status === status;
-    });
+    return payments.filter(function (p) { return p.status === status; });
   };
   const total = function (list) {
-    return list.reduce(function (n, p) {
-      return n + p.amount;
-    }, 0);
+    return list.reduce(function (n, p) { return n + p.amount; }, 0);
   };
   const awaiting = sum("awaiting_funding");
   const secured = sum("funds_secured");
@@ -2087,23 +1619,14 @@ Backend.facilityPayments = async function () {
   return {
     summary: {
       awaitingFunding: nairaText(total(awaiting)),
-      awaitingFundingNote:
-        awaiting.length +
-        (awaiting.length === 1 ? " shift needs" : " shifts need") +
-        " funding",
+      awaitingFundingNote: awaiting.length + (awaiting.length === 1 ? " shift needs" : " shifts need") + " funding",
       fundsSecured: nairaText(total(secured)),
-      fundsSecuredNote:
-        secured.length +
-        (secured.length === 1 ? " shift" : " shifts") +
-        " covered",
+      fundsSecuredNote: secured.length + (secured.length === 1 ? " shift" : " shifts") + " covered",
       paidThisMonth: nairaText(total(paid)),
       paidThisMonthNote: "Payments for completed shifts",
     },
     payments: payments.map(function (p) {
-      return Object.assign({}, p, {
-        id: p.id,
-        date: p.date + " · " + p.shortId,
-      });
+      return Object.assign({}, p, { id: p.id, date: p.date + " · " + p.shortId });
     }),
   };
 };
@@ -2114,13 +1637,7 @@ function facilityShiftStatus(shift, acceptedCount) {
   if (s === "completed") return "completed";
   if (isAwaitingPayment(shift)) return "awaiting_payment";
   const needed = Number(pick(shift, ["professionalsNeeded"], 1));
-  if (
-    s === "filled" ||
-    s === "confirmed" ||
-    s === "booked" ||
-    (acceptedCount || 0) >= needed
-  )
-    return "confirmed";
+  if (s === "filled" || s === "confirmed" || s === "booked" || (acceptedCount || 0) >= needed) return "confirmed";
   return "open";
 }
 
@@ -2136,65 +1653,34 @@ const FACILITY_APPLICATION_LISTS = [
   "/api/applications/v1/facility",
 ];
 const SHIFT_APPLICATION_LISTS = [
-  function (id) {
-    return "/api/shifts/v1/get-shift-applications/" + id;
-  }, // the backend's Postman collection
-  function (id) {
-    return "/api/shifts/v1/fetch-applications/" + id;
-  },
-  function (id) {
-    return "/api/applications/v1/shift/" + id;
-  },
-  function (id) {
-    return "/api/applications/v1/shift-applications/" + id;
-  },
-  function (id) {
-    return "/api/applications/v1/get-shift-applications/" + id;
-  },
-  function (id) {
-    return "/api/shifts/v1/" + id + "/applications";
-  },
+  function (id) { return "/api/shifts/v1/get-shift-applications/" + id; }, // the backend's Postman collection
+  function (id) { return "/api/shifts/v1/fetch-applications/" + id; },
+  function (id) { return "/api/applications/v1/shift/" + id; },
+  function (id) { return "/api/applications/v1/shift-applications/" + id; },
+  function (id) { return "/api/applications/v1/get-shift-applications/" + id; },
+  function (id) { return "/api/shifts/v1/" + id + "/applications"; },
 ];
 
 // Applications embedded in a shift (e.g. shift.applications = [{ worker, status }])
 function applicationsInsideShift(shift) {
-  const list = pick(
-    shift,
-    ["applications", "applicants", "shiftApplications"],
-    [],
-  );
+  const list = pick(shift, ["applications", "applicants", "shiftApplications"], []);
   if (!Array.isArray(list)) return [];
   return list
-    .filter(function (a) {
-      return a && typeof a === "object";
-    })
-    .map(function (a) {
-      return Object.assign({ shift: idOf(shift) }, a, { _shift: shift });
-    });
+    .filter(function (a) { return a && typeof a === "object"; })
+    .map(function (a) { return Object.assign({ shift: idOf(shift) }, a, { _shift: shift }); });
 }
 
 async function loadFacilityApplicationsList(knownShifts) {
   let remembered = null;
-  try {
-    remembered = sessionStorage.getItem("facilityApplicationsSource3");
-  } catch (e) {
-    /* ignore */
-  }
+  try { remembered = sessionStorage.getItem("facilityApplicationsSource3"); } catch (e) { /* ignore */ }
   const remember = function (value) {
-    try {
-      sessionStorage.setItem("facilityApplicationsSource3", value);
-    } catch (e) {
-      /* ignore */
-    }
+    try { sessionStorage.setItem("facilityApplicationsSource3", value); } catch (e) { /* ignore */ }
   };
 
   // 1. A whole-facility list
-  const lists =
-    remembered && remembered.indexOf("list:") === 0
-      ? [remembered.slice(5)]
-      : remembered
-        ? []
-        : FACILITY_APPLICATION_LISTS;
+  const lists = remembered && remembered.indexOf("list:") === 0
+    ? [remembered.slice(5)]
+    : remembered ? [] : FACILITY_APPLICATION_LISTS;
   for (const path of lists) {
     try {
       const apps = asList(await apiRequest(path), ["applications", "data"]);
@@ -2206,14 +1692,9 @@ async function loadFacilityApplicationsList(knownShifts) {
   }
 
   // 2. Per shift: applications inside each shift, or a per-shift address
-  const shifts =
-    knownShifts && knownShifts.length > 1
-      ? knownShifts
-      : await loadFacilityShiftsRaw();
+  const shifts = knownShifts && knownShifts.length > 1 ? knownShifts : await loadFacilityShiftsRaw();
   let apps = [];
-  shifts.forEach(function (shift) {
-    apps = apps.concat(applicationsInsideShift(shift));
-  });
+  shifts.forEach(function (shift) { apps = apps.concat(applicationsInsideShift(shift)); });
   if (apps.length > 0 || remembered === "embedded") {
     remember("embedded");
     return apps;
@@ -2234,17 +1715,10 @@ async function loadFacilityApplicationsList(knownShifts) {
     }
   }
   if (perShift) {
-    const lists = await Promise.all(
-      shifts.map(async function (shift) {
-        const list = asList(await apiRequest(perShift(idOf(shift))), [
-          "applications",
-          "data",
-        ]);
-        return list.map(function (a) {
-          return Object.assign({ shift: idOf(shift) }, a);
-        });
-      }),
-    );
+    const lists = await Promise.all(shifts.map(async function (shift) {
+      const list = asList(await apiRequest(perShift(idOf(shift))), ["applications", "data"]);
+      return list.map(function (a) { return Object.assign({ shift: idOf(shift) }, a); });
+    }));
     return [].concat.apply([], lists);
   }
   if (shifts.length === 0) {
@@ -2252,7 +1726,7 @@ async function loadFacilityApplicationsList(knownShifts) {
   }
   throw new Error(
     "The server doesn't have a facility applications endpoint yet: GET /api/shifts/v1/get-shift-applications/{shiftId} " +
-      "and GET /api/applications/v1/facility-applications both answered 404. Ask the backend developer to deploy one of them.",
+    "and GET /api/applications/v1/facility-applications both answered 404. Ask the backend developer to deploy one of them.",
   );
 }
 
@@ -2262,7 +1736,14 @@ async function loadFacilityApplicationsRaw(knownShifts) {
 }
 
 async function loadFacilityShiftsRaw() {
-  return asList(await apiRequest(ENDPOINTS.facilityShifts), ["shifts", "data"]);
+  const shifts = asList(await apiRequest(ENDPOINTS.facilityShifts), ["shifts", "data"]);
+  // Leave out shifts the server only marks as deleted (instead of removing them)
+  return shifts.filter(function (s) { return !isDeletedShift(s); });
+}
+
+function isDeletedShift(s) {
+  const status = String(pick(s, ["status"]) || "").toLowerCase();
+  return status === "deleted" || s.isDeleted === true || s.deleted === true || Boolean(s.deletedAt);
 }
 
 function isAccepted(app) {
@@ -2279,20 +1760,13 @@ Backend.facilityShifts = async function () {
   }
   const shifts = list
     .filter(function (s) {
-      return !["closed", "cancelled", "canceled", "deleted"].includes(
-        String(pick(s, ["status"])).toLowerCase(),
-      );
+      return !["closed", "cancelled", "canceled", "deleted"].includes(String(pick(s, ["status"])).toLowerCase());
     })
     .map(function (s) {
       const id = idOf(s);
-      const acceptedCount = apps.filter(function (a) {
-        return applicationShiftId(a) === id && isAccepted(a);
-      }).length;
+      const acceptedCount = apps.filter(function (a) { return applicationShiftId(a) === id && isAccepted(a); }).length;
       const waiting = apps.filter(function (a) {
-        return (
-          applicationShiftId(a) === id &&
-          applicationStatusText(pick(a, ["status"])) === "Under review"
-        );
+        return applicationShiftId(a) === id && applicationStatusText(pick(a, ["status"])) === "Under review";
       }).length;
       const status = facilityShiftStatus(s, acceptedCount);
       const needed = Number(pick(s, ["professionalsNeeded"], 1));
@@ -2300,18 +1774,11 @@ Backend.facilityShifts = async function () {
       if (status === "completed") {
         staffing = "Completed";
       } else if (status === "awaiting_payment") {
-        staffing =
-          "Awaiting payment · fund the escrow so workers can see this shift";
+        staffing = "Awaiting payment · fund the escrow so workers can see this shift";
       } else if (status === "confirmed") {
-        staffing =
-          "All places filled (" + acceptedCount + " of " + needed + ")";
+        staffing = "All places filled (" + acceptedCount + " of " + needed + ")";
       } else {
-        staffing =
-          acceptedCount +
-          " of " +
-          needed +
-          " booked" +
-          (waiting ? " · " + waiting + " waiting for review" : "");
+        staffing = acceptedCount + " of " + needed + " booked" + (waiting ? " · " + waiting + " waiting for review" : "");
       }
       return {
         id: id,
@@ -2330,26 +1797,16 @@ Backend.facilityShifts = async function () {
         waiting: waiting,
       };
     })
-    .sort(function (a, b) {
-      return a.start - b.start;
-    });
+    .sort(function (a, b) { return a.start - b.start; });
   const count = function (test) {
     return shifts.filter(test).length;
   };
   return {
     counts: {
-      all: count(function (s) {
-        return s.status !== "completed";
-      }),
-      urgent: count(function (s) {
-        return s.urgent && s.status !== "completed";
-      }),
-      confirmed: count(function (s) {
-        return s.status === "confirmed";
-      }),
-      completed: count(function (s) {
-        return s.status === "completed";
-      }),
+      all: count(function (s) { return s.status !== "completed"; }),
+      urgent: count(function (s) { return s.urgent && s.status !== "completed"; }),
+      confirmed: count(function (s) { return s.status === "confirmed"; }),
+      completed: count(function (s) { return s.status === "completed"; }),
     },
     shifts: shifts,
     applications: apps,
@@ -2358,16 +1815,7 @@ Backend.facilityShifts = async function () {
 
 // How each application brings its worker: a populated "worker" / "workerId" / "applicant" / "user"
 function applicationWorker(app) {
-  for (const name of [
-    "worker",
-    "workerId",
-    "workerProfile",
-    "applicant",
-    "applicantId",
-    "professional",
-    "user",
-    "userId",
-  ]) {
+  for (const name of ["worker", "workerId", "workerProfile", "applicant", "applicantId", "professional", "user", "userId"]) {
     const w = app && app[name];
     if (w && typeof w === "object" && !Array.isArray(w)) {
       return unwrapProfile(w, "worker");
@@ -2379,10 +1827,7 @@ function applicationWorker(app) {
 // The worker's id, to find them again on the profile pages
 function applicationWorkerId(app) {
   const w = applicationWorker(app);
-  return (
-    idOf(w) ||
-    idValue(pick(app, ["workerId", "worker", "applicantId", "userId", "user"]))
-  );
+  return idOf(w) || idValue(pick(app, ["workerId", "worker", "applicantId", "userId", "user"]));
 }
 
 // The verification badge for an applicant: { text, color } (or null when we don't know)
@@ -2391,10 +1836,8 @@ function applicantBadge(w) {
   if (!hasVerificationInfo(w, docs)) return null;
   const status = overallStatusOf(w, docs);
   if (status === "verified") return { text: "Verified worker", color: "green" };
-  if (status === "rejected")
-    return { text: "Documents need attention", color: "red" };
-  if (status === "not_submitted")
-    return { text: "Not verified", color: "gray" };
+  if (status === "rejected") return { text: "Documents need attention", color: "red" };
+  if (status === "not_submitted") return { text: "Not verified", color: "gray" };
   return { text: "Verification in progress", color: "amber" };
 }
 
@@ -2423,20 +1866,14 @@ Backend.applicants = async function (shiftId) {
         details: [
           pick(w, ["profession"]),
           pick(w, ["specialty"]),
-          years !== ""
-            ? years + (Number(years) === 1 ? " year" : " years")
-            : "",
+          years !== "" ? years + (Number(years) === 1 ? " year" : " years") : "",
         ]
           .filter(Boolean)
           .join(" · "),
         stats:
-          "Application " +
-          status.toLowerCase() +
-          " · " +
-          shiftTitle(sh) +
-          (pick(sh, ["shiftDate", "date"])
-            ? " · " + shortDate(pick(sh, ["shiftDate", "date"]))
-            : ""),
+          "Application " + status.toLowerCase() +
+          " · " + shiftTitle(sh) +
+          (pick(sh, ["shiftDate", "date"]) ? " · " + shortDate(pick(sh, ["shiftDate", "date"])) : ""),
         latestRole: "",
         softSkills: [],
         shortlisted: false,
@@ -2448,28 +1885,16 @@ Backend.applicants = async function (shiftId) {
 
 // Work experience the backend may send with a worker (several likely names)
 function experiencesOf(p) {
-  const list = pick(
-    p,
-    ["workExperience", "experiences", "experience", "workHistory"],
-    [],
-  );
+  const list = pick(p, ["workExperience", "experiences", "experience", "workHistory"], []);
   if (!Array.isArray(list)) return [];
   return list.map(function (e) {
     const start = String(pick(e, ["startDate", "start", "from"])).slice(0, 7);
     const endRaw = pick(e, ["endDate", "end", "to"]);
-    const current =
-      pick(e, ["current", "isCurrent"], false) === true || !endRaw;
+    const current = pick(e, ["current", "isCurrent"], false) === true || !endRaw;
     return {
       id: idOf(e),
       title: pick(e, ["title", "role", "position", "jobTitle"], "Role"),
-      workplace: pick(e, [
-        "workplace",
-        "facility",
-        "employer",
-        "company",
-        "organisation",
-        "organization",
-      ]),
+      workplace: pick(e, ["workplace", "facility", "employer", "company", "organisation", "organization"]),
       location: pick(e, ["location", "city"]),
       start: /^\d{4}-\d{2}$/.test(start) ? start : "",
       end: current ? "" : String(endRaw).slice(0, 7),
@@ -2483,77 +1908,38 @@ function experiencesOf(p) {
 async function findApplicant(workerId, applicationId) {
   const apps = await loadFacilityApplicationsRaw();
   const app =
-    (applicationId &&
-      apps.find(function (a) {
-        return idOf(a) === applicationId;
-      })) ||
+    (applicationId && apps.find(function (a) { return idOf(a) === applicationId; })) ||
     apps.find(function (a) {
       const w = applicationWorker(a);
-      return [
-        applicationWorkerId(a),
-        idOf(w),
-        idValue(pick(w, ["user"])),
-        idValue(pick(w, ["userId"])),
-      ].includes(workerId);
+      return [applicationWorkerId(a), idOf(w), idValue(pick(w, ["user"])), idValue(pick(w, ["userId"]))].includes(workerId);
     });
   if (!app) {
     throw new Error("We couldn't find this worker among your applicants.");
   }
   // Every application from the same worker (to count how many shifts they've done with you)
   const id = applicationWorkerId(app);
-  const all = apps.filter(function (a) {
-    return applicationWorkerId(a) === id;
-  });
+  const all = apps.filter(function (a) { return applicationWorkerId(a) === id; });
   let worker = applicationWorker(app);
   // The newest server lets anyone logged in read a worker's profile by their USER id
   // (get-worker-profile/{userId}): use it to fill in what the application didn't include
-  const userId =
-    idValue(pick(worker, ["user"])) ||
-    idValue(pick(worker, ["userId"])) ||
-    idValue(pick(app, ["worker.user", "userId"]));
+  const userId = idValue(pick(worker, ["user"])) || idValue(pick(worker, ["userId"])) || idValue(pick(app, ["worker.user", "userId"]));
   if (userId || idOf(worker)) {
     try {
       // Swagger: worker/v1/get-worker-profile/{userId}. Postman: shifts/v1/get-worker-profile/{id}
       const workerProfileId = idOf(worker);
       // Latest Postman collection: worker/v1/get-worker-profile/{worker profile id}
-      const full = unwrapProfile(
-        await apiFirst(
-          (workerProfileId
-            ? [[ENDPOINTS.workerOwnProfile(workerProfileId), "GET"]]
-            : []
-          )
-            .concat(
-              userId
-                ? [
-                    [ENDPOINTS.workerOwnProfile(userId), "GET"],
-                    ["/api/shifts/v1/get-worker-profile/" + userId, "GET"],
-                  ]
-                : [],
-            )
-            .concat(
-              workerProfileId
-                ? [
-                    [
-                      "/api/shifts/v1/get-worker-profile/" + workerProfileId,
-                      "GET",
-                    ],
-                  ]
-                : [],
-            ),
-        ),
-        "worker",
-      );
+      const full = unwrapProfile(await apiFirst(
+        (workerProfileId ? [[ENDPOINTS.workerOwnProfile(workerProfileId), "GET"]] : []).concat(userId ? [
+          [ENDPOINTS.workerOwnProfile(userId), "GET"],
+          ["/api/shifts/v1/get-worker-profile/" + userId, "GET"],
+        ] : []).concat(workerProfileId ? [["/api/shifts/v1/get-worker-profile/" + workerProfileId, "GET"]] : []),
+      ), "worker");
       if (full && typeof full === "object") {
-        worker = Object.assign({}, full, worker, {
-          user: Object.assign({}, full.user || {}, worker.user || {}),
-        });
+        worker = Object.assign({}, full, worker, { user: Object.assign({}, full.user || {}, worker.user || {}) });
         // the profile's documents and status are the up-to-date ones
-        Object.keys(WORKER_DOCUMENTS)
-          .concat(["documents", "verificationStatus", "about", "location"])
-          .forEach(function (key) {
-            if (full[key] !== undefined && full[key] !== null)
-              worker[key] = full[key];
-          });
+        Object.keys(WORKER_DOCUMENTS).concat(["documents", "verificationStatus", "about", "location"]).forEach(function (key) {
+          if (full[key] !== undefined && full[key] !== null) worker[key] = full[key];
+        });
       }
     } catch (error) {
       // not allowed or not there: use what the application has
@@ -2582,79 +1968,35 @@ Backend.applicantProfile = async function (workerId, applicationId) {
     applicationStatus: status,
     badge: applicantBadge(p),
     documents: docs.map(function (d) {
-      return {
-        label: d.label,
-        url: d.url,
-        status: d.status,
-        text: documentStatusText(d),
-      };
+      return { label: d.label, url: d.url, status: d.status, text: documentStatusText(d) };
     }),
     experiences: experiencesOf(p),
     softSkills: asList(pick(p, ["softSkills", "skills"], [])),
     fields: {
       name: name,
       initials: initialsOf(name),
-      headline: [
-        pick(p, ["profession"]),
-        pick(p, ["specialty"]),
-        [pick(loc, ["city"]), pick(loc, ["state"])].filter(Boolean).join(", "),
-      ]
+      headline: [pick(p, ["profession"]), pick(p, ["specialty"]), [pick(loc, ["city"]), pick(loc, ["state"])].filter(Boolean).join(", ")]
         .filter(Boolean)
         .join(" · "),
-      about: pick(
-        p,
-        ["about", "bio"],
-        "This worker hasn't added an introduction yet.",
-      ),
+      about: pick(p, ["about", "bio"], "This worker hasn't added an introduction yet."),
       profession: pick(p, ["profession"], "—"),
       specialty: pick(p, ["specialty"], "—"),
-      experienceYears:
-        years === "" ? "—" : years + (Number(years) === 1 ? " year" : " years"),
-      location:
-        [
-          pick(loc, ["address"]),
-          pick(loc, ["city", "street"]),
-          pick(loc, ["state"]),
-          pick(loc, ["country"]),
-        ]
-          .filter(Boolean)
-          .join(", ") || "—",
+      experienceYears: years === "" ? "—" : years + (Number(years) === 1 ? " year" : " years"),
+      location: [pick(loc, ["address"]), pick(loc, ["city", "street"]), pick(loc, ["state"]), pick(loc, ["country"])]
+        .filter(Boolean)
+        .join(", ") || "—",
       email: pick(p, ["email", "user.email", "userId.email"], "—"),
-      phone: pick(
-        p,
-        ["phoneNumber", "user.phoneNumber", "userId.phoneNumber"],
-        "—",
-      ),
+      phone: pick(p, ["phoneNumber", "user.phoneNumber", "userId.phoneNumber"], "—"),
       shiftTitle: shiftTitle(sh),
       shiftWhen: pick(sh, ["shiftDate", "date"])
-        ? longDate(pick(sh, ["shiftDate", "date"])) +
-          " · " +
-          pick(sh, ["startTime"]) +
-          "–" +
-          pick(sh, ["endTime"]) +
-          " WAT"
+        ? longDate(pick(sh, ["shiftDate", "date"])) + " · " + pick(sh, ["startTime"]) + "–" + pick(sh, ["endTime"]) + " WAT"
         : "",
-      shiftPay:
-        pick(sh, ["payRate"]) !== ""
-          ? nairaText(payForShift(sh)) + " for the shift"
-          : "",
+      shiftPay: pick(sh, ["payRate"]) !== "" ? nairaText(payForShift(sh)) + " for the shift" : "",
       applied: appliedAt
-        ? "Applied " +
-          new Date(appliedAt).toLocaleString("en-GB", {
-            day: "numeric",
-            month: "short",
-            hour: "2-digit",
-            minute: "2-digit",
-            timeZone: "Africa/Lagos",
-          }) +
-          " WAT"
+        ? "Applied " + new Date(appliedAt).toLocaleString("en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", timeZone: "Africa/Lagos" }) + " WAT"
         : "",
       applicationStatus: status === "Accepted" ? "Booked" : status,
-      bookedWithYou:
-        booked.length +
-        (booked.length === 1
-          ? " shift booked with you"
-          : " shifts booked with you"),
+      bookedWithYou: booked.length + (booked.length === 1 ? " shift booked with you" : " shifts booked with you"),
     },
   };
 };
@@ -2678,45 +2020,26 @@ Backend.workerForFacility = async function (workerId, applicationId) {
     experiences: experiencesOf(p),
     softSkills: asList(pick(p, ["softSkills", "skills"], [])),
     name: workerNameOf(p),
-    summary: [
-      pick(p, ["profession"]),
-      pick(p, ["specialty"]),
-      pick(loc, ["state", "city"]),
-    ]
+    summary: [pick(p, ["profession"]), pick(p, ["specialty"]), pick(loc, ["state", "city"])]
       .filter(Boolean)
       .join(" · "),
-    specialty:
-      [
-        pick(p, ["specialty"]),
-        years !== "" ? years + " years of experience" : "",
-      ]
-        .filter(Boolean)
-        .join(" · ") || "—",
+    specialty: [pick(p, ["specialty"]), years !== "" ? years + " years of experience" : ""]
+      .filter(Boolean)
+      .join(" · ") || "—",
     licenceBody: "Professional licence",
     licenceStatus: "Status: " + documentStatusText(docs[0]),
     licenceNumber: "ID document: " + documentStatusText(docs[1]),
     certification1: "Education certificate · " + documentStatusText(docs[2]),
     certification2: "Proof of address · " + documentStatusText(docs[3]),
-    education: pick(
-      p,
-      ["education", "qualification"],
-      "See education certificate above",
-    ),
+    education: pick(p, ["education", "qualification"], "See education certificate above"),
     review: "No reviews yet",
     reviewSource: "Reviews appear after completed shifts.",
     rating: "No ratings yet",
-    completedShifts:
-      booked +
-      (booked === 1 ? " shift booked with you" : " shifts booked with you"),
+    completedShifts: booked + (booked === 1 ? " shift booked with you" : " shifts booked with you"),
     attendance: "",
     noShows: "",
     availability: pick(sh, ["shiftDate", "date"])
-      ? shortDate(pick(sh, ["shiftDate", "date"])) +
-        " · " +
-        pick(sh, ["startTime"]) +
-        "–" +
-        pick(sh, ["endTime"]) +
-        " WAT"
+      ? shortDate(pick(sh, ["shiftDate", "date"])) + " · " + pick(sh, ["startTime"]) + "–" + pick(sh, ["endTime"]) + " WAT"
       : "—",
     availabilityNote: "Applied for " + shiftTitle(sh) + ".",
   };
@@ -2728,94 +2051,45 @@ Backend.workerForFacility = async function (workerId, applicationId) {
 Backend.acceptApplication = function (applicationId) {
   return apiFirst([
     [ENDPOINTS.acceptApplication(applicationId), "PATCH"],
-    [
-      "/api/applications/v1/applications/" + applicationId + "/status",
-      "PATCH",
-      { status: "accepted" },
-    ],
-    [
-      "/api/shifts/v1/" + applicationId + "/status",
-      "PATCH",
-      { status: "accepted" },
-    ], // latest Postman collection
+    ["/api/applications/v1/applications/" + applicationId + "/status", "PATCH", { status: "accepted" }],
+    ["/api/shifts/v1/" + applicationId + "/status", "PATCH", { status: "accepted" }], // latest Postman collection
   ]);
 };
 
 Backend.rejectApplication = function (applicationId) {
   return apiFirst([
     [ENDPOINTS.rejectApplication(applicationId), "PATCH"],
-    [
-      "/api/applications/v1/applications/" + applicationId + "/status",
-      "PATCH",
-      { status: "rejected" },
-    ],
-    [
-      "/api/shifts/v1/" + applicationId + "/status",
-      "PATCH",
-      { status: "rejected" },
-    ], // latest Postman collection
+    ["/api/applications/v1/applications/" + applicationId + "/status", "PATCH", { status: "rejected" }],
+    ["/api/shifts/v1/" + applicationId + "/status", "PATCH", { status: "rejected" }], // latest Postman collection
   ]);
 };
 
 // The verified facility dashboard, put together from the facility's shifts and applications
 Backend.facilityDashboard = async function () {
-  const results = await Promise.all([
-    Backend.facilityShifts(),
-    Backend.myProfile().catch(function () {
-      return {};
-    }),
-  ]);
+  const results = await Promise.all([Backend.facilityShifts(), Backend.myProfile().catch(function () { return {}; })]);
   const data = results[0];
   const profile = results[1];
   const loc = pick(profile, ["location"], {});
-  const active = data.shifts.filter(function (s) {
-    return s.status !== "completed";
-  });
-  const open = active.filter(function (s) {
-    return s.status === "open";
-  });
-  const urgentOpen = open.filter(function (s) {
-    return s.urgent;
-  });
-  const today = new Date().toLocaleDateString("en-CA", {
-    timeZone: "Africa/Lagos",
-  });
+  const active = data.shifts.filter(function (s) { return s.status !== "completed"; });
+  const open = active.filter(function (s) { return s.status === "open"; });
+  const urgentOpen = open.filter(function (s) { return s.urgent; });
+  const today = new Date().toLocaleDateString("en-CA", { timeZone: "Africa/Lagos" });
   const startingToday = active.filter(function (s) {
-    return (
-      s.start &&
-      new Date(s.start).toLocaleDateString("en-CA", {
-        timeZone: "Africa/Lagos",
-      }) === today
-    );
+    return s.start && new Date(s.start).toLocaleDateString("en-CA", { timeZone: "Africa/Lagos" }) === today;
   }).length;
   const waiting = data.applications.filter(function (a) {
     return applicationStatusText(pick(a, ["status"])) === "Under review";
   });
-  const city = [pick(loc, ["city"]), pick(loc, ["state"])]
-    .filter(function (v) {
-      return v && !/to be provided/i.test(v);
-    })
-    .join(", ");
+  const city = [pick(loc, ["city"]), pick(loc, ["state"])].filter(function (v) { return v && !/to be provided/i.test(v); }).join(", ");
   return {
-    facilityLine: [pick(profile, ["facilityName"]), city]
-      .filter(Boolean)
-      .join(" · "),
+    facilityLine: [pick(profile, ["facilityName"]), city].filter(Boolean).join(" · "),
     openShifts: String(open.length),
-    openShiftsNote:
-      startingToday +
-      (startingToday === 1 ? " shift starts today" : " shifts start today"),
+    openShiftsNote: startingToday + (startingToday === 1 ? " shift starts today" : " shifts start today"),
     newApplicants: String(waiting.length),
-    newApplicantsNote: waiting.length
-      ? "Ready for you to review"
-      : "No one is waiting right now",
+    newApplicantsNote: waiting.length ? "Ready for you to review" : "No one is waiting right now",
     urgentShifts: String(urgentOpen.length),
-    urgentShiftsNote: urgentOpen.length
-      ? "Find cover for these shifts"
-      : "No urgent shifts open",
-    applicantsWaiting:
-      waiting.length +
-      (waiting.length === 1 ? " person is" : " people are") +
-      " waiting to hear from you",
+    urgentShiftsNote: urgentOpen.length ? "Find cover for these shifts" : "No urgent shifts open",
+    applicantsWaiting: waiting.length + (waiting.length === 1 ? " person is" : " people are") + " waiting to hear from you",
     upcomingShifts: active.slice(0, 4),
     newApplicantList: waiting.slice(0, 3).map(function (a) {
       const w = applicationWorker(a);
@@ -2825,14 +2099,8 @@ Backend.facilityDashboard = async function () {
         applicationId: idOf(a),
         shiftId: applicationShiftId(a),
         name: workerNameOf(w) || "Applicant",
-        role:
-          [pick(w, ["profession"]), pick(w, ["specialty"])]
-            .filter(Boolean)
-            .join(" · ") || "Health professional",
-        stats:
-          (badge ? badge.text + " · " : "") +
-          "Applied for " +
-          shiftTitle(applicationShift(a)),
+        role: [pick(w, ["profession"]), pick(w, ["specialty"])].filter(Boolean).join(" · ") || "Health professional",
+        stats: (badge ? badge.text + " · " : "") + "Applied for " + shiftTitle(applicationShift(a)),
       };
     }),
   };
@@ -2846,11 +2114,7 @@ Backend.facilityDashboard = async function () {
 // the code itself. Find each, wherever it is: { qrCode: "data:image/..." , qrToken: "..." }, etc.
 function qrParts(answer) {
   const isImage = function (v) {
-    return (
-      typeof v === "string" &&
-      (/^data:image\//i.test(v) ||
-        /^https?:\/\/\S+\.(png|jpe?g|svg|gif|webp)(\?|$)/i.test(v))
-    );
+    return typeof v === "string" && (/^data:image\//i.test(v) || /^https?:\/\/\S+\.(png|jpe?g|svg|gif|webp)(\?|$)/i.test(v));
   };
   let image = "";
   let code = "";
@@ -2860,12 +2124,7 @@ function qrParts(answer) {
     if (typeof value === "string") {
       if (isImage(value)) {
         if (!image) image = value;
-      } else if (
-        !code &&
-        /token|code|qr|value|payload/i.test(key || "") &&
-        value.length >= 4 &&
-        value.length < 2000
-      ) {
+      } else if (!code && /token|code|qr|value|payload/i.test(key || "") && value.length >= 4 && value.length < 2000) {
         code = value;
       }
       return;
@@ -2874,18 +2133,10 @@ function qrParts(answer) {
     seen.add(value);
     // the likely names first, so the right field wins
     const keys = Object.keys(value).sort(function (a, b) {
-      const rank = function (k) {
-        return /^(qrToken|token|code|backupCode)$/i.test(k)
-          ? 0
-          : /qr/i.test(k)
-            ? 1
-            : 2;
-      };
+      const rank = function (k) { return /^(qrToken|token|code|backupCode)$/i.test(k) ? 0 : /qr/i.test(k) ? 1 : 2; };
       return rank(a) - rank(b);
     });
-    keys.forEach(function (k) {
-      walk(value[k], k, depth + 1);
-    });
+    keys.forEach(function (k) { walk(value[k], k, depth + 1); });
   })(answer, "qr", 0);
   return { image: image, code: code };
 }
@@ -2897,8 +2148,7 @@ Backend.facilityShift = async function (shiftId) {
   });
   const accepted = apps.filter(isAccepted);
   const needed = Number(pick(s, ["professionalsNeeded"], 1));
-  const status =
-    String(pick(s, ["status"])) === "completed" ? "completed" : "active";
+  const status = String(pick(s, ["status"])) === "completed" ? "completed" : "active";
 
   // The attendance QR as soon as at least one worker is booked
   let qrValue = ""; // the code itself (for "can't scan? paste this code")
@@ -2924,9 +2174,7 @@ Backend.facilityShift = async function (shiftId) {
 
   // Clock times, if the server sends them with each application
   const attendance = accepted.map(attendanceFromServer);
-  const attendanceKnown = attendance.some(function (a) {
-    return a !== null;
-  });
+  const attendanceKnown = attendance.some(function (a) { return a !== null; });
 
   return {
     id: shiftId,
@@ -2950,13 +2198,7 @@ Backend.facilityShift = async function (shiftId) {
     qrError: qrError,
     backupCode: "", // the backend has no 6-digit backup code; the page shows the QR's text instead
     attendanceKnown: attendanceKnown,
-    paymentStatus: pick(s, [
-      "paymentStatus",
-      "payment.fundingStatus",
-      "payment.status",
-      "fundingStatus",
-      "escrowStatus",
-    ]),
+    paymentStatus: pick(s, ["paymentStatus", "payment.fundingStatus", "payment.status", "fundingStatus", "escrowStatus"]),
     awaitingPayment: isAwaitingPayment(s),
     workers: accepted.map(function (a, index) {
       const w = applicationWorker(a);
@@ -2992,8 +2234,30 @@ Backend.closeShift = function (shiftId) {
 };
 
 // Delete a shift for good
-Backend.deleteShift = function (shiftId) {
-  return apiRequest(ENDPOINTS.deleteShift(shiftId), "DELETE");
+// Then checks the shift is really gone, so the page never says "deleted" when it isn't.
+Backend.deleteShift = async function (shiftId) {
+  const answer = await apiRequest(ENDPOINTS.deleteShift(shiftId), "DELETE");
+  // Some refusals come back as 200 with { success: false, message: "..." }
+  if (answer && typeof answer === "object" && answer.success === false) {
+    throw new Error(answer.message || "The server refused to delete this shift.");
+  }
+  console.log("[delete-shift] server answered:", answer);
+
+  // Ask for the shift again: a 404 (or a "deleted" status) means it's gone
+  let still = null;
+  try {
+    still = unwrapShift(await apiRequest(ENDPOINTS.shift(shiftId)));
+  } catch (error) {
+    return answer; // not found any more: deleted
+  }
+  if (still && idValue(pick(still, ["_id", "id"])) && !isDeletedShift(still)) {
+    throw new Error(
+      "The server said " + JSON.stringify((answer && answer.message) || "OK") +
+      " but the shift is still there (status: " + (pick(still, ["status"]) || "unknown") + "). " +
+      "Ask the backend developer to check DELETE /api/shifts/v1/delete-shift/" + shiftId + "."
+    );
+  }
+  return answer;
 };
 
 Backend.retryPayment = function (shiftId) {
@@ -3025,18 +2289,7 @@ Backend.adminOverview = async function () {
 
 // Which worker or facility a queue item belongs to (the queue lists each document separately)
 function queueOwnerId(item) {
-  return (
-    idValue(
-      pick(item, [
-        "workerId",
-        "facilityId",
-        "profileId",
-        "ownerId",
-        "worker",
-        "facility",
-      ]),
-    ) || idOf(item)
-  );
+  return idValue(pick(item, ["workerId", "facilityId", "profileId", "ownerId", "worker", "facility"])) || idOf(item);
 }
 
 function queueType(item) {
@@ -3047,23 +2300,14 @@ function queueType(item) {
 // The document key (e.g. "idDocument") from a queue item's documentType, whatever the spelling
 function documentKeyOf(name, labels) {
   const n = String(name || "").toLowerCase();
-  return (
-    Object.keys(labels).find(function (key) {
-      return (
-        (DOCUMENT_ALIASES[key] || [key]).some(function (alias) {
-          return alias.toLowerCase() === n;
-        }) || labels[key].toLowerCase() === n
-      );
-    }) || ""
-  );
+  return Object.keys(labels).find(function (key) {
+    return (DOCUMENT_ALIASES[key] || [key]).some(function (alias) { return alias.toLowerCase() === n; }) ||
+      labels[key].toLowerCase() === n;
+  }) || "";
 }
 
 async function loadQueueItems() {
-  return asList(await apiRequest(ENDPOINTS.verifications), [
-    "queue",
-    "items",
-    "data",
-  ]);
+  return asList(await apiRequest(ENDPOINTS.verifications), ["queue", "items", "data"]);
 }
 
 // The queue: one row per worker or facility.
@@ -3071,15 +2315,9 @@ async function loadQueueItems() {
 // uploaded documents is missed even if one of those lists is incomplete.
 Backend.adminQueue = async function () {
   const results = await Promise.all([
-    loadQueueItems().catch(function () {
-      return [];
-    }),
-    apiRequest(ENDPOINTS.adminPendingWorkers).catch(function () {
-      return [];
-    }),
-    apiRequest(ENDPOINTS.adminPendingFacilities).catch(function () {
-      return [];
-    }),
+    loadQueueItems().catch(function () { return []; }),
+    apiRequest(ENDPOINTS.adminPendingWorkers).catch(function () { return []; }),
+    apiRequest(ENDPOINTS.adminPendingFacilities).catch(function () { return []; }),
   ]);
   const rows = {};
   const addRow = function (type, id, name, submittedAt) {
@@ -3091,12 +2329,7 @@ Backend.adminQueue = async function () {
         type: type,
         typeLabel: type === "facility" ? "Facility" : "Worker",
         submitted: submittedAt
-          ? new Date(submittedAt).toLocaleString("en-GB", {
-              day: "numeric",
-              month: "short",
-              hour: "2-digit",
-              minute: "2-digit",
-            })
+          ? new Date(submittedAt).toLocaleString("en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })
           : "",
         order: submittedAt ? new Date(submittedAt).getTime() : 0,
         status: "Pending",
@@ -3107,34 +2340,18 @@ Backend.adminQueue = async function () {
   };
 
   results[0].forEach(function (item) {
-    const row = addRow(
-      queueType(item),
-      queueOwnerId(item),
-      pick(item, ["name", "fullName", "facilityName"]),
-      pick(item, ["submittedAt", "updatedAt", "createdAt"]),
-    );
+    const row = addRow(queueType(item), queueOwnerId(item), pick(item, ["name", "fullName", "facilityName"]), pick(item, ["submittedAt", "updatedAt", "createdAt"]));
     row.documents += 1;
   });
 
   const addProfiles = function (list, type) {
     asList(list, ["workers", "facilities", "data"]).forEach(function (raw) {
       const p = unwrapProfile(raw, type);
-      const docs = documentsOf(
-        p,
-        type === "facility" ? FACILITY_DOCUMENTS : WORKER_DOCUMENTS,
-      );
-      const waiting = docs.filter(function (d) {
-        return d.uploaded && d.status === "pending";
-      }).length;
+      const docs = documentsOf(p, type === "facility" ? FACILITY_DOCUMENTS : WORKER_DOCUMENTS);
+      const waiting = docs.filter(function (d) { return d.uploaded && d.status === "pending"; }).length;
       if (waiting === 0) return; // nothing to review yet
-      const name =
-        type === "facility" ? pick(p, ["facilityName"]) : workerNameOf(p);
-      const row = addRow(
-        type,
-        idOf(p),
-        name,
-        pick(p, ["updatedAt", "createdAt"]),
-      );
+      const name = type === "facility" ? pick(p, ["facilityName"]) : workerNameOf(p);
+      const row = addRow(type, idOf(p), name, pick(p, ["updatedAt", "createdAt"]));
       row.documents = Math.max(row.documents, waiting);
     });
   };
@@ -3142,13 +2359,69 @@ Backend.adminQueue = async function () {
   addProfiles(results[2], "facility");
 
   return Object.values(rows).map(function (row) {
-    row.typeLabel +=
-      " · " +
-      row.documents +
-      (row.documents === 1 ? " document" : " documents");
+    row.typeLabel += " · " + row.documents + (row.documents === 1 ? " document" : " documents");
     return row;
   });
 };
+
+// Every id a worker / facility can be known by: its profile id, its user account id, its email
+function submissionIds(raw, type) {
+  const p = unwrapProfile(raw, type);
+  return [
+    idOf(p), idOf(raw),
+    idValue(pick(p, ["user"])), idValue(pick(p, ["userId"])),
+    idValue(pick(raw, ["user"])), idValue(pick(raw, ["userId"])),
+    pick(p, ["user.email", "email", "userId.email"]),
+  ].filter(Boolean).map(String);
+}
+
+// When GET /admin/v1/{workers|facilities}/{id} doesn't find someone, look for them:
+// 1. in the full list and the "pending" list (asking for a big page, in case the list is paged)
+// 2. in the verification queue, where the id may be a queue item's id: the item says whose it is
+async function findSubmissionProfile(type, id) {
+  const wanted = String(id);
+  const lists = type === "facility"
+    ? [ENDPOINTS.adminFacilities + "?limit=1000", ENDPOINTS.adminFacilities, ENDPOINTS.adminPendingFacilities]
+    : [ENDPOINTS.adminWorkers + "?limit=1000", ENDPOINTS.adminWorkers, ENDPOINTS.adminPendingWorkers];
+  for (const path of lists) {
+    let list = [];
+    try {
+      list = asList(await apiRequest(path), ["workers", "facilities", "data"]);
+    } catch (error) {
+      continue;
+    }
+    const raw = list.find(function (item) { return submissionIds(item, type).includes(wanted); });
+    if (raw) return unwrapProfile(raw, type);
+  }
+
+  // The verification queue
+  let items = [];
+  try {
+    items = await loadQueueItems();
+  } catch (error) {
+    return null;
+  }
+  const item = items.find(function (it) {
+    return [idOf(it), queueOwnerId(it), idValue(pick(it, ["user"])), idValue(pick(it, ["userId"]))]
+      .filter(Boolean).map(String).includes(wanted);
+  });
+  if (!item) return null;
+  // The queue item may hold the whole profile
+  const embedded = unwrapProfile(pick(item, [type, type + "Profile", "profile", "owner"]) || {}, type);
+  if (looksLikeProfile(embedded, type) && idOf(embedded)) return embedded;
+  // Otherwise try the ids it gives
+  const candidates = [queueOwnerId(item), idValue(pick(item, ["user"])), idValue(pick(item, ["userId"]))]
+    .filter(function (c) { return c && String(c) !== wanted; });
+  for (const candidate of candidates) {
+    try {
+      const p = unwrapProfile(await apiRequest(type === "facility" ? ENDPOINTS.adminFacility(candidate) : ENDPOINTS.adminWorker(candidate)), type);
+      if (idOf(p)) return p;
+    } catch (error) {
+      // try the next one
+    }
+  }
+  return null;
+}
 
 // One worker or facility (with its documents) for the review pages.
 // Looks the person up by id; if that fails, finds them in the full list (the id might be the
@@ -3158,72 +2431,46 @@ async function loadSubmission(type, id) {
   let profile = null;
   let firstError = null;
   try {
-    const raw = await apiRequest(
-      type === "facility"
-        ? ENDPOINTS.adminFacility(id)
-        : ENDPOINTS.adminWorker(id),
-    );
+    const raw = await apiRequest(type === "facility" ? ENDPOINTS.adminFacility(id) : ENDPOINTS.adminWorker(id));
     console.info("Admin " + type + " from the backend:", JSON.stringify(raw));
     profile = unwrapProfile(raw, type);
-    if (!looksLikeProfile(profile, type) && !Object.keys(profile).length)
-      profile = null;
+    if (!looksLikeProfile(profile, type) && !Object.keys(profile).length) profile = null;
   } catch (error) {
     firstError = error;
   }
   if (!profile) {
-    const list = asList(
-      await apiRequest(
-        type === "facility"
-          ? ENDPOINTS.adminFacilities
-          : ENDPOINTS.adminWorkers,
-      ),
-      ["workers", "facilities", "data"],
-    );
-    const raw = list.find(function (item) {
-      const p = unwrapProfile(item, type);
-      return [
-        idOf(p),
-        idOf(item),
-        idValue(pick(p, ["user"])),
-        idValue(pick(p, ["userId"])),
-      ].includes(id);
-    });
-    if (!raw) {
-      throw firstError || new Error("We couldn't find this " + type + ".");
+    profile = await findSubmissionProfile(type, id);
+    if (!profile) {
+      // Opened on the wrong review page (a worker on the facility page, or the other way round)?
+      const other = type === "facility" ? "worker" : "facility";
+      const elsewhere = await findSubmissionProfile(other, id).catch(function () { return null; });
+      if (elsewhere) {
+        const error = new Error("This is a " + other + ", not a " + type + ".");
+        error.otherType = other;
+        throw error;
+      }
+      throw new Error(
+        "We couldn't find this " + type + " (id " + id + "). " +
+        (firstError ? "The server answered: " + firstError.message + ". " : "") +
+        "It isn't in the " + type + " lists or the verification queue either."
+      );
     }
-    profile = unwrapProfile(raw, type);
   }
 
   const docs = documentsOf(profile, labels);
 
   // Fill in any document the profile didn't show, from the verification queue
-  if (
-    docs.some(function (d) {
-      return !d.uploaded;
-    })
-  ) {
+  if (docs.some(function (d) { return !d.uploaded; })) {
     try {
       const items = (await loadQueueItems()).filter(function (item) {
-        return (
-          queueType(item) === type &&
-          [id, idOf(profile)].includes(queueOwnerId(item))
-        );
+        return queueType(item) === type && [id, idOf(profile)].includes(queueOwnerId(item));
       });
       items.forEach(function (item) {
         const key = documentKeyOf(pick(item, ["documentType", "type"]), labels);
-        const doc = docs.find(function (d) {
-          return d.key === key;
-        });
+        const doc = docs.find(function (d) { return d.key === key; });
         if (doc && !doc.uploaded) {
           doc.url = pick(item, ["documentUrl", "url", "fileUrl"]);
-          doc.status =
-            normaliseStatus(
-              pick(item, [
-                "documentVerificationStatus",
-                "verificationStatus",
-                "status",
-              ]),
-            ) || "pending";
+          doc.status = normaliseStatus(pick(item, ["documentVerificationStatus", "verificationStatus", "status"])) || "pending";
           doc.comment = pick(item, ["verificationComment", "comment"]);
           doc.uploaded = true;
         }
@@ -3234,11 +2481,7 @@ async function loadSubmission(type, id) {
   }
 
   // The id the document review endpoint needs: the one that worked for looking them up
-  return {
-    profile: profile,
-    docs: docs,
-    id: firstError ? idOf(profile) || id : id,
-  };
+  return { profile: profile, docs: docs, id: firstError ? idOf(profile) || id : id };
 }
 
 Backend.adminSubmission = async function (type, id) {
@@ -3247,12 +2490,7 @@ Backend.adminSubmission = async function (type, id) {
   const docs = loaded.docs;
   const status = overallStatusOf(p, docs);
   const docLine = function (d) {
-    return (
-      d.label +
-      " · " +
-      (d.status === "missing" ? "not uploaded" : d.status) +
-      (d.comment ? " (" + d.comment + ")" : "")
-    );
+    return d.label + " · " + (d.status === "missing" ? "not uploaded" : d.status) + (d.comment ? " (" + d.comment + ")" : "");
   };
   if (type === "facility") {
     const loc = pick(p, ["location"], {});
@@ -3275,14 +2513,7 @@ Backend.adminSubmission = async function (type, id) {
         ]
           .filter(Boolean)
           .join(", "),
-        contact:
-          "Contact: " +
-          ([
-            pick(p, ["secondaryContact.fullName"]),
-            pick(p, ["secondaryContact.position"]),
-          ]
-            .filter(Boolean)
-            .join(" · ") || pick(p, ["facilityName"])),
+        contact: "Contact: " + ([pick(p, ["secondaryContact.fullName"]), pick(p, ["secondaryContact.position"])].filter(Boolean).join(" · ") || pick(p, ["facilityName"])),
         contactDetails: [
           pick(p, ["user.email", "email", "userId.email"]),
           pick(p, ["user.phoneNumber", "phoneNumber", "userId.phoneNumber"]),
@@ -3305,12 +2536,7 @@ Backend.adminSubmission = async function (type, id) {
         .filter(Boolean)
         .join(" · "),
       licence: docLine(docs[0]),
-      licenceDates: [
-        pick(p, ["user.email", "email", "userId.email"]),
-        pick(p, ["user.phoneNumber", "phoneNumber", "userId.phoneNumber"]),
-      ]
-        .filter(Boolean)
-        .join(" · "),
+      licenceDates: [pick(p, ["user.email", "email", "userId.email"]), pick(p, ["user.phoneNumber", "phoneNumber", "userId.phoneNumber"])].filter(Boolean).join(" · "),
       certification: docLine(docs[2]),
       identity: docLine(docs[1]) + " · " + docLine(docs[3]),
       experience:
@@ -3328,10 +2554,7 @@ Backend.adminSubmission = async function (type, id) {
 // { status, done: [...labels], failed: [{ label, message }] }.
 Backend.adminDecide = async function (type, id, decision, reason) {
   const loaded = await loadSubmission(type, id);
-  const path =
-    type === "facility"
-      ? ENDPOINTS.adminFacilityDocuments(loaded.id)
-      : ENDPOINTS.adminWorkerDocuments(loaded.id);
+  const path = type === "facility" ? ENDPOINTS.adminFacilityDocuments(loaded.id) : ENDPOINTS.adminWorkerDocuments(loaded.id);
   const done = [];
   const failed = [];
   let sent = 0;
@@ -3346,10 +2569,7 @@ Backend.adminDecide = async function (type, id, decision, reason) {
     sent += 1;
     try {
       // Swagger: PATCH. Postman: POST
-      await apiFirst([
-        [path, "PATCH", body],
-        [path, "POST", body],
-      ]);
+      await apiFirst([[path, "PATCH", body], [path, "POST", body]]);
       done.push(doc.label);
     } catch (error) {
       failed.push({ label: doc.label, message: error.message });
@@ -3357,8 +2577,7 @@ Backend.adminDecide = async function (type, id, decision, reason) {
   }
 
   // Check what the server now says
-  let status =
-    decision === "verified" && failed.length === 0 ? "verified" : decision;
+  let status = decision === "verified" && failed.length === 0 ? "verified" : decision;
   try {
     const after = await loadSubmission(type, id);
     status = overallStatusOf(after.profile, after.docs);
@@ -3366,29 +2585,17 @@ Backend.adminDecide = async function (type, id, decision, reason) {
     // keep the best guess
   }
   if (sent === 0 && decision === "verified" && status !== "verified") {
-    failed.push({
-      label: "Documents",
-      message: "There were no documents to approve.",
-    });
+    failed.push({ label: "Documents", message: "There were no documents to approve." });
   }
   return { status: status, done: done, failed: failed };
 };
 
 // Manage users: the backend has two lists (workers and facilities); the page shows one
 Backend.adminUsers = async function () {
-  const workers = asList(await apiRequest(ENDPOINTS.adminWorkers), [
-    "workers",
-    "data",
-  ]);
-  const facilities = asList(await apiRequest(ENDPOINTS.adminFacilities), [
-    "facilities",
-    "data",
-  ]);
+  const workers = asList(await apiRequest(ENDPOINTS.adminWorkers), ["workers", "data"]);
+  const facilities = asList(await apiRequest(ENDPOINTS.adminFacilities), ["facilities", "data"]);
   const verification = function (p, type) {
-    const docs = documentsOf(
-      p,
-      type === "facility" ? FACILITY_DOCUMENTS : WORKER_DOCUMENTS,
-    );
+    const docs = documentsOf(p, type === "facility" ? FACILITY_DOCUMENTS : WORKER_DOCUMENTS);
     const status = overallStatusOf(p, docs);
     return {
       verified: "Verified",
@@ -3409,9 +2616,7 @@ Backend.adminUsers = async function () {
         email: pick(w, ["user.email", "email", "userId.email"]),
         verification: verification(w, "worker"),
         access: "Active",
-        details: [pick(w, ["profession"]), pick(w, ["specialty"])]
-          .filter(Boolean)
-          .join(" · "),
+        details: [pick(w, ["profession"]), pick(w, ["specialty"])].filter(Boolean).join(" · "),
       };
     })
     .concat(
@@ -3425,18 +2630,14 @@ Backend.adminUsers = async function () {
           email: pick(f, ["user.email", "email", "userId.email"]),
           verification: verification(f, "facility"),
           access: "Active",
-          details: [
-            Backend.facilityTypeLabel(pick(f, ["facilityType"])),
-            pick(f, ["location.city"]),
-          ]
-            .filter(function (v) {
-              return v && !/to be provided/i.test(v);
-            })
+          details: [Backend.facilityTypeLabel(pick(f, ["facilityType"])), pick(f, ["location.city"])]
+            .filter(function (v) { return v && !/to be provided/i.test(v); })
             .join(" · "),
         };
       }),
     );
 };
+
 
 // ==================================================
 // 8. NOTIFICATIONS (GET /api/notifications/v1/, PATCH read/{id}, PATCH read-all)
@@ -3446,58 +2647,29 @@ Backend.adminUsers = async function () {
 function notificationLink(n, role) {
   const link = pick(n, ["link", "url", "actionLink", "actionUrl", "data.link"]);
   if (link) return link;
-  const text = (
-    pick(n, ["type", "category", "event"]) +
-    " " +
-    pick(n, ["title"]) +
-    " " +
-    pick(n, ["message", "body", "text"])
-  ).toLowerCase();
-  const shiftId = idValue(
-    pick(n, [
-      "shift",
-      "shiftId",
-      "data.shiftId",
-      "data.shift",
-      "relatedShift",
-      "metadata.shiftId",
-    ]),
-  );
+  const text = (pick(n, ["type", "category", "event"]) + " " + pick(n, ["title"]) + " " + pick(n, ["message", "body", "text"])).toLowerCase();
+  const shiftId = idValue(pick(n, ["shift", "shiftId", "data.shiftId", "data.shift", "relatedShift", "metadata.shiftId"]));
   const W = "../WorkerShiftMarket/";
   const F = "../FacilityHiringSection/";
   if (role === "facility") {
-    if (/applica|applied|applicant/.test(text))
-      return (
-        F +
-        "Applicants.html" +
-        (shiftId ? "?shift=" + encodeURIComponent(shiftId) : "")
-      );
-    if (/payment|fund|escrow|paid|payout/.test(text))
-      return shiftId
-        ? F + "FundShift.html?shift=" + encodeURIComponent(shiftId)
-        : F + "Payments.html";
-    if (/verif|document|approv|reject/.test(text))
-      return F + "FacilityProfile.html";
-    if (shiftId)
-      return F + "ShiftDetails.html?shift=" + encodeURIComponent(shiftId);
+    if (/applica|applied|applicant/.test(text)) return F + "Applicants.html" + (shiftId ? "?shift=" + encodeURIComponent(shiftId) : "");
+    if (/payment|fund|escrow|paid|payout/.test(text)) return shiftId ? F + "FundShift.html?shift=" + encodeURIComponent(shiftId) : F + "Payments.html";
+    if (/verif|document|approv|reject/.test(text)) return F + "FacilityProfile.html";
+    if (shiftId) return F + "ShiftDetails.html?shift=" + encodeURIComponent(shiftId);
     return F + "Dashboard.html";
   }
-  if (/accept|booked|clock|attendance|starts|reminder/.test(text) && shiftId)
-    return W + "UpcomingShifts.html?shift=" + encodeURIComponent(shiftId);
+  if (/accept|booked|clock|attendance|starts|reminder/.test(text) && shiftId) return W + "UpcomingShifts.html?shift=" + encodeURIComponent(shiftId);
   if (/applica|applied/.test(text)) return W + "MyApplications.html";
   if (/payment|payout|paid/.test(text)) return W + "Payments.html";
   if (/verif|document|approv|reject/.test(text)) return W + "Profile.html";
-  if (shiftId)
-    return W + "ShiftDetails.html?shift=" + encodeURIComponent(shiftId);
+  if (shiftId) return W + "ShiftDetails.html?shift=" + encodeURIComponent(shiftId);
   return W + "Dashboard.html";
 }
 
 // "Today" | "Yesterday" | "Earlier", from the date
 function notificationGroup(date) {
   if (isNaN(date)) return "Earlier";
-  const day = function (d) {
-    return d.toLocaleDateString("en-CA", { timeZone: "Africa/Lagos" });
-  };
+  const day = function (d) { return d.toLocaleDateString("en-CA", { timeZone: "Africa/Lagos" }); };
   const today = day(new Date());
   const yesterday = day(new Date(Date.now() - 86400000));
   if (day(date) === today) return "Today";
@@ -3515,52 +2687,27 @@ Backend.notifications = async function () {
   const list = asList(data, ["notifications", "data", "items"]);
   return list
     .map(function (n) {
-      const created = new Date(
-        pick(n, ["createdAt", "date", "sentAt", "updatedAt"]),
-      );
+      const created = new Date(pick(n, ["createdAt", "date", "sentAt", "updatedAt"]));
       const group = notificationGroup(created);
       const time = isNaN(created)
         ? ""
-        : group +
-          " · " +
-          created.toLocaleString(
-            "en-GB",
-            group === "Earlier"
-              ? {
-                  day: "numeric",
-                  month: "long",
-                  hour: "numeric",
-                  minute: "2-digit",
-                  timeZone: "Africa/Lagos",
-                }
-              : {
-                  hour: "numeric",
-                  minute: "2-digit",
-                  timeZone: "Africa/Lagos",
-                },
-          ) +
-          " WAT";
+        : group + " · " + created.toLocaleString("en-GB", group === "Earlier"
+            ? { day: "numeric", month: "long", hour: "numeric", minute: "2-digit", timeZone: "Africa/Lagos" }
+            : { hour: "numeric", minute: "2-digit", timeZone: "Africa/Lagos" }) + " WAT";
       const type = String(pick(n, ["type", "category"])).replace(/[_-]+/g, " ");
       return {
         id: idOf(n),
         order: isNaN(created) ? 0 : created.getTime(),
         group: group,
-        title: pick(
-          n,
-          ["title", "subject", "heading"],
-          type ? type.charAt(0).toUpperCase() + type.slice(1) : "Notification",
-        ),
+        title: pick(n, ["title", "subject", "heading"], type ? type.charAt(0).toUpperCase() + type.slice(1) : "Notification"),
         text: pick(n, ["message", "body", "text", "content", "description"]),
         time: time,
         actionText: pick(n, ["actionText", "action.label"], "View"),
         actionLink: notificationLink(n, role),
-        read:
-          pick(n, ["isRead", "read"], false) === true || !!pick(n, ["readAt"]),
+        read: pick(n, ["isRead", "read"], false) === true || !!pick(n, ["readAt"]),
       };
     })
-    .sort(function (a, b) {
-      return b.order - a.order;
-    });
+    .sort(function (a, b) { return b.order - a.order; });
 };
 
 Backend.markNotificationRead = function (id) {
@@ -3570,6 +2717,7 @@ Backend.markNotificationRead = function (id) {
 Backend.markAllNotificationsRead = function () {
   return apiRequest(ENDPOINTS.markAllNotificationsRead, "PATCH");
 };
+
 
 // ==================================================
 // 9. WORKER PAYMENTS (booked shifts + GET /api/payouts/v1/history)
@@ -3584,9 +2732,7 @@ function payoutAmount(p) {
 }
 
 function payoutStatusOf(p) {
-  const s = String(
-    pick(p, ["status", "transferStatus", "payoutStatus"]),
-  ).toLowerCase();
+  const s = String(pick(p, ["status", "transferStatus", "payoutStatus"])).toLowerCase();
   if (/success|paid|complete|sent/.test(s)) return "paid";
   if (/fail|revers|declin/.test(s)) return "failed";
   return "processing";
@@ -3594,12 +2740,8 @@ function payoutStatusOf(p) {
 
 async function loadWorkerPayments() {
   const results = await Promise.all([
-    loadMyApplicationsRaw().catch(function () {
-      return [];
-    }),
-    apiRequest(ENDPOINTS.payoutHistory).catch(function () {
-      return [];
-    }),
+    loadMyApplicationsRaw().catch(function () { return []; }),
+    apiRequest(ENDPOINTS.payoutHistory).catch(function () { return []; }),
   ]);
   const booked = results[0].filter(isAccepted);
   const payouts = asList(results[1], ["payouts", "data", "history"]);
@@ -3616,11 +2758,8 @@ async function loadWorkerPayments() {
     if (payout) used[id] = true;
     let status = "funds_secured";
     if (String(pick(s, ["status"])) === "completed") status = "processing";
-    if (payout)
-      status = payoutStatusOf(payout) === "paid" ? "paid" : "processing";
-    const paidAt = payout
-      ? pick(payout, ["paidAt", "completedAt", "updatedAt"])
-      : "";
+    if (payout) status = payoutStatusOf(payout) === "paid" ? "paid" : "processing";
+    const paidAt = payout ? pick(payout, ["paidAt", "completedAt", "updatedAt"]) : "";
     return {
       id: id,
       title: shiftTitle(s),
@@ -3631,22 +2770,8 @@ async function loadWorkerPayments() {
       amount: payout ? payoutAmount(payout) || payForShift(s) : payForShift(s),
       deductions: 0,
       status: status,
-      reference: payout
-        ? pick(payout, [
-            "reference",
-            "transferReference",
-            "transferCode",
-            "_id",
-          ])
-        : "",
-      paidOn:
-        status === "paid" && paidAt
-          ? new Date(paidAt).toLocaleDateString("en-GB", {
-              day: "numeric",
-              month: "short",
-              year: "numeric",
-            })
-          : "",
+      reference: payout ? pick(payout, ["reference", "transferReference", "transferCode", "_id"]) : "",
+      paidOn: status === "paid" && paidAt ? new Date(paidAt).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }) : "",
     };
   });
   // Payouts for shifts not in the applications list
@@ -3660,20 +2785,12 @@ async function loadWorkerPayments() {
       facility: idOf(s) ? shiftFacilityName(s) : "",
       place: pick(s, ["location"]),
       date: shortDate(pick(s, ["shiftDate"]) || pick(p, ["createdAt"])),
-      time: idOf(s)
-        ? pick(s, ["startTime"]) + "–" + pick(s, ["endTime"]) + " WAT"
-        : "",
+      time: idOf(s) ? pick(s, ["startTime"]) + "–" + pick(s, ["endTime"]) + " WAT" : "",
       amount: payoutAmount(p),
       deductions: 0,
       status: payoutStatusOf(p) === "paid" ? "paid" : "processing",
       reference: pick(p, ["reference", "transferReference", "_id"]),
-      paidOn: pick(p, ["paidAt"])
-        ? new Date(p.paidAt).toLocaleDateString("en-GB", {
-            day: "numeric",
-            month: "short",
-            year: "numeric",
-          })
-        : "",
+      paidOn: pick(p, ["paidAt"]) ? new Date(p.paidAt).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }) : "",
     });
   });
   return payments;
@@ -3682,15 +2799,8 @@ async function loadWorkerPayments() {
 Backend.workerPayments = async function () {
   const payments = await loadWorkerPayments();
   const sum = function (status) {
-    const list = payments.filter(function (p) {
-      return p.status === status;
-    });
-    return {
-      total: list.reduce(function (n, p) {
-        return n + p.amount;
-      }, 0),
-      count: list.length,
-    };
+    const list = payments.filter(function (p) { return p.status === status; });
+    return { total: list.reduce(function (n, p) { return n + p.amount; }, 0), count: list.length };
   };
   const secured = sum("funds_secured");
   const processing = sum("processing");
@@ -3699,17 +2809,11 @@ Backend.workerPayments = async function () {
   return {
     summary: {
       pending: nairaText(secured.total),
-      pendingNote:
-        secured.count +
-        (secured.count === 1 ? " booked shift" : " booked shifts") +
-        " awaiting payment",
+      pendingNote: secured.count + (secured.count === 1 ? " booked shift" : " booked shifts") + " awaiting payment",
       processing: nairaText(processing.total),
       processingNote: "On its way to your bank",
       received: nairaText(paid.total),
-      receivedNote:
-        paid.count +
-        (paid.count === 1 ? " payment" : " payments") +
-        " received",
+      receivedNote: paid.count + (paid.count === 1 ? " payment" : " payments") + " received",
     },
     account: null, // no bank details endpoint yet
     accountName: name,
@@ -3719,21 +2823,13 @@ Backend.workerPayments = async function () {
 
 Backend.workerPayment = async function (id) {
   const payments = await loadWorkerPayments();
-  const payment = payments.find(function (p) {
-    return p.id === id;
-  });
-  return payment
-    ? Object.assign({ account: "Your bank account" }, payment)
-    : null;
+  const payment = payments.find(function (p) { return p.id === id; });
+  return payment ? Object.assign({ account: "Your bank account" }, payment) : null;
 };
 
 // Report a problem with a shift's payment = a dispute
 Backend.raiseDispute = function (shiftId, reason, description) {
-  return apiRequest(ENDPOINTS.raiseDispute, "POST", {
-    shiftId: shiftId,
-    reason: reason,
-    description: description,
-  });
+  return apiRequest(ENDPOINTS.raiseDispute, "POST", { shiftId: shiftId, reason: reason, description: description });
 };
 
 // ==================================================
@@ -3742,101 +2838,36 @@ Backend.raiseDispute = function (shiftId, reason, description) {
 
 function disputeView(d) {
   const s = typeof d.shift === "object" && d.shift ? d.shift : {};
-  const raisedBy = pick(d, [
-    "raisedBy.fullName",
-    "raisedBy.facilityName",
-    "raisedBy.name",
-    "raisedBy.email",
-    "user.fullName",
-    "user.email",
-  ]);
-  const role = String(
-    pick(d, ["raisedByRole", "raisedBy.role", "role", "user.role"]),
-  ).toLowerCase();
+  const raisedBy = pick(d, ["raisedBy.fullName", "raisedBy.facilityName", "raisedBy.name", "raisedBy.email", "user.fullName", "user.email"]);
+  const role = String(pick(d, ["raisedByRole", "raisedBy.role", "role", "user.role"])).toLowerCase();
   const status = String(pick(d, ["status"], "open"));
   const created = pick(d, ["createdAt"]);
   return {
     id: idOf(d),
-    parties:
-      [raisedBy, idOf(s) ? shiftFacilityName(s) : ""]
-        .filter(Boolean)
-        .join(" / ") || "—",
+    parties: [raisedBy, idOf(s) ? shiftFacilityName(s) : ""].filter(Boolean).join(" / ") || "—",
     issue: pick(d, ["reason", "title", "issue"], "Dispute"),
     status: status.charAt(0).toUpperCase() + status.slice(1).replace(/_/g, " "),
     fields: {
       title: "Dispute " + String(idOf(d)).slice(-6).toUpperCase(),
-      subtitle: [
-        pick(d, ["reason", "title"], "Dispute"),
-        raisedBy
-          ? "raised by " + raisedBy + (role ? " (" + role + ")" : "")
-          : "",
-      ]
-        .filter(Boolean)
-        .join(" · "),
-      shift:
-        "Shift: " +
-        (idOf(s)
-          ? shiftTitle(s) +
-            " · " +
-            shortDate(pick(s, ["shiftDate"])) +
-            " · " +
-            pick(s, ["startTime"]) +
-            "–" +
-            pick(s, ["endTime"]) +
-            " WAT"
-          : idValue(pick(d, ["shift", "shiftId"])) || "—"),
-      amount: idOf(s)
-        ? "Amount: " + nairaText(payForShift(s)) + " per worker"
-        : "Amount: —",
-      openedAt: created
-        ? new Date(created).toLocaleString("en-GB", {
-            day: "numeric",
-            month: "short",
-            hour: "2-digit",
-            minute: "2-digit",
-            timeZone: "Africa/Lagos",
-          })
-        : "—",
-      status:
-        status.charAt(0).toUpperCase() + status.slice(1).replace(/_/g, " "),
+      subtitle: [pick(d, ["reason", "title"], "Dispute"), raisedBy ? "raised by " + raisedBy + (role ? " (" + role + ")" : "") : ""].filter(Boolean).join(" · "),
+      shift: "Shift: " + (idOf(s)
+        ? shiftTitle(s) + " · " + shortDate(pick(s, ["shiftDate"])) + " · " + pick(s, ["startTime"]) + "–" + pick(s, ["endTime"]) + " WAT"
+        : idValue(pick(d, ["shift", "shiftId"])) || "—"),
+      amount: idOf(s) ? "Amount: " + nairaText(payForShift(s)) + " per worker" : "Amount: —",
+      openedAt: created ? new Date(created).toLocaleString("en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", timeZone: "Africa/Lagos" }) : "—",
+      status: status.charAt(0).toUpperCase() + status.slice(1).replace(/_/g, " "),
       // The person who raised it explains what happened; the other side hasn't replied (no endpoint yet)
-      workerStatement: role.includes("facility")
-        ? "No statement yet."
-        : "“" + pick(d, ["description", "details", "message"], "—") + "”",
-      facilityStatement: role.includes("facility")
-        ? "“" + pick(d, ["description", "details", "message"], "—") + "”"
-        : "No statement yet.",
+      workerStatement: role.includes("facility") ? "No statement yet." : "“" + pick(d, ["description", "details", "message"], "—") + "”",
+      facilityStatement: role.includes("facility") ? "“" + pick(d, ["description", "details", "message"], "—") + "”" : "No statement yet.",
     },
-    timeline: asList(pick(d, ["timeline", "history", "notes"], []), []).map(
-      function (t) {
-        return typeof t === "string"
-          ? t
-          : [
-              pick(t, ["at", "createdAt"])
-                ? new Date(pick(t, ["at", "createdAt"])).toLocaleString(
-                    "en-GB",
-                    {
-                      day: "numeric",
-                      month: "short",
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    },
-                  )
-                : "",
-              pick(t, ["text", "note", "message", "event"]),
-            ]
-              .filter(Boolean)
-              .join(" — ");
-      },
-    ),
+    timeline: asList(pick(d, ["timeline", "history", "notes"], []), []).map(function (t) {
+      return typeof t === "string" ? t : [pick(t, ["at", "createdAt"]) ? new Date(pick(t, ["at", "createdAt"])).toLocaleString("en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }) : "", pick(t, ["text", "note", "message", "event"])].filter(Boolean).join(" — ");
+    }),
   };
 }
 
 Backend.disputes = async function () {
-  return asList(await apiRequest(ENDPOINTS.allDisputes), [
-    "disputes",
-    "data",
-  ]).map(disputeView);
+  return asList(await apiRequest(ENDPOINTS.allDisputes), ["disputes", "data"]).map(disputeView);
 };
 
 Backend.dispute = async function (id) {

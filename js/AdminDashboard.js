@@ -329,6 +329,18 @@ if (approveButton) {
       showDocuments(submission.documents);
       showVerifiedState(submission.status);
     } catch (error) {
+      // A worker opened on the facility page (or the other way round): open the right page
+      if (error && error.otherType) {
+        window.location.replace((error.otherType === "facility" ? PAGES.reviewFacility : PAGES.reviewWorker) +
+          "?id=" + encodeURIComponent(submissionId));
+        return;
+      }
+      // Don't leave the sample details on screen as if they were this person's
+      approveButton.disabled = true;
+      rejectButton.disabled = true;
+      approveButton.classList.add("opacity-50", "cursor-not-allowed");
+      rejectButton.classList.add("opacity-50", "cursor-not-allowed");
+      document.querySelectorAll("[data-field]").forEach(function (el) { el.textContent = ""; });
       showGeneralError("Couldn't load this submission: " + error.message);
     }
   }
