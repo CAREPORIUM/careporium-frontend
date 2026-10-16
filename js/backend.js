@@ -1671,62 +1671,70 @@ function applicationsInsideShift(shift) {
 }
 
 async function loadFacilityApplicationsList(knownShifts) {
-  let remembered = null;
-  try { remembered = sessionStorage.getItem("facilityApplicationsSource3"); } catch (e) { /* ignore */ }
-  const remember = function (value) {
-    try { sessionStorage.setItem("facilityApplicationsSource3", value); } catch (e) { /* ignore */ }
+  // Which per-shift route worked last time (so the others aren't tried again on every page)
+  let remembered = -1;
+  try { remembered = Number(sessionStorage.getItem("facilityApplicationsRoute4") || -1); } catch (e) { /* ignore */ }
+  const remember = function (index) {
+    try { sessionStorage.setItem("facilityApplicationsRoute4", String(index)); } catch (e) { /* ignore */ }
   };
 
-  // 1. A whole-facility list
-  const lists = remembered && remembered.indexOf("list:") === 0
-    ? [remembered.slice(5)]
-    : remembered ? [] : FACILITY_APPLICATION_LISTS;
-  for (const path of lists) {
-    try {
-      const apps = asList(await apiRequest(path), ["applications", "data"]);
-      remember("list:" + path);
-      return apps;
-    } catch (error) {
-      if (error.status !== 404) throw error; // a real error (e.g. not logged in): show it
-    }
-  }
-
-  // 2. Per shift: applications inside each shift, or a per-shift address
   const shifts = knownShifts && knownShifts.length > 1 ? knownShifts : await loadFacilityShiftsRaw();
-  let apps = [];
-  shifts.forEach(function (shift) { apps = apps.concat(applicationsInsideShift(shift)); });
-  if (apps.length > 0 || remembered === "embedded") {
-    remember("embedded");
-    return apps;
-  }
-  let perShift = null;
-  if (remembered && remembered.indexOf("shift:") === 0) {
-    perShift = SHIFT_APPLICATION_LISTS[Number(remembered.slice(6))];
-  } else if (shifts.length > 0) {
-    for (let i = 0; i < SHIFT_APPLICATION_LISTS.length; i += 1) {
-      try {
-        await apiRequest(SHIFT_APPLICATION_LISTS[i](idOf(shifts[0])));
-        perShift = SHIFT_APPLICATION_LISTS[i];
-        remember("shift:" + i);
-        break;
-      } catch (error) {
-        if (error.status !== 404) throw error;
-      }
-    }
-  }
-  if (perShift) {
-    const lists = await Promise.all(shifts.map(async function (shift) {
-      const list = asList(await apiRequest(perShift(idOf(shift))), ["applications", "data"]);
-      return list.map(function (a) { return Object.assign({ shift: idOf(shift) }, a); });
-    }));
-    return [].concat.apply([], lists);
-  }
   if (shifts.length === 0) {
     return []; // no shifts yet, so no applications either
   }
-  throw new Error(
+  let lastError = null;
+
+  // 1. Per shift: GET /api/shifts/v1/get-shift-applications/{shiftId} (the backend's Postman collection),
+  //    then the other spellings. Every shift is asked on its own: one old or broken shift that the
+  //    server refuses no longer hides the applicants of all the others.
+  const order = SHIFT_APPLICATION_LISTS.map(function (route, index) { return index; });
+  if (remembered >= 0 && remembered < order.length) {
+    order.splice(order.indexOf(remembered), 1);
+    order.unshift(remembered);
+  }
+  for (const index of order) {
+    const route = SHIFT_APPLICATION_LISTS[index];
+    const results = await Promise.all(shifts.map(function (shift) {
+      return apiRequest(route(idOf(shift))).then(
+        function (answer) { return { ok: true, shift: shift, list: asList(answer, ["applications", "data"]) }; },
+        function (error) { return { ok: false, shift: shift, error: error }; },
+      );
+    }));
+    const worked = results.filter(function (r) { return r.ok; });
+    results.filter(function (r) { return !r.ok && r.error.status !== 404; }).forEach(function (r) {
+      lastError = r.error;
+      console.warn("[applicants] " + route(idOf(r.shift)) + " → " + r.error.message);
+    });
+    if (worked.length > 0) {
+      remember(index);
+      return [].concat.apply([], worked.map(function (r) {
+        return r.list.map(function (a) {
+          // keep the shift's id with each application (unless it already names its shift)
+          return pick(a, ["shift", "shiftId"]) ? a : Object.assign({ shift: idOf(r.shift) }, a);
+        });
+      }));
+    }
+  }
+
+  // 2. A whole-facility list
+  for (const path of FACILITY_APPLICATION_LISTS) {
+    try {
+      return asList(await apiRequest(path), ["applications", "data"]);
+    } catch (error) {
+      if (error.status !== 404) lastError = error;
+    }
+  }
+
+  // 3. Applications sent inside each shift
+  let apps = [];
+  shifts.forEach(function (shift) { apps = apps.concat(applicationsInsideShift(shift)); });
+  if (apps.length > 0) {
+    return apps;
+  }
+
+  throw lastError || new Error(
     "The server doesn't have a facility applications endpoint yet: GET /api/shifts/v1/get-shift-applications/{shiftId} " +
-    "and GET /api/applications/v1/facility-applications both answered 404. Ask the backend developer to deploy one of them.",
+    "answered 404. Ask the backend developer to deploy it.",
   );
 }
 
