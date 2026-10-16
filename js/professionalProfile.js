@@ -1,4 +1,8 @@
 // ====== PROFESSIONAL PROFILE (3 STEPS) ======
+// Needs /js/api.js to be loaded first.
+
+// Where to go after the account is created
+const successPage = "../AuthenticationSection/accountCreateSuccess.html";
 
 // ---------- Helper functions ----------
 
@@ -26,9 +30,20 @@ function clearError(inputId) {
   input.classList.add("border-gray-200");
 }
 
-// Get what the user typed in a field (trim() removes extra spaces at the start and end)
+// Get what the user typed in a field (trim() removes extra spaces at the start and end).
+// If a box is missing from the page (e.g. commented out in the HTML), don't crash:
+// say which one in the Console (F12) and carry on with an empty value.
 function getValue(inputId) {
-  return document.getElementById(inputId).value.trim();
+  const field = document.getElementById(inputId);
+  if (field === null) {
+    console.warn(
+      'professionalProfile.js: there is no box with id="' +
+        inputId +
+        '" on this page.',
+    );
+    return "";
+  }
+  return field.value.trim();
 }
 
 // Show one step (1, 2 or 3) and hide the others
@@ -49,18 +64,20 @@ function showStep(stepNumber) {
 function setupEyeButton(inputId) {
   const input = document.getElementById(inputId);
 
-  document.getElementById(inputId + "Toggle").addEventListener("click", function () {
-    // If the password is hidden, show it. Otherwise, hide it.
-    if (input.type === "password") {
-      input.type = "text";
-    } else {
-      input.type = "password";
-    }
+  document
+    .getElementById(inputId + "Toggle")
+    .addEventListener("click", function () {
+      // If the password is hidden, show it. Otherwise, hide it.
+      if (input.type === "password") {
+        input.type = "text";
+      } else {
+        input.type = "password";
+      }
 
-    // Swap the two eye icons
-    document.getElementById(inputId + "EyeOff").classList.toggle("hidden");
-    document.getElementById(inputId + "EyeOn").classList.toggle("hidden");
-  });
+      // Swap the two eye icons
+      document.getElementById(inputId + "EyeOff").classList.toggle("hidden");
+      document.getElementById(inputId + "EyeOn").classList.toggle("hidden");
+    });
 }
 
 setupEyeButton("password");
@@ -79,15 +96,38 @@ document.getElementById("stepTwoArrow").addEventListener("click", function () {
 });
 
 // Step 3's arrow goes back to step 2
-document.getElementById("stepThreeArrow").addEventListener("click", function () {
-  showStep(2);
-});
+document
+  .getElementById("stepThreeArrow")
+  .addEventListener("click", function () {
+    showStep(2);
+  });
 
 // ==================================================
 // STEP 1: PROFILE
 // ==================================================
 
-document.getElementById("stepOneForm").addEventListener("submit", function (event) {
+// REAL: ask the server if the email is free, so the user finds out now,
+// not after filling in all 3 steps. The server answers { available: true } or { available: false }.
+async function isEmailAvailable(email) {
+  // Not on the server yet (see SERVER_HAS.emailCheck in api.js): the register call checks instead
+  if (usesDemo("emailCheck")) {
+    return true;
+  }
+
+  try {
+    const data = await apiRequest(
+      ENDPOINTS.emailAvailable + "?email=" + encodeURIComponent(email),
+    );
+    return data.available;
+  } catch (error) {
+    // If the check itself fails, let the user continue. The server checks again at the end.
+    return true;
+  }
+}
+
+const stepOneForm = document.getElementById("stepOneForm");
+
+stepOneForm.addEventListener("submit", async function (event) {
   // Stop the page from reloading when the form is sent
   event.preventDefault();
 
@@ -95,9 +135,9 @@ document.getElementById("stepOneForm").addEventListener("submit", function (even
   let isValid = true;
 
   const fullName = getValue("fullName");
-  const email = getValue("email");
+  const email = getValue("email").toLowerCase();
   const phone = getValue("phone");
-  const secondaryPhone = getValue("secondaryPhone");
+  // const secondaryPhone = getValue("secondaryPhone");
   const password = document.getElementById("password").value;
   const confirmPassword = document.getElementById("confirmPassword").value;
 
@@ -144,19 +184,19 @@ document.getElementById("stepOneForm").addEventListener("submit", function (even
   }
 
   // 4. SECONDARY PHONE NUMBER (optional, so we only check it if something was typed)
-  const secondaryNumbers = secondaryPhone.replace(/[^0-9]/g, "");
+  // const secondaryNumbers = secondaryPhone.replace(/[^0-9]/g, "");
 
-  if (secondaryPhone === "") {
-    clearError("secondaryPhone"); // empty is fine
-  } else if (secondaryNumbers.length !== 11) {
-    showError("secondaryPhone", "Phone number must have 11 digits, like 0812 345 6789.");
-    isValid = false;
-  } else if (secondaryNumbers === phoneNumbers) {
-    showError("secondaryPhone", "Please use a different number from your main phone number.");
-    isValid = false;
-  } else {
-    clearError("secondaryPhone");
-  }
+  // if (secondaryPhone === "") {
+  //   clearError("secondaryPhone"); // empty is fine
+  // } else if (secondaryNumbers.length !== 11) {
+  //   showError("secondaryPhone", "Phone number must have 11 digits, like 0812 345 6789.");
+  //   isValid = false;
+  // } else if (secondaryNumbers === phoneNumbers) {
+  //   showError("secondaryPhone", "Please use a different number from your main phone number.");
+  //   isValid = false;
+  // } else {
+  //   clearError("secondaryPhone");
+  // }
 
   // 5. PASSWORD (at least 8 characters, uppercase and lowercase letters, and a number or symbol)
   if (password === "") {
@@ -167,11 +207,17 @@ document.getElementById("stepOneForm").addEventListener("submit", function (even
     isValid = false;
   } else if (!/[A-Z]/.test(password) || !/[a-z]/.test(password)) {
     // /[A-Z]/ looks for a capital letter, /[a-z]/ looks for a small letter
-    showError("password", "Password must include uppercase and lowercase letters.");
+    showError(
+      "password",
+      "Password must include uppercase and lowercase letters.",
+    );
     isValid = false;
   } else if (!/[^A-Za-z]/.test(password)) {
     // [^A-Za-z] means "anything that is NOT a letter", so a number or a symbol
-    showError("password", "Password must include a number or special character.");
+    showError(
+      "password",
+      "Password must include a number or special character.",
+    );
     isValid = false;
   } else {
     clearError("password");
@@ -188,10 +234,26 @@ document.getElementById("stepOneForm").addEventListener("submit", function (even
     clearError("confirmPassword");
   }
 
-  // If everything is correct, go to step 2
-  if (isValid) {
-    showStep(2);
+  if (!isValid) {
+    return;
   }
+
+  // 7. EMAIL NOT ALREADY USED (asks the server, only with the real backend)
+  const continueButton = stepOneForm.querySelector('button[type="submit"]');
+  setLoading(continueButton, true, "Checking…");
+  const available = await isEmailAvailable(email);
+  setLoading(continueButton, false);
+
+  if (!available) {
+    showError(
+      "email",
+      "An account with this email already exists. Try logging in instead.",
+    );
+    return;
+  }
+
+  // Everything is correct: go to step 2
+  showStep(2);
 });
 
 // ==================================================
@@ -202,58 +264,108 @@ document.getElementById("stepTwoBack").addEventListener("click", function () {
   showStep(1);
 });
 
-document.getElementById("stepTwoForm").addEventListener("submit", function (event) {
-  event.preventDefault();
+document
+  .getElementById("stepTwoForm")
+  .addEventListener("submit", function (event) {
+    event.preventDefault();
 
-  let isValid = true;
+    let isValid = true;
 
-  // 1. ROLE, SPECIALTY AND CERTIFICATION (dropdowns: the first option has an empty value)
-  // We check all three the same way, using a loop.
-  // const dropdowns = [
-  //   { id: "role", message: "Please choose your professional role." },
-  //   { id: "specialty", message: "Please choose your specialty." },
-  //   { id: "certification", message: "Please choose a certification." },
-  // ];
+    // 1. ROLE, SPECIALTY AND CERTIFICATION (dropdowns: the first option has an empty value)
 
-  // dropdowns.forEach(function (dropdown) {
-  //   if (getValue(dropdown.id) === "") {
-  //     showError(dropdown.id, dropdown.message);
-  //     isValid = false;
-  //   } else {
-  //     clearError(dropdown.id);
-  //   }
-  // });
+    // 1. ROLE AND SPECIALTY (dropdowns: the first option has an empty value)
+    // (Certification is left out while its box is commented out in the HTML)
+    const dropdowns = [
+      { id: "role", message: "Please choose your professional role." },
+      { id: "specialty", message: "Please choose your specialty." },
+    ];
 
-  // 2. YEARS OF EXPERIENCE (placeholder "2 years": a whole number from 0 to 60)
-  const experience = getValue("experience");
-  // Number() turns the text "2" into the number 2
-  const years = Number(experience);
+    dropdowns.forEach(function (dropdown) {
+      if (getValue(dropdown.id) === "") {
+        showError(dropdown.id, dropdown.message);
+        isValid = false;
+      } else {
+        clearError(dropdown.id);
+      }
+    });
+    // We check all three the same way, using a loop.
+    // const dropdowns = [
+    //   { id: "role", message: "Please choose your professional role." },
+    //   { id: "specialty", message: "Please choose your specialty." },
+    //   { id: "certification", message: "Please choose a certification." },
+    // ];
 
-  if (experience === "") {
-    showError("experience", "Please enter your years of experience.");
-    isValid = false;
-  } else if (!Number.isInteger(years) || years < 0 || years > 60) {
-    showError("experience", "Please enter a whole number between 0 and 60.");
-    isValid = false;
-  } else {
-    clearError("experience");
-  }
+    // dropdowns.forEach(function (dropdown) {
+    //   if (getValue(dropdown.id) === "") {
+    //     showError(dropdown.id, dropdown.message);
+    //     isValid = false;
+    //   } else {
+    //     clearError(dropdown.id);
+    //   }
+    // });
 
-  // If everything is correct, go to step 3
-  if (isValid) {
-    showStep(3);
-  }
-});
+    // 2. YEARS OF EXPERIENCE (placeholder "2 years": a whole number from 0 to 60)
+    const experience = getValue("experience");
+    // Number() turns the text "2" into the number 2
+    const years = Number(experience);
+
+    if (experience === "") {
+      showError("experience", "Please enter your years of experience.");
+      isValid = false;
+    } else if (!Number.isInteger(years) || years < 0 || years > 60) {
+      showError("experience", "Please enter a whole number between 0 and 60.");
+      isValid = false;
+    } else {
+      clearError("experience");
+    }
+
+    // If everything is correct, go to step 3
+    if (isValid) {
+      showStep(3);
+    }
+  });
 
 // ==================================================
-// STEP 3: LOCATION / AREA
+// STEP 3: LOCATION / AREA (and create the account)
 // ==================================================
 
 document.getElementById("stepThreeBack").addEventListener("click", function () {
   showStep(2);
 });
 
-document.getElementById("stepThreeForm").addEventListener("submit", function (event) {
+// Get a field's value, or "" if the field isn't on the page
+// (e.g. Certifications and the secondary phone are commented out in the HTML for now)
+function getOptionalValue(inputId) {
+  const field = document.getElementById(inputId);
+  if (field === null) {
+    return "";
+  }
+  return field.value.trim();
+}
+
+// Collect the details from all 3 steps into one object, ready to send to the server
+function getAllDetails() {
+  return {
+    fullName: getValue("fullName"),
+    email: getValue("email").toLowerCase(),
+    phone: getValue("phone").replace(/[^0-9]/g, ""),
+    // The secondary phone box is commented out in the HTML for now, so it may not be there
+    secondaryPhone: getOptionalValue("secondaryPhone").replace(/[^0-9]/g, ""),
+    password: document.getElementById("password").value,
+    role: getOptionalValue("role"),
+    specialty: getOptionalValue("specialty"),
+    experience: Number(getValue("experience")),
+    certification: getOptionalValue("certification"),
+    address: getValue("address"),
+    city: getValue("city"),
+    state: getValue("state"),
+    country: getValue("country"),
+  };
+}
+
+const stepThreeForm = document.getElementById("stepThreeForm");
+
+stepThreeForm.addEventListener("submit", async function (event) {
   event.preventDefault();
 
   let isValid = true;
@@ -295,8 +407,29 @@ document.getElementById("stepThreeForm").addEventListener("submit", function (ev
     termsError.classList.add("hidden");
   }
 
-  // If everything is correct, go to the success page
-  if (isValid) {
-    window.location.href = "/AuthenticationSection/AccountCreateSuccess.html";
+  if (!isValid) {
+    return;
+  }
+
+  // DEMO: go straight to the success page
+  if (USE_DEMO_MODE) {
+    window.location.href = successPage;
+    return;
+  }
+
+  // REAL: create the account with the details from all 3 steps
+  const createButton = stepThreeForm.querySelector('button[type="submit"]');
+  setLoading(createButton, true, "Creating account…");
+
+  try {
+    const details = getAllDetails();
+    await Backend.registerWorker(details);
+    // The backend emails a 6-digit code to confirm the email address: go and enter it
+    sessionStorage.setItem("verifyEmail", details.email);
+    window.location.href = "../AuthenticationSection/verifyAccount.html";
+  } catch (error) {
+    termsError.textContent = "Couldn't create your account: " + error.message;
+    termsError.classList.remove("hidden");
+    setLoading(createButton, false);
   }
 });

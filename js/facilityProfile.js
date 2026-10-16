@@ -1,4 +1,8 @@
-// ====== HEALTH FACILITY PAGE ======
+// ====== HEALTH FACILITY SIGN-UP PAGE ======
+// Needs /js/api.js to be loaded first.
+
+// Where to go after the account is created
+const successPage = "../AuthenticationSection/accountCreateSuccess.html";
 
 // ---------- Helper functions ----------
 
@@ -33,22 +37,41 @@ function clearError(inputId) {
 function setupEyeButton(inputId) {
   const input = document.getElementById(inputId);
 
-  document.getElementById(inputId + "Toggle").addEventListener("click", function () {
-    // If the password is hidden, show it. Otherwise, hide it.
-    if (input.type === "password") {
-      input.type = "text";
-    } else {
-      input.type = "password";
-    }
+  document
+    .getElementById(inputId + "Toggle")
+    .addEventListener("click", function () {
+      // If the password is hidden, show it. Otherwise, hide it.
+      if (input.type === "password") {
+        input.type = "text";
+      } else {
+        input.type = "password";
+      }
 
-    // Swap the two eye icons
-    document.getElementById(inputId + "EyeOff").classList.toggle("hidden");
-    document.getElementById(inputId + "EyeOn").classList.toggle("hidden");
-  });
+      // Swap the two eye icons
+      document.getElementById(inputId + "EyeOff").classList.toggle("hidden");
+      document.getElementById(inputId + "EyeOn").classList.toggle("hidden");
+    });
 }
 
 setupEyeButton("password");
 setupEyeButton("confirmPassword");
+
+// ---------- Creating the account ----------
+
+// REAL: create the account on the server. The backend then emails a 6-digit code to confirm the
+// email address. The address and documents are added after logging in (registration page).
+async function createAccount(details, button) {
+  setLoading(button, true, "Creating account…");
+
+  try {
+    await Backend.registerFacility(details);
+    sessionStorage.setItem("verifyEmail", details.businessEmail);
+    window.location.href = "../AuthenticationSection/verifyAccount.html";
+  } catch (error) {
+    showGeneralError(error.message);
+    setLoading(button, false);
+  }
+}
 
 // ---------- Form validation ----------
 
@@ -65,9 +88,12 @@ form.addEventListener("submit", function (event) {
   const facilityName = document.getElementById("facilityName").value.trim();
   const facilityType = document.getElementById("facilityType").value;
   const taxId = document.getElementById("taxId").value.trim();
-  const businessEmail = document.getElementById("businessEmail").value.trim();
+  const businessEmail = document
+    .getElementById("businessEmail")
+    .value.trim()
+    .toLowerCase();
   const phone = document.getElementById("phone").value.trim();
-  const secondaryPhone = document.getElementById("secondaryPhone").value.trim();
+  // const secondaryPhone = document.getElementById("secondaryPhone").value.trim();
   const password = document.getElementById("password").value;
   const confirmPassword = document.getElementById("confirmPassword").value;
   const termsChecked = document.getElementById("terms").checked;
@@ -112,7 +138,10 @@ form.addEventListener("submit", function (event) {
     showError("businessEmail", "Please enter your business email.");
     isValid = false;
   } else if (!emailPattern.test(businessEmail)) {
-    showError("businessEmail", "Please enter a valid email, like admin@facility.com.");
+    showError(
+      "businessEmail",
+      "Please enter a valid email, like admin@facility.com.",
+    );
     isValid = false;
   } else {
     clearError("businessEmail");
@@ -133,22 +162,21 @@ form.addEventListener("submit", function (event) {
   }
 
   // 6. SECONDARY PHONE NUMBER (optional, so we only check it if something was typed)
-  const secondaryNumbers = secondaryPhone.replace(/[^0-9]/g, "");
+  // const secondaryNumbers = secondaryPhone.replace(/[^0-9]/g, "");
 
-  if (secondaryPhone === "") {
-    clearError("secondaryPhone"); // empty is fine
-  } else if (secondaryNumbers.length !== 11) {
-    showError("secondaryPhone", "Phone number must have 11 digits, like 0812 345 6789.");
-    isValid = false;
-  } else if (secondaryNumbers === phoneNumbers) {
-    showError("secondaryPhone", "Please use a different number from the main phone number.");
-    isValid = false;
-  } else {
-    clearError("secondaryPhone");
-  }
+  // if (secondaryPhone === "") {
+  //   clearError("secondaryPhone"); // empty is fine
+  // } else if (secondaryNumbers.length !== 11) {
+  //   showError("secondaryPhone", "Phone number must have 11 digits, like 0812 345 6789.");
+  //   isValid = false;
+  // } else if (secondaryNumbers === phoneNumbers) {
+  //   showError("secondaryPhone", "Please use a different number from the main phone number.");
+  //   isValid = false;
+  // } else {
+  //   clearError("secondaryPhone");
+  // }
 
   // 7. PASSWORD (at least 8 characters, uppercase and lowercase letters, and a number or symbol)
-  // These are the same rules as the "Create New Password" page.
   if (password === "") {
     showError("password", "Please enter a password.");
     isValid = false;
@@ -157,11 +185,17 @@ form.addEventListener("submit", function (event) {
     isValid = false;
   } else if (!/[A-Z]/.test(password) || !/[a-z]/.test(password)) {
     // /[A-Z]/ looks for a capital letter, /[a-z]/ looks for a small letter
-    showError("password", "Password must include uppercase and lowercase letters.");
+    showError(
+      "password",
+      "Password must include uppercase and lowercase letters.",
+    );
     isValid = false;
   } else if (!/[^A-Za-z]/.test(password)) {
     // [^A-Za-z] means "anything that is NOT a letter", so a number or a symbol
-    showError("password", "Password must include a number or special character.");
+    showError(
+      "password",
+      "Password must include a number or special character.",
+    );
     isValid = false;
   } else {
     clearError("password");
@@ -191,8 +225,27 @@ form.addEventListener("submit", function (event) {
     termsError.classList.add("hidden");
   }
 
-  // If everything is correct, go to the "Account Created" page
-  if (isValid) {
-    window.location.href = "/AuthenticationSection/accountCreateSuccess.html";
+  if (!isValid) {
+    return;
+  }
+
+  // Everything is correct
+  if (USE_DEMO_MODE) {
+    // DEMO: go straight to the "Account Created" page
+    window.location.href = successPage;
+  } else {
+    // REAL: send the details to the server (the password is sent once, never stored here)
+    createAccount(
+      {
+        facilityName: facilityName,
+        facilityType: facilityType,
+        taxId: taxId,
+        businessEmail: businessEmail,
+        phone: phoneNumbers,
+        // secondaryPhone: secondaryNumbers,
+        password: password,
+      },
+      form.querySelector('button[type="submit"]'),
+    );
   }
 });

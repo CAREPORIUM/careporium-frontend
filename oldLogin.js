@@ -1,0 +1,200 @@
+// ====== LOG IN PAGE ======
+// Needs /js/api.js to be loaded first.
+
+// ---------- Where each type of user goes after logging in ----------
+
+// Everyone goes to their dashboard. The dashboard then shows the right version:
+// "Verification needed", "Verification in progress", or the full dashboard once verified.
+const startPages = {
+  professional: "/WorkerShiftMarket/Dashboard.html",
+  facility: "/FacilityHiringSection/Dashboard.html",
+};
+
+// ---------- Demo accounts (only used when USE_DEMO_MODE is true in api.js) ----------
+
+//  This is only for testing the design. Anyone can read this file in the browser,
+// so real emails and passwords must NEVER be written here.
+const professionalAccount = {
+  email: "professional@careporium.com",
+  password: "Nurse@123",
+  type: "professional",
+};
+
+const facilityAccount = {
+  email: "facility@careporium.com",
+  password: "Facility@123",
+  type: "facility",
+};
+
+// ---------- Helper functions ----------
+
+// Show a red error message under an input and make its border red
+function showError(inputId, message) {
+  const input = document.getElementById(inputId);
+  const errorText = document.getElementById(inputId + "Error");
+
+  errorText.textContent = message;
+  errorText.classList.remove("hidden");
+
+  input.classList.remove("border-blue-400");
+  input.classList.add("border-red-500");
+}
+
+// Hide the error message and make the border blue again
+function clearError(inputId) {
+  const input = document.getElementById(inputId);
+  const errorText = document.getElementById(inputId + "Error");
+
+  errorText.textContent = "";
+  errorText.classList.add("hidden");
+
+  input.classList.remove("border-red-500");
+  input.classList.add("border-blue-400");
+}
+
+// ---------- Show / hide password ----------
+
+const togglePassword = document.getElementById("togglePassword");
+
+togglePassword.addEventListener("click", function () {
+  const passwordInput = document.getElementById("password");
+
+  // If the password is hidden, show it. Otherwise, hide it.
+  if (passwordInput.type === "password") {
+    passwordInput.type = "text";
+  } else {
+    passwordInput.type = "password";
+  }
+
+  // Swap the eye icons
+  document.getElementById("passwordEyeOff").classList.toggle("hidden");
+  document.getElementById("passwordEyeOn").classList.toggle("hidden");
+});
+
+// ---------- Logging in ----------
+
+// DEMO: check the details against the two demo accounts
+function demoLogin(email, password) {
+  // Find which account the email belongs to (if any)
+  let account = null;
+
+  if (email === professionalAccount.email) {
+    account = professionalAccount;
+  } else if (email === facilityAccount.email) {
+    account = facilityAccount;
+  }
+
+  if (account === null) {
+    showError("email", "No account found with this email.");
+    return;
+  }
+
+  if (password !== account.password) {
+    showError("password", "Incorrect password. Please try again.");
+    return;
+  }
+
+  // Remember who logged in, then go to their dashboard.
+  // The email is used to remember this demo account's verification progress (see api.js).
+  localStorage.setItem("userType", account.type);
+  localStorage.setItem("userEmail", email);
+  window.location.href = startPages[account.type];
+}
+
+// REAL: ask the server to check the details (backend.js translates the answer).
+async function apiLogin(email, password, button) {
+  setLoading(button, true, "Logging in…");
+
+  try {
+    const result = await Backend.login(email, password);
+
+    // The email address hasn't been confirmed with the emailed code yet: send a new code
+    // and go to the code page. (The account can log in once it's confirmed.)
+    if (!result.emailConfirmed) {
+      sessionStorage.setItem("verifyEmail", email);
+      try {
+        await Backend.resendAccountCode(email);
+      } catch (error) {
+        // The code page has its own "Resend code" button
+      }
+      window.location.href = "/AuthenticationSection/verifyAccount.html";
+      return;
+    }
+
+    // Save the login token (sent with every later request), the user type and the user id
+    Backend.saveSession(result, email);
+
+    // Admins have their own workspace
+    if (result.userType === "admin") {
+      window.location.href = "/Admin/AdminOverview.html";
+      return;
+    }
+    window.location.href = startPages[result.userType];
+  } catch (error) {
+    // One general message under the password, e.g. "Incorrect email or password."
+    showError("password", error.message);
+    setLoading(button, false);
+  }
+}
+
+// Coming from the email code page: say the account is ready
+if (getUrlValue("confirmed") === "1") {
+  const formError = document.getElementById("formError");
+  if (formError) {
+    formError.textContent = "Your email is confirmed. You can log in now.";
+    formError.className =
+      "bg-green-50 text-green-700 text-xs font-medium rounded-lg p-3 mb-5";
+  }
+}
+
+// ---------- Form validation ----------
+
+const form = document.getElementById("loginForm");
+
+form.addEventListener("submit", function (event) {
+  // Stop the page from reloading when the form is sent
+  event.preventDefault();
+
+  // This stays true unless we find a mistake
+  let isValid = true;
+
+  // Get what the user typed. trim() removes extra spaces at the start and end.
+  // toLowerCase() makes "Facility@Careporium.com" the same as "facility@careporium.com".
+  const email = document.getElementById("email").value.trim().toLowerCase();
+  const password = document.getElementById("password").value;
+
+  // 1. EMAIL (placeholder "you@gmail.com")
+  // This pattern checks for: something @ something . something
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  if (email === "") {
+    showError("email", "Please enter your email address.");
+    isValid = false;
+  } else if (!emailPattern.test(email)) {
+    showError("email", "Please enter a valid email, like you@gmail.com.");
+    isValid = false;
+  } else {
+    clearError("email");
+  }
+
+  // 2. PASSWORD (just make sure it's not empty)
+  if (password === "") {
+    showError("password", "Please enter your password.");
+    isValid = false;
+  } else {
+    clearError("password");
+  }
+
+  // Stop here if something is missing
+  if (!isValid) {
+    return;
+  }
+
+  // 3. CHECK THE DETAILS: with the demo accounts, or with the real server
+  if (USE_DEMO_MODE) {
+    demoLogin(email, password);
+  } else {
+    const submitButton = form.querySelector('button[type="submit"]');
+    apiLogin(email, password, submitButton);
+  }
+});

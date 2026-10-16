@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Careporium - Amara Okafor</title>
+    <title>Careporium - Worker Profile</title>
 
     <!-- Tailwind CSS from the CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -29,207 +29,172 @@
     </script>
   </head>
 
-  <body class="bg-slate-50 text-gray-900">
+  <!-- data-requires-verification: until the account is verified, this page sends the user back to the dashboard -->
+  <body class="bg-slate-50 text-gray-900" data-requires-verification="../FacilityHiringSection/Dashboard.html">
     <!-- Sidebar on the left, page on the right -->
     <div class="flex min-h-screen">
       <!-- ==================== SIDEBAR ==================== -->
-      <!-- On desktop it always shows (md:flex). On mobile it's hidden until the menu button opens it. -->
+      <!-- Mobile: hidden until the menu button opens it, then it covers the left of the screen (fixed).
+           Desktop (md:): always visible, and sticky + h-screen keeps it in place while the page scrolls. -->
       <aside
         id="sidebar"
-        class="hidden md:flex fixed md:static inset-y-0 left-0 z-20 w-56 flex-shrink-0 flex-col bg-white border-r border-gray-200 p-5"
+        class="flex hidden md:flex flex-col fixed md:sticky inset-y-0 md:top-0 left-0 z-20 w-72 md:w-56 h-screen overflow-y-auto flex-shrink-0 bg-white border-r border-gray-200 p-5"
       >
-        <!-- Logo, with a close button next to it (the close button only shows on mobile) -->
-        <div class="flex items-center justify-between">
-          <img
-            src="/images/logo-blue.png"
-            alt="Careporium logo"
-            class="w-36 h-auto"
-          />
-          <button type="button" id="closeMenuButton" class="md:hidden">
-            <img src="/icons/close.png" alt="Close menu" class="w-6 h-6" />
+        <!-- Logo, with a close button next to it (the close button only shows on mobile).
+             gap-5 and the wider mobile sidebar (w-72) keep the button away from the logo. -->
+        <div class="flex items-center justify-between gap-5">
+          <img src="../images/logo-blue.png" alt="Careporium logo" class="w-36 h-auto" />
+          <button type="button" id="closeMenuButton" class="md:hidden p-2 rounded-lg hover:bg-gray-100">
+            <img src="../icons/close.png" alt="Close menu" class="w-6 h-6" />
           </button>
         </div>
 
         <!-- Menu links -->
         <nav class="space-y-2 mt-10">
-          <!-- <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50">
-            <img src="/icons/nav-dashboard.png" alt="" class="w-4 h-4" />
+          <a href="../FacilityHiringSection/Dashboard.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50">
+            <img src="../icons/nav-dashboard.png" alt="" class="w-4 h-4" />
             Dashboard
-          </a> -->
-          <a
-            href="/FacilityHiringSection/PostShift.html"
-            class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50"
-          >
-            <img src="/icons/nav-post-shift.png" alt="" class="w-4 h-4" />
+          </a>
+          <a href="../FacilityHiringSection/PostShift.html" data-needs-verification class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50">
+            <img src="../icons/nav-post-shift.png" alt="" class="w-4 h-4" />
             Post a shift
           </a>
           <!-- Active page: light blue -->
-          <a
-            href="/FacilityHiringSection/Applicants.html"
-            class="flex items-center gap-3 px-3 py-2 rounded-lg bg-blue-50 text-blue-600 text-sm font-medium"
-          >
-            <img src="/icons/nav-applicants.png" alt="" class="w-4 h-4" />
+          <a href="../FacilityHiringSection/Applicants.html" data-needs-verification class="flex items-center gap-3 px-3 py-2 rounded-lg bg-blue-50 text-blue-600 text-sm font-medium">
+            <img src="../icons/nav-applicants.png" alt="" class="w-4 h-4" />
             Applicants
           </a>
-          <!-- <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50">
-            <img src="/icons/nav-my-shifts.png" alt="" class="w-4 h-4" />
-            My shifts
-          </a> -->
-          <!-- <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50">
-            <img src="/icons/nav-facility-profile.png" alt="" class="w-4 h-4" />
+          <a href="../FacilityHiringSection/ManageShifts.html" data-needs-verification class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50">
+            <img src="../icons/nav-upcoming.png" alt="" class="w-4 h-4" />
+            Manage shifts
+          </a>
+          <a href="../FacilityHiringSection/Payments.html" data-needs-verification class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50">
+            <img src="../icons/nav-payments.png" alt="" class="w-4 h-4" />
+            Payments
+          </a>
+          <a href="../FacilityHiringSection/FacilityProfile.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50">
+            <img src="../icons/nav-profile.png" alt="" class="w-4 h-4" />
             Facility profile
-          </a> -->
-          <!-- Log out button. mt-auto pushes it to the bottom of the sidebar on desktop. -->
-          <!-- data-login says which sign-in page to go to after logging out. -->
-          <button
-            type="button"
-            id="logoutButton"
-            data-login="/AuthenticationSection/login.html"
-            class="mt-auto flex items-center gap-3 px-3 py-2 rounded-lg border border-red-600 text-red-600 text-sm font-medium hover:bg-red-50"
-          >
-            <img src="/icons/logout.png" alt="" class="w-4 h-4" />
-            Log out
-          </button>
+          </a>
+          <a href="../FacilityHiringSection/Notifications.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50">
+            <img src="../icons/bell.png" alt="" class="w-4 h-4" />
+            Notifications
+          </a>
         </nav>
+
+        <!-- Log out: outside the <nav>, so mt-auto can push it to the bottom-left of the sidebar -->
+        <button
+          type="button"
+          id="logoutButton"
+          data-login="../AuthenticationSection/login.html"
+          class="mt-auto w-full flex items-center gap-3 px-3 py-2 rounded-lg border border-red-600 text-red-600 text-sm font-medium hover:bg-red-50"
+        >
+          <img src="../icons/logout.png" alt="" class="w-4 h-4" />
+          Log out
+        </button>
       </aside>
 
       <!-- ==================== RIGHT SIDE ==================== -->
       <div class="flex-1 min-w-0">
-        <!-- Top bar: where you are on the left, user on the right -->
-        <header
-          class="bg-white border-b border-gray-200 px-5 md:px-8 py-4 flex items-center justify-between"
-        >
+        <!-- Top bar. sticky top-0 keeps it at the top while the page scrolls under it. -->
+        <header class="sticky top-0 z-10 bg-white border-b border-gray-200 px-5 md:px-8 py-4 flex items-center justify-between">
           <div class="flex items-center gap-3">
             <!-- Menu button (only on mobile) -->
             <button type="button" id="menuButton" class="md:hidden">
-              <img src="/icons/menu.png" alt="Open menu" class="w-6 h-6" />
+              <img src="../icons/menu.png" alt="Open menu" class="w-6 h-6" />
             </button>
-            <p class="text-xs font-medium text-gray-500 uppercase">
-              Facility workspace / Amara Okafor
-            </p>
+            <!-- No page title in the top bar in this design -->
+            <span></span>
           </div>
 
           <div class="flex items-center gap-3">
-            <img src="/icons/bell.png" alt="Notifications" class="w-4 h-4" />
-            <p class="hidden sm:block text-sm font-medium">Mainland Care</p>
+            <!-- The bell opens the Notifications page -->
+            <a href="../FacilityHiringSection/Notifications.html" class="p-1 rounded-lg hover:bg-gray-100"><img src="../icons/bell.png" alt="Notifications" class="w-4 h-4" /></a>
+            <p class="hidden sm:block text-sm font-medium" data-user-name></p>
             <!-- Initials in a light blue circle -->
-            <span
-              class="w-8 h-8 rounded-full bg-blue-50 text-blue-600 text-xs font-semibold flex items-center justify-center"
-              >MC</span
-            >
+            <span class="w-8 h-8 rounded-full bg-blue-50 text-blue-600 text-xs font-semibold flex items-center justify-center" data-user-initials></span>
           </div>
         </header>
 
         <!-- ==================== PAGE CONTENT ==================== -->
         <main class="p-5 md:p-8 max-w-6xl">
-          <!-- Page heading -->
-          <h1 class="text-3xl font-semibold">Amara Okafor</h1>
-          <p class="text-sm text-gray-700 mt-2">
-            Registered nurse · Acute care · Lagos · Available for the full shift
-          </p>
+          <!-- Errors that don't belong to one input (e.g. "Can't reach the server") show here -->
+          <p id="formError" class="hidden bg-red-50 text-red-600 text-xs font-medium rounded-lg p-3 mb-5"></p>
+
+          <!-- Page heading. data-field="..." tells the JS which detail from the server goes where. -->
+          <h1 class="text-3xl font-semibold" data-field="name">Amara Okafor</h1>
+          <p class="text-sm text-gray-700 mt-2" data-field="summary">Registered nurse · Acute care · Lagos · Available for the full shift</p>
 
           <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mt-5">
             <!-- ===== Credentials (left) ===== -->
-            <section
-              class="bg-white border border-gray-200 rounded-2xl p-6 md:col-span-2"
-            >
-              <span
-                class="inline-block bg-green-50 text-green-700 text-xs font-semibold uppercase px-3 py-1 rounded"
-                >Verified license · Active</span
-              >
-              <h2 class="text-lg font-semibold mt-5">
-                Qualifications &amp; credentials
-              </h2>
+            <section class="bg-white border border-gray-200 rounded-2xl p-6 md:col-span-2">
+              <span id="workerBadge" class="hidden inline-block text-xs font-semibold px-3 py-1 rounded"></span>
+              <h2 class="text-lg font-semibold mt-5">Qualifications &amp; credentials</h2>
 
               <h3 class="text-base font-semibold mt-5">Professional licence</h3>
               <div class="space-y-1 text-xs text-gray-700 mt-3">
-                <p>Nursing and Midwifery Council of Nigeria (NMCN)</p>
-                <p>Status: Verified and active · Valid until 31 Dec 2026</p>
-                <p>Licence number: NMCN •••• 4821</p>
+                <p data-field="licenceBody">Nursing and Midwifery Council of Nigeria (NMCN)</p>
+                <p data-field="licenceStatus">Status: Verified and active · Valid until 31 Dec 2026</p>
+                <p data-field="licenceNumber">Licence number: NMCN •••• 4821</p>
               </div>
-              <a
-                href="#"
-                class="inline-block border border-blue-600 text-blue-600 text-sm font-medium text-center py-3 rounded-lg hover:bg-blue-50 px-8 mt-5"
-                >View verified credential</a
-              >
+              <a id="viewCredentialLink" href="../FacilityHiringSection/ApplicantProfile.html" class="inline-block border border-blue-600 text-blue-600 text-sm font-medium text-center py-3 rounded-lg hover:bg-blue-50 px-8 mt-5">View verified credential</a>
 
               <h3 class="text-base font-semibold mt-5">Certifications</h3>
               <div class="space-y-1 text-xs text-gray-700 mt-3">
-                <p>Basic Life Support (BLS) · Verified · Expires Jun 2027</p>
-                <p>
-                  Infection Prevention &amp; Control · Verified · Completed Apr
-                  2026
-                </p>
+                <p data-field="certification1">Basic Life Support (BLS) · Verified · Expires Jun 2027</p>
+                <p data-field="certification2">Infection Prevention &amp; Control · Verified · Completed Apr 2026</p>
               </div>
 
-              <h3 class="text-base font-semibold mt-5">
-                Specialty &amp; experience
-              </h3>
-              <div class="space-y-1 text-xs text-gray-700 mt-3">
-                <p>Acute care and community nursing · 5 years of experience</p>
-                <p>Staff Nurse — Mainland Care Hospital (2023–present)</p>
-                <p>Registered Nurse — Community Health Centre (2021–2023)</p>
-              </div>
+              <h3 class="text-base font-semibold mt-5">Specialty</h3>
+              <p class="text-xs text-gray-700 mt-3" data-field="specialty">Acute care and community nursing · 5 years of experience</p>
+
+              <!-- The worker's recent roles and soft skills (drawn by experience.js) -->
+              <h3 class="text-base font-semibold mt-5">Recent work experience</h3>
+              <div id="workerExperience" class="space-y-3 mt-3"><p class="text-xs text-gray-700">Loading…</p></div>
+
+              <h3 class="text-base font-semibold mt-5">Soft skills</h3>
+              <div id="workerSkills" class="flex flex-wrap gap-2 mt-3"></div>
 
               <h3 class="text-base font-semibold mt-5">Education</h3>
-              <p class="text-xs text-gray-700 mt-3">
-                Bachelor of Nursing Science · 2021
-              </p>
+              <p class="text-xs text-gray-700 mt-3" data-field="education">Bachelor of Nursing Science · 2021</p>
 
               <h3 class="text-base font-semibold mt-5">Worker reviews</h3>
               <div class="space-y-1 text-xs text-gray-700 mt-3">
-                <p>★★★★★ · “Punctual, prepared and clear during handover.”</p>
-                <p>Facility review from a verified completed shift.</p>
+                <p data-field="review">★★★★★ · “Punctual, prepared and clear during handover.”</p>
+                <p data-field="reviewSource">Facility review from a verified completed shift.</p>
               </div>
             </section>
 
             <!-- ===== Reliability and actions (right) ===== -->
-            <section
-              class="bg-white border border-gray-200 rounded-2xl p-6 self-start"
-            >
+            <section class="bg-white border border-gray-200 rounded-2xl p-6 self-start">
               <h2 class="text-lg font-semibold">Reliability at a glance</h2>
               <div class="space-y-1 text-sm text-gray-700 mt-3">
-                <p>★ 4.9 / 5 · 24 reviews</p>
-                <p>32 completed shifts</p>
-                <p>98% attendance</p>
-                <p>0 recorded no-shows in the last 90 days</p>
+                <p data-field="rating">★ 4.9 / 5 · 24 reviews</p>
+                <p data-field="completedShifts">32 completed shifts</p>
+                <p data-field="attendance">98% attendance</p>
+                <p data-field="noShows">0 recorded no-shows in the last 90 days</p>
               </div>
-              <p class="text-xs text-gray-500 mt-3">
-                Based on facility-confirmed shifts. Sample data for this design.
-              </p>
+              <p class="text-xs text-gray-500 mt-3">Based on facility-confirmed shifts.</p>
 
               <h2 class="text-lg font-semibold mt-5">Availability</h2>
-              <p class="text-xs text-gray-700 mt-3">6 Oct · 07:00–19:00 WAT</p>
-              <p class="text-xs text-gray-700 mt-1">
-                Matches this shift's full schedule.
-              </p>
+              <p class="text-xs text-gray-700 mt-3" data-field="availability">9 Oct · 07:00–19:00 WAT</p>
+              <p class="text-xs text-gray-700 mt-1" data-field="availabilityNote">Matches this shift's full schedule.</p>
 
               <!-- The JS changes these buttons when clicked -->
-              <button
-                type="button"
-                id="shortlistWorker"
-                class="w-full border border-blue-600 text-blue-600 text-sm font-medium text-center py-3 rounded-lg hover:bg-blue-50 mt-5"
-              >
-                Shortlist worker
-              </button>
-              <button
-                type="button"
-                id="offerShift"
-                class="w-full bg-blue-600 text-white text-sm font-medium text-center py-3 rounded-lg hover:bg-blue-700 mt-3"
-              >
-                Offer shift
-              </button>
-              <p class="text-xs text-gray-700 mt-3">
-                Credential documents are shared only with authorised facility
-                reviewers.
-              </p>
+              <button type="button" id="shortlistWorker" class="w-full border border-blue-600 text-blue-600 text-sm font-medium text-center py-3 rounded-lg hover:bg-blue-50 mt-5">Shortlist worker</button>
+              <button type="button" id="offerShift" class="w-full bg-blue-600 text-white text-sm font-medium text-center py-3 rounded-lg hover:bg-blue-700 mt-3">Offer shift</button>
+              <p class="text-xs text-gray-700 mt-3">Credential documents are shared only with authorised facility reviewers.</p>
             </section>
           </div>
         </main>
       </div>
     </div>
 
-    <!-- Shared JavaScript for this workspace -->
-    <script src="/js/facilityDashboard.js"></script>
+    <!-- api.js must come first: the page script uses its settings and helpers -->
+    <script src="../js/api.js"></script>
+    <!-- backend.js translates between the pages and the backend's field names -->
+    <script src="../js/backend.js"></script>
+    <script src="../js/facilityDashboard.js"></script>
+    <script src="../js/experience.js"></script>
   </body>
 </html>

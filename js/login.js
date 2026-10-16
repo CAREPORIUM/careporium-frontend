@@ -1,24 +1,29 @@
 // ====== LOG IN PAGE ======
+// Needs /js/api.js to be loaded first.
 
-// ---------- Demo accounts ----------
+// ---------- Where each type of user goes after logging in ----------
 
-// Two test accounts, one for each type of user.
-// ⚠️ This is only for testing the design. Anyone can read this file in the browser,
-// so real emails and passwords must NEVER be written here. A backend will check them later.
+// Everyone goes to their dashboard. The dashboard then shows the right version:
+// "Verification needed", "Verification in progress", or the full dashboard once verified.
+const startPages = {
+  professional: "../WorkerShiftMarket/Dashboard.html",
+  facility: "../FacilityHiringSection/Dashboard.html",
+};
+
+// ---------- Demo accounts (only used when USE_DEMO_MODE is true in api.js) ----------
+
+//  This is only for testing the design. Anyone can read this file in the browser,
+// so real emails and passwords must NEVER be written here.
 const professionalAccount = {
   email: "professional@careporium.com",
   password: "Nurse@123",
-  type: "professional", // saved when this account logs in
-  // Where a healthcare professional goes after logging in
-  page: "/HealthWorkerSection/healthWorkerCredentials.html",
+  type: "professional",
 };
 
 const facilityAccount = {
   email: "facility@careporium.com",
   password: "Facility@123",
-  type: "facility", // saved when this account logs in
-  // Where a facility goes after logging in
-  page: "/FacilitySection/facilityRegistration.html",
+  type: "facility",
 };
 
 // ---------- Helper functions ----------
@@ -66,6 +71,92 @@ togglePassword.addEventListener("click", function () {
   document.getElementById("passwordEyeOn").classList.toggle("hidden");
 });
 
+// ---------- Logging in ----------
+
+// DEMO: check the details against the two demo accounts
+function demoLogin(email, password) {
+  // Find which account the email belongs to (if any)
+  let account = null;
+
+  if (email === professionalAccount.email) {
+    account = professionalAccount;
+  } else if (email === facilityAccount.email) {
+    account = facilityAccount;
+  }
+
+  if (account === null) {
+    showError("email", "No account found with this email.");
+    return;
+  }
+
+  if (password !== account.password) {
+    showError("password", "Incorrect password. Please try again.");
+    return;
+  }
+
+  // Remember who logged in, then go to their dashboard.
+  // The email is used to remember this demo account's verification progress (see api.js).
+  localStorage.setItem("userType", account.type);
+  localStorage.setItem("userEmail", email);
+  window.location.href = startPages[account.type];
+}
+
+// REAL: ask the server to check the details (backend.js translates the answer).
+async function apiLogin(email, password, button) {
+  setLoading(button, true, "Logging in…");
+
+  try {
+    const result = await Backend.login(email, password);
+
+    // The email address hasn't been confirmed with the emailed code yet: send a new code
+    // and go to the code page. (The account can log in once it's confirmed.)
+    if (!result.emailConfirmed) {
+      sessionStorage.setItem("verifyEmail", email);
+      try {
+        await Backend.resendAccountCode(email);
+      } catch (error) {
+        // The code page has its own "Resend code" button
+      }
+      window.location.href = "../AuthenticationSection/verifyAccount.html";
+      return;
+    }
+
+    // We couldn't tell which kind of account this is: say so, instead of opening a broken page
+    if (result.userType !== "admin" && !startPages[result.userType]) {
+      showError(
+        "password",
+        "You're logged in, but we couldn't tell if this is a health worker or facility account. Please contact support.",
+      );
+      setLoading(button, false);
+      return;
+    }
+
+    // Save the login token (sent with every later request), the user type and the user id
+    Backend.saveSession(result, email);
+
+    // Admins have their own workspace
+    if (result.userType === "admin") {
+      window.location.href = "../Admin/AdminOverview.html";
+      return;
+    }
+    window.location.href = startPages[result.userType];
+  } catch (error) {
+    // One general message under the password, e.g. "Incorrect email or password."
+    showError("password", error.message);
+    setLoading(button, false);
+  }
+}
+
+// Coming from the email code page: say the account is ready
+if (getUrlValue("confirmed") === "1") {
+  const formError = document.getElementById("formError");
+  if (formError) {
+    formError.textContent = "Your email is confirmed. You can log in now.";
+    formError.className =
+      "bg-green-50 text-green-700 text-xs font-medium rounded-lg p-3 mb-5";
+  }
+}
+
 // ---------- Form validation ----------
 
 const form = document.getElementById("loginForm");
@@ -109,34 +200,11 @@ form.addEventListener("submit", function (event) {
     return;
   }
 
-  // 3. CHECK THE EMAIL AND PASSWORD AGAINST THE DEMO ACCOUNTS
-
-  // First, find which account the email belongs to (if any)
-  let account = null;
-
-  if (email === professionalAccount.email) {
-    account = professionalAccount;
-  } else if (email === facilityAccount.email) {
-    account = facilityAccount;
+  // 3. CHECK THE DETAILS: with the demo accounts, or with the real server
+  if (USE_DEMO_MODE) {
+    demoLogin(email, password);
+  } else {
+    const submitButton = form.querySelector('button[type="submit"]');
+    apiLogin(email, password, submitButton);
   }
-
-  // No account has this email
-  if (account === null) {
-    showError("email", "No account found with this email.");
-    return;
-  }
-
-  // The email is right, but the password doesn't match that account
-  if (password !== account.password) {
-    showError("password", "Incorrect password. Please try again.");
-    return;
-  }
-
-  // Both are correct.
-  // Remember who logged in, so other pages can read it later.
-  // localStorage keeps this saved in the browser, even after the page changes.
-  localStorage.setItem("userType", account.type);
-
-  // Go to that account's page
-  window.location.href = account.page;
 });

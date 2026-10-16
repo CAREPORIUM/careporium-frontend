@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Careporium - Facility Dashboard</title>
+
+    <!-- Tailwind CSS from the CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Use SF Pro (the Apple system font) for the whole page -->
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [
+                "-apple-system",
+                "BlinkMacSystemFont",
+                '"SF Pro Text"',
+                '"Segoe UI"',
+                "Roboto",
+                "sans-serif",
+              ],
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+
+  <body class="bg-slate-50 text-gray-900">
+    <!-- Sidebar on the left, page on the right -->
+    <div class="flex min-h-screen">
+      <!-- ==================== SIDEBAR ==================== -->
+      <!-- Mobile: hidden until the menu button opens it, then it covers the left of the screen (fixed).
+           Desktop (md:): always visible, and sticky + h-screen keeps it in place while the page scrolls. -->
+      <aside
+        id="sidebar"
+        class="flex hidden md:flex flex-col fixed md:sticky inset-y-0 md:top-0 left-0 z-20 w-72 md:w-56 h-screen overflow-y-auto flex-shrink-0 bg-white border-r border-gray-200 p-5"
+      >
+        <!-- Logo, with a close button next to it (the close button only shows on mobile).
+             gap-5 and the wider mobile sidebar (w-72) keep the button away from the logo. -->
+        <div class="flex items-center justify-between gap-5">
+          <img src="../images/logo-blue.png" alt="Careporium logo" class="w-36 h-auto" />
+          <button type="button" id="closeMenuButton" class="md:hidden p-2 rounded-lg hover:bg-gray-100">
+            <img src="../icons/close.png" alt="Close menu" class="w-6 h-6" />
+          </button>
+        </div>
+
+        <!-- Menu links -->
+        <nav class="space-y-2 mt-10">
+          <!-- Active page: light blue -->
+          <a href="../FacilityHiringSection/Dashboard.html" class="flex items-center gap-3 px-3 py-2 rounded-lg bg-blue-50 text-blue-600 text-sm font-medium">
+            <img src="../icons/nav-dashboard.png" alt="" class="w-4 h-4" />
+            Dashboard
+          </a>
+          <a href="../FacilityHiringSection/PostShift.html" data-needs-verification class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50">
+            <img src="../icons/nav-post-shift.png" alt="" class="w-4 h-4" />
+            Post a shift
+          </a>
+          <a href="../FacilityHiringSection/Applicants.html" data-needs-verification class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50">
+            <img src="../icons/nav-applicants.png" alt="" class="w-4 h-4" />
+            Applicants
+          </a>
+          <a href="../FacilityHiringSection/ManageShifts.html" data-needs-verification class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50">
+            <img src="../icons/nav-upcoming.png" alt="" class="w-4 h-4" />
+            Manage shifts
+          </a>
+          <a href="../FacilityHiringSection/Payments.html" data-needs-verification class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50">
+            <img src="../icons/nav-payments.png" alt="" class="w-4 h-4" />
+            Payments
+          </a>
+          <a href="../FacilityHiringSection/FacilityProfile.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50">
+            <img src="../icons/nav-profile.png" alt="" class="w-4 h-4" />
+            Facility profile
+          </a>
+          <a href="../FacilityHiringSection/Notifications.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50">
+            <img src="../icons/bell.png" alt="" class="w-4 h-4" />
+            Notifications
+          </a>
+        </nav>
+
+        <!-- Log out: outside the <nav>, so mt-auto can push it to the bottom-left of the sidebar -->
+        <button
+          type="button"
+          id="logoutButton"
+          data-login="../AuthenticationSection/login.html"
+          class="mt-auto w-full flex items-center gap-3 px-3 py-2 rounded-lg border border-red-600 text-red-600 text-sm font-medium hover:bg-red-50"
+        >
+          <img src="../icons/logout.png" alt="" class="w-4 h-4" />
+          Log out
+        </button>
+      </aside>
+
+      <!-- ==================== RIGHT SIDE ==================== -->
+      <div class="flex-1 min-w-0">
+        <!-- Top bar. sticky top-0 keeps it at the top while the page scrolls under it. -->
+        <header class="sticky top-0 z-10 bg-white border-b border-gray-200 px-5 md:px-8 py-4 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <!-- Menu button (only on mobile) -->
+            <button type="button" id="menuButton" class="md:hidden">
+              <img src="../icons/menu.png" alt="Open menu" class="w-6 h-6" />
+            </button>
+            <!-- No page title in the top bar in this design -->
+            <span></span>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <!-- The bell opens the Notifications page -->
+            <a href="../FacilityHiringSection/Notifications.html" class="p-1 rounded-lg hover:bg-gray-100"><img src="../icons/bell.png" alt="Notifications" class="w-4 h-4" /></a>
+            <p class="hidden sm:block text-sm font-medium" data-user-name></p>
+            <!-- Initials in a light blue circle -->
+            <span class="w-8 h-8 rounded-full bg-blue-50 text-blue-600 text-xs font-semibold flex items-center justify-center" data-user-initials></span>
+          </div>
+        </header>
+
+        <!-- ==================== PAGE CONTENT ==================== -->
+        <main class="p-5 md:p-8 max-w-6xl">
+          <!-- Errors that don't belong to one input (e.g. "Can't reach the server") show here -->
+          <p id="formError" class="hidden bg-red-50 text-red-600 text-xs font-medium rounded-lg p-3 mb-5"></p>
+
+          <!-- ===================================================================
+               This dashboard has 3 versions. WHICH one shows depends on the account's
+               verification status (see "VERIFICATION STATUS" in api.js):
+                 #stateLocked   not verified yet, or documents rejected (red banner)
+                 #statePending  documents are being reviewed
+                 #stateVerified the full dashboard
+               #stateLoading shows for a moment while the status is checked.
+               =================================================================== -->
+          <p id="stateLoading" class="text-sm text-gray-700">Loading your dashboard…</p>
+
+          <!-- ==================== NOT VERIFIED (and REJECTED) ==================== -->
+          <div id="stateLocked" class="hidden">
+            <!-- The JS turns this banner red and changes its text if the documents were rejected -->
+            <section id="lockedBanner" class="bg-blue-600 rounded-2xl p-6 md:p-8 flex flex-col md:flex-row md:items-center md:justify-between gap-5">
+              <div>
+                <h1 class="text-2xl font-semibold text-white" data-field="welcome">Welcome, Mainland Care.</h1>
+                <p id="lockedEyebrow" class="text-xs font-semibold text-white uppercase mt-3">Your hiring starts here</p>
+                <p id="lockedText" class="text-sm text-blue-50 mt-1">Before you post shifts, we need to check your registration, licence and tax documents.</p>
+              </div>
+              <a id="lockedButton" href="../FacilitySection/facilityRegistration.html" class="bg-white text-blue-600 text-sm font-semibold text-center px-10 py-3 rounded-lg hover:bg-blue-50 whitespace-nowrap">Verification needed</a>
+            </section>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mt-5">
+              <section class="bg-white border border-gray-200 rounded-2xl p-6 md:col-span-2">
+                <h2 id="lockedDocsTitle" class="text-lg font-semibold">Finish your verification</h2>
+                <p class="text-xs text-gray-700 mt-1">Have these documents ready. Clear, up-to-date copies help us review your facility.</p>
+                <div class="space-y-3 mt-5">
+                  <div class="bg-slate-50 border border-gray-200 rounded-xl p-4">
+                    <p class="text-sm font-semibold">Business registration certificate</p>
+                    <p class="text-xs text-gray-700 mt-1">Upload your official facility registration document.</p>
+                    <p class="doc-status text-xs font-medium text-amber-700 mt-2">Not submitted</p>
+                  </div>
+                  <div class="bg-slate-50 border border-gray-200 rounded-xl p-4">
+                    <p class="text-sm font-semibold">Facility licence</p>
+                    <p class="text-xs text-gray-700 mt-1">Upload your valid operating licence or permit.</p>
+                    <p class="doc-status text-xs font-medium text-amber-700 mt-2">Not submitted</p>
+                  </div>
+                  <div class="bg-slate-50 border border-gray-200 rounded-xl p-4">
+                    <p class="text-sm font-semibold">Tax identification number (TIN)</p>
+                    <p class="text-xs text-gray-700 mt-1">Upload your facility's tax identification document.</p>
+                    <p class="doc-status text-xs font-medium text-amber-700 mt-2">Not submitted</p>
+                  </div>
+                </div>
+                <a id="lockedUpload" href="../FacilitySection/facilityRegistration.html" class="block bg-blue-600 text-white text-sm font-medium text-center py-3 rounded-lg hover:bg-blue-700 mt-5">Upload my documents</a>
+              </section>
+
+              <div class="space-y-5">
+              <section class="bg-white border border-gray-200 rounded-2xl p-6">
+                <h2 class="text-base font-semibold">A safer marketplace for everyone</h2>
+                <p class="text-xs text-gray-700 mt-2">Verification helps professionals trust that your facility is real and ready to hire.</p>
+              </section>
+              <section class="bg-white border border-gray-200 rounded-2xl p-6">
+                <h2 class="text-base font-semibold">Make your profile yours</h2>
+                <p class="text-xs text-gray-700 mt-2">Add your address, contact person and a short description so professionals know your workplace.</p>
+                <a href="../FacilityHiringSection/FacilityProfile.html" class="block border border-blue-600 text-blue-600 text-sm font-medium text-center py-3 rounded-lg hover:bg-blue-50 mt-5">Update facility profile</a>
+              </section>
+              </div>
+            </div>
+
+            <section class="bg-white border border-gray-200 rounded-2xl p-6 mt-5">
+              <h2 class="text-base font-semibold">Your first shift starts after verification</h2>
+              <p class="text-xs text-gray-700 mt-2">Posting shifts, reviewing applicants and booking professionals will be available once your facility is approved. You haven't posted any shifts yet.</p>
+            </section>
+          </div>
+
+          <!-- ==================== AWAITING VERIFICATION ==================== -->
+          <div id="statePending" class="hidden">
+            <section class="bg-blue-600 rounded-2xl p-6 md:p-8 flex flex-col md:flex-row md:items-center md:justify-between gap-5">
+              <div>
+                <h1 class="text-2xl font-semibold text-white" data-field="welcome">Welcome, Mainland Care.</h1>
+                <p class="text-sm font-semibold text-white mt-3">Your documents are with our verification team.</p>
+                <p class="text-sm text-blue-50 mt-1">We're checking your facility documents. You'll be able to post shifts and book professionals once your facility is approved.</p>
+              </div>
+              <a href="../StatusSection/VerificationStatus.html" class="bg-white text-blue-600 text-sm font-semibold text-center px-10 py-3 rounded-lg hover:bg-blue-50 whitespace-nowrap">Verification in progress</a>
+            </section>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mt-5">
+              <section class="bg-white border border-gray-200 rounded-2xl p-6 md:col-span-2">
+                <h2 class="text-lg font-semibold">Your submitted documents</h2>
+                <p class="text-xs text-gray-700 mt-1">Your documents are safely submitted. There's no need to upload them again.</p>
+                <div class="space-y-3 mt-5">
+                  <div class="bg-slate-50 border border-gray-200 rounded-xl p-4">
+                    <p class="text-sm font-semibold">Business registration certificate</p>
+                    <p class="text-xs text-gray-700 mt-1">Registration certificate submitted</p>
+                    <p class="doc-status text-xs font-medium text-amber-700 mt-2">Submitted · Awaiting review</p>
+                  </div>
+                  <div class="bg-slate-50 border border-gray-200 rounded-xl p-4">
+                    <p class="text-sm font-semibold">Facility licence</p>
+                    <p class="text-xs text-gray-700 mt-1">Operating licence submitted</p>
+                    <p class="doc-status text-xs font-medium text-amber-700 mt-2">Submitted · Awaiting review</p>
+                  </div>
+                  <div class="bg-slate-50 border border-gray-200 rounded-xl p-4">
+                    <p class="text-sm font-semibold">Tax identification number (TIN)</p>
+                    <p class="text-xs text-gray-700 mt-1">Tax document submitted</p>
+                    <p class="doc-status text-xs font-medium text-amber-700 mt-2">Submitted · Awaiting review</p>
+                  </div>
+                </div>
+                <a href="../StatusSection/VerificationStatus.html" class="block bg-blue-600 text-white text-sm font-medium text-center py-3 rounded-lg hover:bg-blue-700 mt-5">View verification progress</a>
+              </section>
+
+              <div class="space-y-5">
+              <section class="bg-white border border-gray-200 rounded-2xl p-6">
+                <h2 class="text-base font-semibold">What happens next?</h2>
+                <p class="text-xs text-gray-700 mt-2">Our team checks your documents, then lets you know the result. If we need anything else, we'll tell you what to update.</p>
+                <p class="text-xs text-gray-700 mt-3">Reviews usually take 1–3 business days. We'll let you know when yours is complete.</p>
+              </section>
+              <section class="bg-white border border-gray-200 rounded-2xl p-6">
+                <h2 class="text-base font-semibold">Get ready while you wait</h2>
+                <p class="text-xs text-gray-700 mt-2">Add your address, contact person and a short description so professionals know your workplace.</p>
+                <a href="../FacilityHiringSection/FacilityProfile.html" class="block border border-blue-600 text-blue-600 text-sm font-medium text-center py-3 rounded-lg hover:bg-blue-50 mt-5">Update facility profile</a>
+              </section>
+              </div>
+            </div>
+
+            <section class="bg-white border border-gray-200 rounded-2xl p-6 mt-5">
+              <h2 class="text-base font-semibold">Your first shift starts after verification</h2>
+              <p class="text-xs text-gray-700 mt-2">Posting shifts, reviewing applicants and booking professionals will be available once your facility is approved. You haven't posted any shifts yet.</p>
+            </section>
+          </div>
+
+          <!-- ==================== VERIFIED: the full dashboard ==================== -->
+          <div id="stateVerified" class="hidden">
+            <!-- data-field="..." tells the JS which detail from the server goes where -->
+            <!-- Welcome banner -->
+            <section class="bg-blue-50 border border-blue-100 rounded-2xl p-6 md:p-8 flex flex-col md:flex-row md:items-center md:justify-between gap-5">
+              <div>
+                <h1 class="text-2xl font-semibold">Keep your team ready for every shift.</h1>
+                <p class="text-xs font-medium mt-2">
+                  <span class="text-blue-600" data-field="facilityLine">Mainland Care Hospital · Yaba, Lagos</span>
+                  <span class="text-green-700"> · Verified facility</span>
+                </p>
+                <p class="text-xs text-gray-700 mt-2">Find the right people for your next shift.</p>
+              </div>
+              <a href="../FacilityHiringSection/PostShift.html" class="bg-blue-600 text-white text-sm font-medium text-center py-3 rounded-lg hover:bg-blue-700 px-14">Post a shift</a>
+            </section>
+
+            <!-- 3 numbers -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mt-5">
+              <div class="bg-white border border-gray-200 rounded-2xl p-6">
+                <p class="text-sm font-medium">Open shifts</p>
+                <p class="text-3xl font-semibold text-blue-600 mt-3" data-field="openShifts">8</p>
+                <p class="text-xs text-gray-700 mt-2" data-field="openShiftsNote">3 starting today</p>
+              </div>
+              <div class="bg-white border border-gray-200 rounded-2xl p-6">
+                <p class="text-sm font-medium">New applicants</p>
+                <p class="text-3xl font-semibold text-blue-600 mt-3" data-field="newApplicants">12</p>
+                <p class="text-xs text-gray-700 mt-2" data-field="newApplicantsNote">Ready for you to review</p>
+              </div>
+              <div class="bg-white border border-gray-200 rounded-2xl p-6">
+                <p class="text-sm font-medium">Urgent shifts to fill</p>
+                <p class="text-3xl font-semibold text-amber-700 mt-3" data-field="urgentShifts">2</p>
+                <p class="text-xs text-gray-700 mt-2" data-field="urgentShiftsNote">Find cover for these shifts</p>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mt-5">
+              <!-- Upcoming shifts (left) -->
+              <section class="bg-white border border-gray-200 rounded-2xl p-6 md:col-span-2">
+                <h2 class="text-lg font-semibold">Upcoming shifts</h2>
+                <p class="text-xs text-gray-700 mt-1">Here's who you need next · Times shown in WAT</p>
+                <!-- id="upcomingShiftList": the JS replaces these sample shifts with real ones -->
+                <div id="upcomingShiftList" class="space-y-3 mt-5">
+                  <div class="shift-item" data-status="open" data-urgent="true">
+                  <div class="bg-slate-50 border border-gray-200 rounded-xl p-5">
+                    <div class="mb-2"><span class="inline-block bg-amber-50 text-amber-700 text-xs font-semibold px-2 py-1 rounded ">Urgent</span></div>
+                    <a href="../FacilityHiringSection/ShiftDetails.html?shift=SH-0824" class="text-base font-semibold hover:underline">ICU Nurse · Intensive care</a>
+                    <p class="text-xs text-gray-700 mt-1">Tomorrow, 9 October · 19:00–07:00 WAT</p>
+                    <p class="text-xs font-medium text-amber-700 mt-2">1 more person needed · ₦45,000 each</p>
+                  </div>
+                  </div>
+                  <div class="shift-item" data-status="open" data-urgent="true">
+                  <div class="bg-slate-50 border border-gray-200 rounded-xl p-5">
+                    <div class="mb-2"><span class="inline-block bg-amber-50 text-amber-700 text-xs font-semibold px-2 py-1 rounded ">Urgent</span></div>
+                    <a href="../FacilityHiringSection/ShiftDetails.html?shift=SH-0824" class="text-base font-semibold hover:underline">Pharmacist · Clinical pharmacy</a>
+                    <p class="text-xs text-gray-700 mt-1">Tomorrow, 9 October · 08:00–16:00 WAT</p>
+                    <p class="text-xs font-medium text-amber-700 mt-2">1 more person needed · ₦35,000 each</p>
+                  </div>
+                  </div>
+                  <div class="shift-item" data-status="confirmed" data-urgent="false">
+                  <div class="bg-slate-50 border border-gray-200 rounded-xl p-5">
+                    <a href="../FacilityHiringSection/ShiftDetails.html?shift=SH-0824" class="text-base font-semibold hover:underline">Registered Nurse · General ward</a>
+                    <p class="text-xs text-gray-700 mt-1">Today, 8 October · 08:00–16:00 WAT</p>
+                    <p class="text-xs font-medium text-green-700 mt-2">Both workers confirmed · ₦30,000 each</p>
+                  </div>
+                  </div>
+                </div>
+                <a href="../FacilityHiringSection/ManageShifts.html" class="block border border-blue-600 text-blue-600 text-sm font-medium text-center py-3 rounded-lg hover:bg-blue-50 mt-5">Manage shifts</a>
+              </section>
+
+              <!-- New applicants (right) -->
+              <section class="bg-white border border-gray-200 rounded-2xl p-6 self-start">
+                <h2 class="text-lg font-semibold">New applicants</h2>
+                <p class="text-xs text-gray-700 mt-1" data-field="applicantsWaiting">12 people are waiting to hear from you</p>
+                <!-- id="newApplicantList": the JS replaces these sample applicants with real ones -->
+                <div id="newApplicantList" class="space-y-3 mt-5">
+                  <div class="bg-slate-50 border border-gray-200 rounded-xl p-5">
+                    <p class="text-sm font-semibold">Amara Okafor</p>
+                    <p class="text-xs text-gray-700 mt-1">Registered Nurse · ICU</p>
+                    <p class="text-xs font-medium text-green-700 mt-2">Licence verified · Rated 4.9 · 32 shifts completed</p>
+                  </div>
+                  <div class="bg-slate-50 border border-gray-200 rounded-xl p-5">
+                    <p class="text-sm font-semibold">Tunde Adeyemi</p>
+                    <p class="text-xs text-gray-700 mt-1">Pharmacist · Clinical pharmacy</p>
+                    <p class="text-xs font-medium text-green-700 mt-2">Licence verified · Rated 4.8 · 24 shifts completed</p>
+                  </div>
+                </div>
+                <a href="../FacilityHiringSection/Applicants.html" class="block bg-blue-600 text-white text-sm font-medium text-center py-3 rounded-lg hover:bg-blue-700 mt-5">Review applicants</a>
+              </section>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <!-- api.js must come first: the page script uses its settings and helpers -->
+    <script src="../js/api.js"></script>
+    <!-- backend.js translates between the pages and the backend's field names -->
+    <script src="../js/backend.js"></script>
+    <script src="../js/facilityDashboard.js"></script>
+  </body>
+</html>

@@ -1,15 +1,15 @@
-// ====== ADMIN SIGN-IN (login page + security code page) ======
+// ====== ADMIN SIGN-IN (login page + invitation setup page) ======
+// Admins sign in with their email and password only (there's no emailed code step).
+// Needs /js/api.js to be loaded first.
 
-// ⚠️ Demo details for testing the design only. Anyone can read this file in the browser,
-// so real admin passwords and codes must NEVER be written here. A backend will check them later.
+// ---------- Demo details (only used when USE_DEMO_MODE is true in api.js) ----------
+
+// For testing the design only. Anyone can read this file in the browser,
+// so real admin passwords and codes must NEVER be written here.
 const adminAccount = {
   email: "admin@careporium.com",
   password: "Admin@123",
 };
-const demoCode = "123456";
-
-// How many wrong codes are allowed before sign-in is blocked
-const maxAttempts = 3;
 
 // ---------- Helper functions ----------
 
@@ -27,7 +27,6 @@ function clearError(inputId) {
   document.getElementById(inputId).classList.remove("border-red-500");
 }
 
-
 // ==================================================
 // 1. LOGIN PAGE
 // ==================================================
@@ -35,28 +34,27 @@ function clearError(inputId) {
 const adminLoginForm = document.getElementById("adminLoginForm");
 
 if (adminLoginForm) {
+  // ---------- Show / hide password ----------
+  // This is inside "if (adminLoginForm)" because only the login page has the eye button.
+  document
+    .getElementById("togglePassword")
+    .addEventListener("click", function () {
+      const passwordInput = document.getElementById("adminPassword");
 
-// ---------- Show / hide password ----------
+      // If the password is hidden, show it. Otherwise, hide it.
+      if (passwordInput.type === "password") {
+        passwordInput.type = "text";
+      } else {
+        passwordInput.type = "password";
+      }
 
-document
-  .getElementById("togglePassword")
-  .addEventListener("click", function () {
-    const passwordInput = document.getElementById("adminPassword");
+      // Swap the eye icons
+      document.getElementById("passwordEyeOff").classList.toggle("hidden");
+      document.getElementById("passwordEyeOn").classList.toggle("hidden");
+    });
 
-    // If the password is hidden, show it. Otherwise, hide it.
-    if (passwordInput.type === "password") {
-      passwordInput.type = "text";
-    } else {
-      passwordInput.type = "password";
-    }
-
-    // Swap the eye icons
-    document.getElementById("passwordEyeOff").classList.toggle("hidden");
-    document.getElementById("passwordEyeOn").classList.toggle("hidden");
-  });
-
-
-  adminLoginForm.addEventListener("submit", function (event) {
+  // ---------- Form ----------
+  adminLoginForm.addEventListener("submit", async function (event) {
     // Stop the page from reloading
     event.preventDefault();
 
@@ -90,82 +88,42 @@ document
       return;
     }
 
-    // Check the details against the demo admin account.
-    // One general message, so strangers can't tell which part was wrong.
-    if (email !== adminAccount.email || password !== adminAccount.password) {
-      showError("adminPassword", "Incorrect email or password.");
+    // ----- DEMO -----
+    if (USE_DEMO_MODE) {
+      // One general message, so strangers can't tell which part was wrong
+      if (email !== adminAccount.email || password !== adminAccount.password) {
+        showError("adminPassword", "Incorrect email or password.");
+        return;
+      }
+      localStorage.setItem("userType", "admin");
+      localStorage.setItem("userEmail", email);
+      window.location.href = "../Admin/AdminOverview.html";
       return;
     }
 
-    // Correct: go to the security code page
-    window.location.href = "/Admin/AdminVerify.html";
+    // ----- REAL BACKEND -----
+    // Admins use the normal login; the account must have the "admin" role.
+    const button = adminLoginForm.querySelector('button[type="submit"]');
+    setLoading(button, true, "Signing in…");
+
+    try {
+      const result = await Backend.login(email, password);
+      if (result.userType !== "admin") {
+        showError("adminPassword", "This account doesn't have admin access.");
+        setLoading(button, false);
+        return;
+      }
+      Backend.saveSession(result, email);
+      window.location.href = "../Admin/AdminOverview.html";
+    } catch (error) {
+      showError("adminPassword", error.message);
+      setLoading(button, false);
+    }
   });
 }
 
 // ==================================================
-// 2. SECURITY CODE PAGE
-// ==================================================
-
-const codeForm = document.getElementById("codeForm");
-
-if (codeForm) {
-  const codeInput = document.getElementById("securityCode");
-  const verifyButton = document.getElementById("verifyButton");
-
-  // Count the wrong codes
-  let failedAttempts = 0;
-
-  // Only allow numbers to be typed (letters are removed straight away)
-  codeInput.addEventListener("input", function () {
-    codeInput.value = codeInput.value.replace(/[^0-9]/g, "");
-  });
-
-  codeForm.addEventListener("submit", function (event) {
-    event.preventDefault();
-
-    const code = codeInput.value;
-
-    // The code must have exactly 6 numbers
-    if (code.length !== 6) {
-      showError("securityCode", "Please enter the 6-digit code.");
-      return;
-    }
-
-    // Right code: sign in
-    if (code === demoCode) {
-      window.location.href = "/Admin/AdminOverview.html";
-      return;
-    }
-
-    // Wrong code: count it
-    failedAttempts = failedAttempts + 1;
-    const attemptsLeft = maxAttempts - failedAttempts;
-
-    if (attemptsLeft > 0) {
-      showError(
-        "securityCode",
-        "Incorrect code. " + attemptsLeft + " attempt(s) left.",
-      );
-    } else {
-      // Too many wrong codes: turn the button off
-      showError(
-        "securityCode",
-        "Too many failed attempts. Sign-in is temporarily blocked.",
-      );
-      verifyButton.disabled = true;
-      verifyButton.classList.add("opacity-50", "cursor-not-allowed");
-    }
-  });
-
-  // Resend code: show a message.
-  // NOTE: Really sending a new code needs a backend.
-  document.getElementById("resendCode").addEventListener("click", function () {
-    document.getElementById("resendMessage").classList.remove("hidden");
-  });
-}
-
-// ==================================================
-// 3. ACCEPT INVITATION (set up a new admin account)
+// 2. ACCEPT INVITATION (set up a new admin account)
 // ==================================================
 
 const setupForm = document.getElementById("setupForm");
@@ -173,22 +131,50 @@ const setupForm = document.getElementById("setupForm");
 if (setupForm) {
   // ---------- Read the invitation from the link ----------
 
-  // The invitation link looks like: acceptInvite.html?email=ngozi.a@careporium.com&role=Verification%20reviewer
-  // URLSearchParams reads the parts after the "?".
+  // URLSearchParams reads the parts after the "?" in the address.
+  // DEMO links look like:  acceptInvite.html?email=ngozi.a@careporium.com&role=Verification%20reviewer
+  // REAL links look like:  acceptInvite.html?token=8f3a91...  (the server makes the token)
   const params = new URLSearchParams(window.location.search);
-  const inviteEmail = params.get("email");
-  const inviteRole = params.get("role");
+  const inviteToken = params.get("token");
 
-  // No email, or not a @careporium.com email: the link isn't valid.
-  // NOTE: Only a backend can really check if a link has expired or was already used.
-  if (inviteEmail === null || !inviteEmail.endsWith("@careporium.com")) {
-    window.location.href = "inviteExpired.html";
-  } else {
-    // Show the invitation details on the page
-    document.getElementById("inviteEmailText").textContent = inviteEmail;
-    document.getElementById("inviteRoleText").textContent =
-      inviteRole || "Admin";
+  // Show the invitation details, or send the user to the "not valid" page
+  async function loadInvitation() {
+    // ----- DEMO (also used until the server has invitations: SERVER_HAS.adminInvitations) -----
+    if (usesDemo("adminInvitations")) {
+      showPreviewNote("Admin invitations");
+      const inviteEmail = params.get("email");
+      const inviteRole = params.get("role");
+
+      if (inviteEmail === null || !inviteEmail.endsWith("@careporium.com")) {
+        window.location.href = "inviteExpired.html";
+        return;
+      }
+      document.getElementById("inviteEmailText").textContent = inviteEmail;
+      document.getElementById("inviteRoleText").textContent =
+        inviteRole || "Admin";
+      return;
+    }
+
+    // ----- REAL BACKEND -----
+    // Ask the server if the token is still valid. It should answer with { email, role }.
+    if (!inviteToken) {
+      window.location.href = "inviteExpired.html";
+      return;
+    }
+
+    try {
+      const invitation = await apiRequest(
+        ENDPOINTS.checkInvitation(inviteToken),
+      );
+      document.getElementById("inviteEmailText").textContent = invitation.email;
+      document.getElementById("inviteRoleText").textContent = invitation.role;
+    } catch (error) {
+      // Expired, already used, or never existed
+      window.location.href = "inviteExpired.html";
+    }
   }
+
+  loadInvitation();
 
   // ---------- Show / hide password ----------
 
@@ -248,9 +234,9 @@ if (setupForm) {
     colorRule("ruleNumber", hasNumberOrSpecial(passwordInput.value));
   });
 
-  // ---------- Validation ----------
+  // ---------- Validation, then create the account ----------
 
-  setupForm.addEventListener("submit", function (event) {
+  setupForm.addEventListener("submit", async function (event) {
     event.preventDefault();
 
     let isValid = true;
@@ -300,11 +286,30 @@ if (setupForm) {
       auditAgreeError.classList.add("hidden");
     }
 
-    // Everything is correct: hide the form and show the success message.
-    // NOTE: Really creating the account needs a backend.
-    if (isValid) {
-      document.getElementById("setupStep").classList.add("hidden");
-      document.getElementById("doneStep").classList.remove("hidden");
+    if (!isValid) {
+      return;
     }
+
+    // Everything is correct: create the account
+    if (!usesDemo("adminInvitations")) {
+      const button = setupForm.querySelector('button[type="submit"]');
+      setLoading(button, true, "Creating account…");
+
+      try {
+        await apiRequest(ENDPOINTS.acceptInvitation, "POST", {
+          token: inviteToken,
+          name: name,
+          password: password,
+        });
+      } catch (error) {
+        showError("newPassword", error.message);
+        setLoading(button, false);
+        return;
+      }
+    }
+
+    // Hide the form and show the success message
+    document.getElementById("setupStep").classList.add("hidden");
+    document.getElementById("doneStep").classList.remove("hidden");
   });
 }

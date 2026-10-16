@@ -1,4 +1,5 @@
 // ====== CREATE NEW PASSWORD PAGE ======
+// Needs /js/api.js to be loaded first.
 
 // ---------- Helper functions ----------
 
@@ -29,38 +30,34 @@ function clearError(inputId) {
 // ---------- Show / hide password ----------
 
 // New password eye button
-document
-  .getElementById("toggleNewPassword")
-  .addEventListener("click", function () {
-    const input = document.getElementById("newPassword");
+document.getElementById("toggleNewPassword").addEventListener("click", function () {
+  const input = document.getElementById("newPassword");
 
-    // If the password is hidden, show it. Otherwise, hide it.
-    if (input.type === "password") {
-      input.type = "text";
-    } else {
-      input.type = "password";
-    }
+  // If the password is hidden, show it. Otherwise, hide it.
+  if (input.type === "password") {
+    input.type = "text";
+  } else {
+    input.type = "password";
+  }
 
-    // Swap the eye icons
-    document.getElementById("newEyeOff").classList.toggle("hidden");
-    document.getElementById("newEyeOn").classList.toggle("hidden");
-  });
+  // Swap the eye icons
+  document.getElementById("newEyeOff").classList.toggle("hidden");
+  document.getElementById("newEyeOn").classList.toggle("hidden");
+});
 
 // Confirm password eye button (same idea as above)
-document
-  .getElementById("toggleConfirmPassword")
-  .addEventListener("click", function () {
-    const input = document.getElementById("confirmPassword");
+document.getElementById("toggleConfirmPassword").addEventListener("click", function () {
+  const input = document.getElementById("confirmPassword");
 
-    if (input.type === "password") {
-      input.type = "text";
-    } else {
-      input.type = "password";
-    }
+  if (input.type === "password") {
+    input.type = "text";
+  } else {
+    input.type = "password";
+  }
 
-    document.getElementById("confirmEyeOff").classList.toggle("hidden");
-    document.getElementById("confirmEyeOn").classList.toggle("hidden");
-  });
+  document.getElementById("confirmEyeOff").classList.toggle("hidden");
+  document.getElementById("confirmEyeOn").classList.toggle("hidden");
+});
 
 // ---------- Password rules ----------
 
@@ -107,7 +104,7 @@ newPasswordInput.addEventListener("input", function () {
 
 const form = document.getElementById("newPasswordForm");
 
-form.addEventListener("submit", function (event) {
+form.addEventListener("submit", async function (event) {
   // Stop the page from reloading when the form is sent
   event.preventDefault();
 
@@ -121,15 +118,8 @@ form.addEventListener("submit", function (event) {
   if (newPassword === "") {
     showError("newPassword", "Please enter a new password.");
     isValid = false;
-  } else if (
-    !hasEightCharacters(newPassword) ||
-    !hasUpperAndLower(newPassword) ||
-    !hasNumberOrSpecial(newPassword)
-  ) {
-    showError(
-      "newPassword",
-      "Your password doesn't meet all the rules below yet.",
-    );
+  } else if (!hasEightCharacters(newPassword) || !hasUpperAndLower(newPassword) || !hasNumberOrSpecial(newPassword)) {
+    showError("newPassword", "Your password doesn't meet all the rules below yet.");
     isValid = false;
   } else {
     clearError("newPassword");
@@ -146,9 +136,36 @@ form.addEventListener("submit", function (event) {
     clearError("confirmPassword");
   }
 
-  // If everything is correct, go back to the login page.
-  // NOTE: Saving the new password needs a backend. For now we only check the form.
-  if (isValid) {
-    window.location.href = "/AuthenticationSection/login.html";
+  if (!isValid) {
+    return;
   }
+
+  // REAL: save the new password. The resetToken was saved by the code page.
+  if (!USE_DEMO_MODE) {
+    const resetToken = sessionStorage.getItem("resetToken");
+
+    if (!resetToken) {
+      showError("newPassword", "Your reset session has expired. Please request a new code.");
+      return;
+    }
+
+    const button = form.querySelector('button[type="submit"]');
+    setLoading(button, true, "Saving…");
+
+    try {
+      // The reset token is sent in place of a login token (see backend.js)
+      await Backend.resetPassword(resetToken, newPassword);
+    } catch (error) {
+      showError("newPassword", error.message);
+      setLoading(button, false);
+      return;
+    }
+
+    // The token can only be used once, so forget it
+    sessionStorage.removeItem("resetToken");
+    sessionStorage.removeItem("resetEmail");
+  }
+
+  // Done: go back to the login page
+  window.location.href = "../AuthenticationSection/login.html";
 });

@@ -37,8 +37,8 @@ facilityCard.addEventListener("click", function () {
 // When "Get started" is clicked, go to the right form page
 getStartedButton.addEventListener("click", function () {
   if (selectedRole === "professional") {
-    window.location.href = "/HealthWorkerSection/professionalProfile.html";
+    window.location.href = "../HealthWorkerSection/professionalProfile.html";
   } else {
-    window.location.href = "/FacilitySection/facilityProfile.html";
+    window.location.href = "../FacilitySection/facilityProfile.html";
   }
 });

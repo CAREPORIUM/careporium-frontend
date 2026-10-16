@@ -29,156 +29,119 @@
     </script>
   </head>
 
-  <body class="bg-slate-50 text-gray-900">
+  <!-- data-page tells WorkerDashboard.js which page this is, so it loads the right data -->
+  <!-- data-requires-verification: until the account is verified, this page sends the user back to the dashboard -->
+  <body class="bg-slate-50 text-gray-900" data-requires-verification="../WorkerShiftMarket/Dashboard.html" data-page="submitted">
     <!-- Sidebar on the left, page on the right -->
     <div class="flex min-h-screen">
       <!-- ==================== SIDEBAR ==================== -->
-      <!-- On desktop it always shows (md:flex). On mobile it's hidden until the menu button opens it. -->
+      <!-- Mobile: hidden until the menu button opens it, then it covers the left of the screen (fixed).
+           Desktop (md:): always visible, and sticky + h-screen keeps it in place while the page scrolls. -->
       <aside
         id="sidebar"
-        class="hidden md:flex fixed md:static inset-y-0 left-0 z-20 w-56 flex-shrink-0 flex-col bg-white border-r border-gray-200 p-5"
+        class="flex hidden md:flex flex-col fixed md:sticky inset-y-0 md:top-0 left-0 z-20 w-72 md:w-56 h-screen overflow-y-auto flex-shrink-0 bg-white border-r border-gray-200 p-5"
       >
-        <!-- Logo, with a close button next to it (the close button only shows on mobile) -->
-        <div class="flex items-center justify-between">
-          <img
-            src="/images/logo-blue.png"
-            alt="Careporium logo"
-            class="w-36 h-auto"
-          />
-          <button type="button" id="closeMenuButton" class="md:hidden">
-            <img src="/icons/close.png" alt="Close menu" class="w-6 h-6" />
+        <!-- Logo, with a close button next to it (the close button only shows on mobile).
+             gap-5 and the wider mobile sidebar (w-72) keep the button away from the logo. -->
+        <div class="flex items-center justify-between gap-5">
+          <img src="../images/logo-blue.png" alt="Careporium logo" class="w-36 h-auto" />
+          <button type="button" id="closeMenuButton" class="md:hidden p-2 rounded-lg hover:bg-gray-100">
+            <img src="../icons/close.png" alt="Close menu" class="w-6 h-6" />
           </button>
         </div>
 
         <!-- Menu links -->
         <nav class="space-y-2 mt-10">
-          <a
-            href="/WorkerShiftMarket/Dashboard.html"
-            class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50"
-          >
-            <img src="/icons/nav-dashboard.png" alt="" class="w-4 h-4" />
+          <a href="../WorkerShiftMarket/Dashboard.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50">
+            <img src="../icons/nav-dashboard.png" alt="" class="w-4 h-4" />
             Dashboard
           </a>
-          <a
-            href="/WorkerShiftMarket/FindShifts.html"
-            class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50"
-          >
-            <img src="/icons/nav-find-shifts.png" alt="" class="w-4 h-4" />
+          <a href="../WorkerShiftMarket/FindShifts.html" data-needs-verification class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50">
+            <img src="../icons/nav-find-shifts.png" alt="" class="w-4 h-4" />
             Find shifts
           </a>
           <!-- Active page: light blue -->
-          <a
-            href="/WorkerShiftMarket/MyApplications.html"
-            class="flex items-center gap-3 px-3 py-2 rounded-lg bg-blue-50 text-blue-600 text-sm font-medium"
-          >
-            <img src="/icons/nav-applications.png" alt="" class="w-4 h-4" />
+          <a href="../WorkerShiftMarket/MyApplications.html" data-needs-verification class="flex items-center gap-3 px-3 py-2 rounded-lg bg-blue-50 text-blue-600 text-sm font-medium">
+            <img src="../icons/nav-applications.png" alt="" class="w-4 h-4" />
             My applications
           </a>
-          <a
-            href="/WorkerShiftMarket/UpcomingShifts.html"
-            class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50"
-          >
-            <img src="/icons/nav-upcoming.png" alt="" class="w-4 h-4" />
+          <a href="../WorkerShiftMarket/UpcomingShifts.html" data-needs-verification class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50">
+            <img src="../icons/nav-upcoming.png" alt="" class="w-4 h-4" />
             Upcoming shifts
           </a>
-          <a
-            href="/WorkerShiftMarket/Profile.html"
-            class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50"
-          >
-            <img src="/icons/nav-profile.png" alt="" class="w-4 h-4" />
+          <a href="../WorkerShiftMarket/Profile.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50">
+            <img src="../icons/nav-profile.png" alt="" class="w-4 h-4" />
             Profile
           </a>
-          <button
-            type="button"
-            id="logoutButton"
-            data-login="/AuthenticationSection/login.html"
-            class="mt-auto flex items-center gap-3 px-3 py-2 rounded-lg border border-red-600 text-red-600 text-sm font-medium hover:bg-red-50"
-          >
-            <img src="/icons/logout.png" alt="" class="w-4 h-4" />
-            Log out
-          </button>
+          <a href="../WorkerShiftMarket/Payments.html" data-needs-verification class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50">
+            <img src="../icons/nav-payments.png" alt="" class="w-4 h-4" />
+            Payments
+          </a>
+          <a href="../WorkerShiftMarket/Notifications.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50">
+            <img src="../icons/bell.png" alt="" class="w-4 h-4" />
+            Notifications
+          </a>
         </nav>
+
+        <!-- Log out: outside the <nav>, so mt-auto can push it to the bottom-left of the sidebar -->
+        <button
+          type="button"
+          id="logoutButton"
+          data-login="../AuthenticationSection/login.html"
+          class="mt-auto w-full flex items-center gap-3 px-3 py-2 rounded-lg border border-red-600 text-red-600 text-sm font-medium hover:bg-red-50"
+        >
+          <img src="../icons/logout.png" alt="" class="w-4 h-4" />
+          Log out
+        </button>
       </aside>
 
       <!-- ==================== RIGHT SIDE ==================== -->
       <div class="flex-1 min-w-0">
-        <!-- Top bar: where you are on the left, user on the right -->
-        <header
-          class="bg-white border-b border-gray-200 px-5 md:px-8 py-4 flex items-center justify-between"
-        >
+        <!-- Top bar. sticky top-0 keeps it at the top while the page scrolls under it. -->
+        <header class="sticky top-0 z-10 bg-white border-b border-gray-200 px-5 md:px-8 py-4 flex items-center justify-between">
           <div class="flex items-center gap-3">
             <!-- Menu button (only on mobile) -->
             <button type="button" id="menuButton" class="md:hidden">
-              <img src="/icons/menu.png" alt="Open menu" class="w-6 h-6" />
+              <img src="../icons/menu.png" alt="Open menu" class="w-6 h-6" />
             </button>
-            <p class="text-xs font-medium text-gray-500 uppercase">
-              Worker workspace / My applications
-            </p>
+            <p class="text-xs font-medium text-gray-500 uppercase">Worker workspace / My applications</p>
           </div>
 
           <div class="flex items-center gap-3">
-            <img src="/icons/bell.png" alt="Notifications" class="w-4 h-4" />
-            <p class="hidden sm:block text-sm font-medium">Amara Okafor</p>
+            <!-- The bell opens the Notifications page -->
+            <a href="../WorkerShiftMarket/Notifications.html" class="p-1 rounded-lg hover:bg-gray-100"><img src="../icons/bell.png" alt="Notifications" class="w-4 h-4" /></a>
+            <p class="hidden sm:block text-sm font-medium" data-user-name></p>
             <!-- Initials in a light blue circle -->
-            <span
-              class="w-8 h-8 rounded-full bg-blue-50 text-blue-600 text-xs font-semibold flex items-center justify-center"
-              >AO</span
-            >
+            <span class="w-8 h-8 rounded-full bg-blue-50 text-blue-600 text-xs font-semibold flex items-center justify-center" data-user-initials></span>
           </div>
         </header>
 
         <!-- ==================== PAGE CONTENT ==================== -->
         <main class="p-5 md:p-8 max-w-6xl">
-          <!-- Page heading -->
+          <!-- Errors that don't belong to one input (e.g. "Can't reach the server") show here -->
+          <p id="formError" class="hidden bg-red-50 text-red-600 text-xs font-medium rounded-lg p-3 mb-5"></p>
+
+          <!-- Page heading. data-field="..." is filled from the server's answer when the application was sent. -->
           <p class="text-xs font-medium text-blue-600 uppercase">Application</p>
           <h1 class="text-3xl font-semibold mt-2">Application submitted</h1>
-          <p class="text-sm text-gray-700 mt-2">
-            Your application is with Mainland Care Hospital.
-          </p>
+          <p class="text-sm text-gray-700 mt-2">Your application is with <span data-field="facility">Mainland Care Hospital</span>.</p>
 
           <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mt-5">
-            <section
-              class="bg-white border border-gray-200 rounded-2xl p-6 md:col-span-2 self-start"
-            >
-              <span
-                class="inline-block bg-green-50 text-green-700 text-xs font-semibold uppercase px-2 py-1 rounded"
-                >✓ Submitted</span
-              >
-              <h2 class="text-xl font-semibold mt-3">
-                Your application is on its way.
-              </h2>
-              <p class="text-sm text-gray-700 mt-3">
-                The facility will review your verified profile. We'll notify you
-                when a decision is made.
-              </p>
+            <section class="bg-white border border-gray-200 rounded-2xl p-6 md:col-span-2 self-start">
+              <span class="inline-block bg-green-50 text-green-700 text-xs font-semibold uppercase px-2 py-1 rounded">✓ Submitted</span>
+              <h2 class="text-xl font-semibold mt-3">Your application is on its way.</h2>
+              <p class="text-sm text-gray-700 mt-3">The facility will review your verified profile. We'll notify you when a decision is made.</p>
 
               <!-- Gray box with the application details -->
               <div class="bg-slate-50 rounded-xl p-3 space-y-2 mt-5 text-xs">
-                <div class="flex gap-3">
-                  <span class="w-24 text-gray-700">Reference</span
-                  ><span class="font-semibold">CP-2026-1048</span>
-                </div>
-                <div class="flex gap-3">
-                  <span class="w-24 text-gray-700">Submitted</span
-                  ><span class="font-semibold">29 Sep 2026 · 09:55 WAT</span>
-                </div>
-                <div class="flex gap-3">
-                  <span class="w-24 text-gray-700">Status</span
-                  ><span class="font-semibold">Under review</span>
-                </div>
+                <div class="flex gap-3"><span class="w-24 flex-shrink-0 text-gray-700">Reference</span><span class="font-semibold" data-field="reference">CP-2026-1048</span></div>
+                <div class="flex gap-3"><span class="w-24 flex-shrink-0 text-gray-700">Submitted</span><span class="font-semibold" data-field="submitted">29 Sep 2026 · 09:55 WAT</span></div>
+                <div class="flex gap-3"><span class="w-24 flex-shrink-0 text-gray-700">Status</span><span class="font-semibold" data-field="status">Under review</span></div>
               </div>
 
               <div class="flex flex-wrap gap-3 mt-5">
-                <a
-                  href="/WorkerShiftMarket/MyApplications.html"
-                  class="inline-block bg-blue-600 text-white text-sm font-medium text-center px-8 py-3 rounded-lg hover:bg-blue-700"
-                  >Track application</a
-                >
-                <a
-                  href="/WorkerShiftMarket/FindShifts.html"
-                  class="inline-block border border-blue-600 text-blue-600 text-sm font-medium text-center px-8 py-3 rounded-lg hover:bg-blue-50"
-                  >Browse more shifts</a
-                >
+                <a href="../WorkerShiftMarket/MyApplications.html" class="inline-block bg-blue-600 text-white text-sm font-medium text-center py-3 rounded-lg hover:bg-blue-700 px-8">Track application</a>
+                <a href="../WorkerShiftMarket/FindShifts.html" class="inline-block border border-blue-600 text-blue-600 text-sm font-medium text-center py-3 rounded-lg hover:bg-blue-50 px-8">Browse more shifts</a>
               </div>
             </section>
 
@@ -187,66 +150,28 @@
               <h2 class="text-lg font-semibold">What to expect</h2>
               <div class="space-y-3 mt-3">
                 <div class="flex gap-3">
-                  <span
-                    class="w-5 h-5 rounded-full bg-green-100 text-green-600 text-xs flex items-center justify-center flex-shrink-0"
-                    >✓</span
-                  >
-                  <div>
-                    <p class="text-sm font-semibold">Submitted</p>
-                    <p class="text-xs text-gray-700">Application delivered</p>
-                  </div>
+                  <span class="w-5 h-5 rounded-full bg-green-100 text-green-600 text-xs flex items-center justify-center flex-shrink-0">✓</span>
+                  <div><p class="text-sm font-semibold">Submitted</p><p class="text-xs text-gray-700">Application delivered</p></div>
                 </div>
                 <div class="flex gap-3">
-                  <span
-                    class="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0"
-                    ><span class="w-2 h-2 rounded-full bg-green-600"></span
-                  ></span>
-                  <div>
-                    <p class="text-sm font-semibold">Under review</p>
-                    <p class="text-xs text-gray-700">
-                      Facility checks credentials and fit
-                    </p>
-                  </div>
+                  <span class="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0"><span class="w-2 h-2 rounded-full bg-green-600"></span></span>
+                  <div><p class="text-sm font-semibold">Under review</p><p class="text-xs text-gray-700">Facility checks credentials and fit</p></div>
                 </div>
                 <div class="flex gap-3">
-                  <span
-                    class="w-5 h-5 rounded-full border border-gray-300 flex-shrink-0"
-                  ></span>
-                  <div>
-                    <p class="text-sm font-semibold">Decision</p>
-                    <p class="text-xs text-gray-700">
-                      You'll hear from us by email
-                    </p>
-                  </div>
+                  <span class="w-5 h-5 rounded-full border border-gray-300 flex-shrink-0"></span>
+                  <div><p class="text-sm font-semibold">Decision</p><p class="text-xs text-gray-700">You'll hear from us by email</p></div>
                 </div>
               </div>
-              <p class="text-xs text-gray-700 mt-3">
-                If you return to the shift, you'll see an "Already applied"
-                state instead of a second application action.
-              </p>
+              <p class="text-xs text-gray-700 mt-3">If you return to the shift, you'll see an "Already applied" state instead of a second application action.</p>
 
-              <h3 class="text-sm font-semibold mt-5">
-                Other confirmation states
-              </h3>
+              <h3 class="text-sm font-semibold mt-5">Other confirmation states</h3>
               <div class="border border-gray-200 rounded-xl p-3 mt-3">
-                <span
-                  class="inline-block bg-amber-50 text-amber-700 text-xs font-semibold uppercase px-2 py-1 rounded"
-                  >Already applied</span
-                >
-                <p class="text-xs text-gray-700 mt-3">
-                  An active application exists for this shift. View its progress
-                  instead of applying again.
-                </p>
+                <span class="inline-block bg-amber-50 text-amber-700 text-xs font-semibold uppercase px-2 py-1 rounded">Already applied</span>
+                <p class="text-xs text-gray-700 mt-3">An active application exists for this shift. View its progress instead of applying again.</p>
               </div>
               <div class="border border-gray-200 rounded-xl p-3 mt-3">
-                <span
-                  class="inline-block bg-gray-100 text-gray-600 text-xs font-semibold uppercase px-2 py-1 rounded"
-                  >Applications closed</span
-                >
-                <p class="text-xs text-gray-700 mt-3">
-                  The shift is no longer accepting applications. Browse similar
-                  opportunities.
-                </p>
+                <span class="inline-block bg-gray-100 text-gray-600 text-xs font-semibold uppercase px-2 py-1 rounded">Applications closed</span>
+                <p class="text-xs text-gray-700 mt-3">The shift is no longer accepting applications. Browse similar opportunities.</p>
               </div>
             </section>
           </div>
@@ -254,7 +179,10 @@
       </div>
     </div>
 
-    <!-- Shared JavaScript for all worker dashboard pages -->
-    <script src="/js/WorkerDashboard.js"></script>
+    <!-- api.js must come first: the page script uses its settings and helpers -->
+    <script src="../js/api.js"></script>
+    <!-- backend.js translates between the pages and the backend's field names -->
+    <script src="../js/backend.js"></script>
+    <script src="../js/WorkerDashboard.js"></script>
   </body>
 </html>

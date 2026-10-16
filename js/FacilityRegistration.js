@@ -1,4 +1,8 @@
 // ====== FACILITY REGISTRATION PAGE ======
+// Needs /js/api.js to be loaded first.
+
+// Where to go after the registration is sent
+const successPage = "../AuthenticationSection/registrationSuccess.html";
 
 // ---------- Helper functions ----------
 
@@ -35,7 +39,7 @@ function getValue(fieldId) {
 
 // ---------- Moving between steps ----------
 
-// Show one step (1 to 4) and update the sidebar
+// Show one step (1 to 4) and update the sidebar (and the mobile stepper, if the page has one)
 function showStep(stepNumber) {
   // Hide all 4 steps, then show the one we want
   for (let i = 1; i <= 4; i++) {
@@ -64,6 +68,13 @@ function showStep(stepNumber) {
       circle.textContent = "✓";
     } else {
       circle.textContent = i;
+    }
+
+    // The same circle in the mobile stepper (shown at the top on phones), if the page has one
+    const mobileCircle = document.getElementById("mobileCircle" + i);
+    if (mobileCircle) {
+      mobileCircle.className = circle.className;
+      mobileCircle.textContent = circle.textContent;
     }
   }
 
@@ -238,6 +249,29 @@ document.querySelectorAll(".edit-button").forEach(function (button) {
   });
 });
 
+// Put every detail and file into one FormData, ready to send to the server.
+// FormData is used (not JSON) because it can carry files.
+function buildRegistration() {
+  const formData = new FormData();
+
+  // Details: formData.append("name the server expects", value)
+  formData.append("facilityName", getValue("facilityName"));
+  formData.append("facilityType", getValue("facilityType"));
+  formData.append("email", getValue("facilityEmail"));
+  formData.append("phone", getValue("facilityPhone").replace(/[\s-]/g, ""));
+  formData.append("street", getValue("street"));
+  formData.append("city", getValue("city"));
+  formData.append("state", getValue("state"));
+  formData.append("country", getValue("country"));
+
+  // Files
+  formData.append("registrationDocument", files.registrationDoc);
+  formData.append("operatingLicence", files.licenseDoc);
+  formData.append("tinDocument", files.tinDoc);
+
+  return formData;
+}
+
 // ---------- Buttons ----------
 
 document.getElementById("step1Next").addEventListener("click", function () {
@@ -269,8 +303,20 @@ document.getElementById("step4Back").addEventListener("click", function () {
   showStep(3);
 });
 
-// Submit: the terms checkbox must be ticked
-document.getElementById("submitButton").addEventListener("click", function () {
+// DEMO: remember that this account has sent its documents. If they were rejected before,
+// this is a resubmission. (With the real backend, the server keeps track of this.)
+function markDemoDocumentsSent() {
+  if (getDemoVerification().status === "rejected") {
+    setDemoVerification("resubmission");
+  } else {
+    setDemoVerification("pending");
+  }
+}
+
+// Submit: the terms checkbox must be ticked, then send everything
+const submitButton = document.getElementById("submitButton");
+
+submitButton.addEventListener("click", async function () {
   const termsError = document.getElementById("termsError");
 
   if (!document.getElementById("terms").checked) {
@@ -278,31 +324,36 @@ document.getElementById("submitButton").addEventListener("click", function () {
     termsError.classList.remove("hidden");
     return;
   }
+  termsError.classList.add("hidden");
 
-  // NOTE: Sending the details and files to a server needs a backend.
-  // For now we go straight to the "Registration Success" page.
-  window.location.href = "/AuthenticationSection/registrationSuccess.html";
+  // DEMO: remember the new status, then go straight to the "Registration Success" page
+  if (USE_DEMO_MODE) {
+    markDemoDocumentsSent();
+    window.location.href = successPage;
+    return;
+  }
+
+  // REAL: add the address and the 3 documents to the logged-in facility's profile
+  // (the same works for uploading corrected documents after a rejection)
+  setLoading(submitButton, true, "Submitting…");
+
+  try {
+    await Backend.uploadFacilityDocuments(
+      {
+        facilityName: getValue("facilityName"),
+        street: getValue("street"),
+        city: getValue("city"),
+        state: getValue("state"),
+        country: getValue("country"),
+      },
+      files,
+    );
+    window.location.href = successPage;
+  } catch (error) {
+    termsError.textContent = "Couldn't submit: " + error.message;
+    termsError.classList.remove("hidden");
+    setLoading(submitButton, false);
+  }
 });
 
-// ==================================================
-// LOG OUT (every page)
-// ==================================================
-
-const logoutButton = document.getElementById("logoutButton");
-
-if (logoutButton) {
-  logoutButton.addEventListener("click", function () {
-    // Ask first, so nobody logs out by accident
-    const confirmed = confirm("Are you sure you want to log out?");
-    if (!confirmed) {
-      return;
-    }
-
-    // Forget who was logged in (saved by the login page)
-    localStorage.removeItem("userType");
-
-    // Go to the sign-in page written in the button's data-login="..."
-    // replace() also stops the Back button from returning to the dashboard
-    window.location.replace(logoutButton.getAttribute("data-login"));
-  });
-}
+// (The log out button is handled in api.js, shared by every page.)

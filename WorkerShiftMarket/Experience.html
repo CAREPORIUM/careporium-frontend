@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Careporium - Your Experience &amp; Soft Skills</title>
+
+    <!-- Tailwind CSS from the CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Use SF Pro (the Apple system font) for the whole page -->
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [
+                "-apple-system",
+                "BlinkMacSystemFont",
+                '"SF Pro Text"',
+                '"Segoe UI"',
+                "Roboto",
+                "sans-serif",
+              ],
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+  <body class="bg-slate-50 text-gray-900">
+    <!-- Sidebar on the left, page on the right -->
+    <div class="flex min-h-screen">
+      <!-- ==================== SIDEBAR ==================== -->
+      <!-- Mobile: hidden until the menu button opens it, then it covers the left of the screen (fixed).
+           Desktop (md:): always visible, and sticky + h-screen keeps it in place while the page scrolls. -->
+      <aside
+        id="sidebar"
+        class="flex hidden md:flex flex-col fixed md:sticky inset-y-0 md:top-0 left-0 z-20 w-72 md:w-56 h-screen overflow-y-auto flex-shrink-0 bg-white border-r border-gray-200 p-5"
+      >
+        <!-- Logo, with a close button next to it (the close button only shows on mobile).
+             gap-5 and the wider mobile sidebar (w-72) keep the button away from the logo. -->
+        <div class="flex items-center justify-between gap-5">
+          <img src="../images/logo-blue.png" alt="Careporium logo" class="w-36 h-auto" />
+          <button type="button" id="closeMenuButton" class="md:hidden p-2 rounded-lg hover:bg-gray-100">
+            <img src="../icons/close.png" alt="Close menu" class="w-6 h-6" />
+          </button>
+        </div>
+
+        <!-- Menu links -->
+        <nav class="space-y-2 mt-10">
+          <a href="../WorkerShiftMarket/Dashboard.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50">
+            <img src="../icons/nav-dashboard.png" alt="" class="w-4 h-4" />
+            Dashboard
+          </a>
+          <a href="../WorkerShiftMarket/FindShifts.html" data-needs-verification class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50">
+            <img src="../icons/nav-find-shifts.png" alt="" class="w-4 h-4" />
+            Find shifts
+          </a>
+          <a href="../WorkerShiftMarket/MyApplications.html" data-needs-verification class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50">
+            <img src="../icons/nav-applications.png" alt="" class="w-4 h-4" />
+            My applications
+          </a>
+          <a href="../WorkerShiftMarket/UpcomingShifts.html" data-needs-verification class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50">
+            <img src="../icons/nav-upcoming.png" alt="" class="w-4 h-4" />
+            Upcoming shifts
+          </a>
+          <!-- Active page: light blue -->
+          <a href="../WorkerShiftMarket/Profile.html" class="flex items-center gap-3 px-3 py-2 rounded-lg bg-blue-50 text-blue-600 text-sm font-medium">
+            <img src="../icons/nav-profile.png" alt="" class="w-4 h-4" />
+            Profile
+          </a>
+          <a href="../WorkerShiftMarket/Payments.html" data-needs-verification class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50">
+            <img src="../icons/nav-payments.png" alt="" class="w-4 h-4" />
+            Payments
+          </a>
+          <a href="../WorkerShiftMarket/Notifications.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50">
+            <img src="../icons/bell.png" alt="" class="w-4 h-4" />
+            Notifications
+          </a>
+        </nav>
+
+        <!-- Log out: outside the <nav>, so mt-auto can push it to the bottom-left of the sidebar -->
+        <button
+          type="button"
+          id="logoutButton"
+          data-login="../AuthenticationSection/login.html"
+          class="mt-auto w-full flex items-center gap-3 px-3 py-2 rounded-lg border border-red-600 text-red-600 text-sm font-medium hover:bg-red-50"
+        >
+          <img src="../icons/logout.png" alt="" class="w-4 h-4" />
+          Log out
+        </button>
+      </aside>
+
+      <!-- ==================== RIGHT SIDE ==================== -->
+      <div class="flex-1 min-w-0">
+        <!-- Top bar. sticky top-0 keeps it at the top while the page scrolls under it. -->
+        <header class="sticky top-0 z-10 bg-white border-b border-gray-200 px-5 md:px-8 py-4 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <!-- Menu button (only on mobile) -->
+            <button type="button" id="menuButton" class="md:hidden">
+              <img src="../icons/menu.png" alt="Open menu" class="w-6 h-6" />
+            </button>
+            <p class="text-xs font-medium text-gray-500 uppercase">Worker workspace / Profile</p>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <!-- The bell opens the Notifications page -->
+            <a href="../WorkerShiftMarket/Notifications.html" class="p-1 rounded-lg hover:bg-gray-100"><img src="../icons/bell.png" alt="Notifications" class="w-4 h-4" /></a>
+            <p class="hidden sm:block text-sm font-medium" data-user-name></p>
+            <!-- Initials in a light blue circle -->
+            <span class="w-8 h-8 rounded-full bg-blue-50 text-blue-600 text-xs font-semibold flex items-center justify-center" data-user-initials></span>
+          </div>
+        </header>
+
+        <!-- ==================== PAGE CONTENT ==================== -->
+        <main class="p-5 md:p-8 max-w-6xl">
+          <!-- Errors that don't belong to one input (e.g. "Can't reach the server") show here -->
+          <p id="formError" class="hidden bg-red-50 text-red-600 text-xs font-medium rounded-lg p-3 mb-5"></p>
+
+          <h1 class="text-3xl font-semibold">Your experience &amp; soft skills</h1>
+          <p class="text-sm text-gray-700 mt-2">Help facilities understand where you've worked and how you work with others.</p>
+
+          <!-- This page has 4 views. The JS (experience.js) shows one at a time:
+               the list, the add/edit form, "Remove this experience?" and "Your profile is up to date". -->
+          <div id="experiencePage">
+            <p id="experienceLoading" class="text-sm text-gray-700 mt-5">Loading your experience…</p>
+
+            <!-- ==================== THE LIST ==================== -->
+            <div id="listView" class="hidden">
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mt-5">
+                <!-- Recent work experience (left) -->
+                <section class="bg-white border border-gray-200 rounded-2xl p-6 md:col-span-2 self-start">
+                  <h2 class="text-lg font-semibold">Recent work experience</h2>
+                  <p class="text-xs text-gray-700 mt-1">Keep up to 3 recent roles, with your newest experience first.</p>
+                  <p id="experienceCount" class="text-xs font-medium text-blue-600 mt-3">0 of 3 experiences</p>
+                  <!-- id="experienceList": the JS draws one card per role, newest first -->
+                  <div id="experienceList" class="space-y-3 mt-3"></div>
+                  <!-- Grey (and can't be clicked) once there are 3 roles -->
+                  <button type="button" id="addExperience" class="text-sm font-medium text-center px-6 py-3 rounded-lg mt-5 bg-blue-600 text-white hover:bg-blue-700">Add experience</button>
+                  <p id="experienceNote" class="text-xs text-gray-700 mt-3"></p>
+                </section>
+
+                <!-- Soft skills (right) -->
+                <section class="bg-white border border-gray-200 rounded-2xl p-6 self-start">
+                  <h2 class="text-lg font-semibold">Soft skills</h2>
+                  <p class="text-xs text-gray-700 mt-1">Choose the skills that reflect how you work.</p>
+                  <div class="space-y-4 mt-5">
+                  <label class="flex items-center gap-3 text-xs">
+                    <input type="checkbox" value="Communication" class="skill-box w-4 h-4 accent-blue-600" />
+                    Communication
+                  </label>
+                  <label class="flex items-center gap-3 text-xs">
+                    <input type="checkbox" value="Teamwork" class="skill-box w-4 h-4 accent-blue-600" />
+                    Teamwork
+                  </label>
+                  <label class="flex items-center gap-3 text-xs">
+                    <input type="checkbox" value="Empathy" class="skill-box w-4 h-4 accent-blue-600" />
+                    Empathy
+                  </label>
+                  <label class="flex items-center gap-3 text-xs">
+                    <input type="checkbox" value="Problem solving" class="skill-box w-4 h-4 accent-blue-600" />
+                    Problem solving
+                  </label>
+                  <label class="flex items-center gap-3 text-xs">
+                    <input type="checkbox" value="Time management" class="skill-box w-4 h-4 accent-blue-600" />
+                    Time management
+                  </label>
+                  <label class="flex items-center gap-3 text-xs">
+                    <input type="checkbox" value="Adaptability" class="skill-box w-4 h-4 accent-blue-600" />
+                    Adaptability
+                  </label>
+                  <label class="flex items-center gap-3 text-xs">
+                    <input type="checkbox" value="Attention to detail" class="skill-box w-4 h-4 accent-blue-600" />
+                    Attention to detail
+                  </label>
+                  <label class="flex items-center gap-3 text-xs">
+                    <input type="checkbox" value="Conflict resolution" class="skill-box w-4 h-4 accent-blue-600" />
+                    Conflict resolution
+                  </label>
+                  </div>
+                  <p class="text-xs text-gray-700 mt-5">Facilities will see these on your professional profile.</p>
+                  <p id="skillsError" class="text-xs font-medium text-red-500 mt-1 hidden"></p>
+                  <button type="button" id="saveSkills" class="bg-blue-600 text-white text-sm font-medium text-center py-3 rounded-lg hover:bg-blue-700 px-6 mt-3">Save soft skills</button>
+                </section>
+              </div>
+
+              <a href="../WorkerShiftMarket/Profile.html" class="inline-block w-56 border border-blue-600 text-blue-600 bg-white text-sm font-medium text-center py-3 rounded-lg hover:bg-blue-50 mt-5">Back to profile</a>
+            </div>
+
+            <!-- ==================== ADD / EDIT A ROLE ==================== -->
+            <div id="formView" class="hidden">
+              <!-- "novalidate" turns off the browser's own popups so our JS messages show instead -->
+              <form id="experienceForm" class="bg-white border border-gray-200 rounded-2xl p-6 mt-5" novalidate>
+                <h2 id="formTitle" class="text-lg font-semibold">Add experience</h2>
+                <p id="formIntro" class="text-xs text-gray-700 mt-1"></p>
+
+                <div class="space-y-5 mt-5">
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div>
+                  <label for="expTitle" class="block text-sm font-semibold mb-2">Job title</label>
+                  <input type="text" id="expTitle" placeholder="e.g. Staff nurse" class="w-full border border-gray-200 rounded-lg py-3 px-3 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-200" />
+                  <p id="expTitleError" class="text-xs font-medium text-red-500 mt-1 hidden"></p>
+                </div>
+                    <div>
+                  <label for="expWorkplace" class="block text-sm font-semibold mb-2">Workplace</label>
+                  <input type="text" id="expWorkplace" placeholder="e.g. Mainland Care Hospital" class="w-full border border-gray-200 rounded-lg py-3 px-3 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-200" />
+                  <p id="expWorkplaceError" class="text-xs font-medium text-red-500 mt-1 hidden"></p>
+                </div>
+                  </div>
+                  <div>
+                  <label for="expLocation" class="block text-sm font-semibold mb-2">Location</label>
+                  <input type="text" id="expLocation" placeholder="e.g. Yaba, Lagos" class="w-full border border-gray-200 rounded-lg py-3 px-3 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-200" />
+                  <p id="expLocationError" class="text-xs font-medium text-red-500 mt-1 hidden"></p>
+                </div>
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div>
+                  <label for="expStart" class="block text-sm font-semibold mb-2">Start month / year</label>
+                  <input type="text" id="expStart" placeholder="MM / YYYY" inputmode="numeric" maxlength="9" class="w-full border border-gray-200 rounded-lg py-3 px-3 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-200" />
+                  <p id="expStartError" class="text-xs font-medium text-red-500 mt-1 hidden"></p>
+                </div>
+                    <div>
+                  <label for="expEnd" class="block text-sm font-semibold mb-2">End month / year</label>
+                  <input type="text" id="expEnd" placeholder="MM / YYYY" inputmode="numeric" maxlength="9" class="w-full border border-gray-200 rounded-lg py-3 px-3 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-200" />
+                  <p id="expEndError" class="text-xs font-medium text-red-500 mt-1 hidden"></p>
+                </div>
+                  </div>
+                  <div>
+                    <label class="flex items-center gap-3 text-xs">
+                      <input type="checkbox" id="expCurrent" class="w-4 h-4 accent-blue-600" />
+                      I currently work here
+                    </label>
+                    <p class="text-xs text-gray-700 mt-3">For a current role, leave the end date as Present.</p>
+                  </div>
+                  <div>
+                    <label for="expResponsibilities" class="block text-sm font-semibold mb-2">Responsibilities</label>
+                    <input type="text" id="expResponsibilities" placeholder="What did you do in this role?" class="w-full border border-gray-200 rounded-lg py-3 px-3 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-200" />
+                    <p id="expResponsibilitiesError" class="text-xs font-medium text-red-500 mt-1 hidden"></p>
+                    <p class="text-xs text-gray-700 mt-2">Briefly describe your responsibilities. Don't include patient names or private information.</p>
+                  </div>
+                </div>
+
+                <div class="flex flex-wrap gap-3 mt-5">
+                  <button type="submit" id="saveExperience" class="w-40 bg-blue-600 text-white text-sm font-medium text-center py-3 rounded-lg hover:bg-blue-700">Save experience</button>
+                  <button type="button" data-back-to-list class="w-40 border border-blue-600 text-blue-600 bg-white text-sm font-medium text-center py-3 rounded-lg hover:bg-blue-50">Cancel</button>
+                </div>
+              </form>
+            </div>
+
+            <!-- ==================== REMOVE A ROLE ==================== -->
+            <div id="removeView" class="hidden">
+              <section class="bg-white border border-gray-200 rounded-2xl p-6 mt-5">
+                <h2 class="text-lg font-semibold">Remove this experience?</h2>
+                <p class="text-xs text-gray-700 mt-2">Remove the selected role from your recent experience.</p>
+                <p class="text-xs text-gray-700 mt-2">This role will no longer appear on your profile. Your other experience and soft skills will stay.</p>
+                <button type="button" id="confirmRemove" class="block w-48 bg-blue-600 text-white text-sm font-medium text-center py-3 rounded-lg hover:bg-blue-700 mt-5">Remove experience</button>
+                <button type="button" data-back-to-list class="block w-48 border border-blue-600 text-blue-600 bg-white text-sm font-medium text-center py-3 rounded-lg hover:bg-blue-50 mt-3">Keep experience</button>
+              </section>
+            </div>
+
+            <!-- ==================== SAVED ==================== -->
+            <div id="savedView" class="hidden">
+              <section class="bg-blue-50 border border-blue-100 rounded-2xl p-6 mt-5">
+                <h2 class="text-lg font-semibold text-blue-600">Your profile is up to date</h2>
+                <p class="text-xs text-gray-700 mt-2">Your recent experience and selected soft skills are saved.</p>
+                <button type="button" data-back-to-list class="bg-blue-600 text-white text-sm font-medium text-center py-3 rounded-lg hover:bg-blue-700 px-6 mt-5">Back to experience</button>
+              </section>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <!-- api.js must come first: the page script uses its settings and helpers -->
+    <script src="../js/api.js"></script>
+    <!-- backend.js translates between the pages and the backend's field names -->
+    <script src="../js/backend.js"></script>
+    <script src="../js/WorkerDashboard.js"></script>
+    <script src="../js/experience.js"></script>
+  </body>
+</html>

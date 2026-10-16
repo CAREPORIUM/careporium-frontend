@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Careporium - Upcoming Shifts</title>
+    <title>Careporium - My Shift</title>
 
     <!-- Tailwind CSS from the CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -14,7 +14,14 @@
         theme: {
           extend: {
             fontFamily: {
-              sans: ["-apple-system", "BlinkMacSystemFont", '"SF Pro Text"', '"Segoe UI"', "Roboto", "sans-serif"],
+              sans: [
+                "-apple-system",
+                "BlinkMacSystemFont",
+                '"SF Pro Text"',
+                '"Segoe UI"',
+                "Roboto",
+                "sans-serif",
+              ],
             },
           },
         },
@@ -22,123 +29,180 @@
     </script>
   </head>
 
-  <body class="bg-slate-50 text-gray-900">
+  <!-- data-requires-verification: until the account is verified, this page sends the user back to the dashboard -->
+  <body class="bg-slate-50 text-gray-900" data-requires-verification="../WorkerShiftMarket/Dashboard.html">
     <!-- Sidebar on the left, page on the right -->
     <div class="flex min-h-screen">
-
       <!-- ==================== SIDEBAR ==================== -->
-      <!-- On desktop it always shows (md:flex). On mobile it's hidden until the menu button opens it. -->
-      <aside id="sidebar" class="hidden md:flex fixed md:static inset-y-0 left-0 z-20 w-56 flex-shrink-0 flex-col bg-white border-r border-gray-200 p-5">
-        <!-- Logo, with a close button next to it (the close button only shows on mobile) -->
-        <div class="flex items-center justify-between">
-          <img src="/images/logo-blue.png" alt="Careporium logo" class="w-36 h-auto" />
-          <button type="button" id="closeMenuButton" class="md:hidden">
-            <img src="/icons/close.png" alt="Close menu" class="w-6 h-6" />
+      <!-- Mobile: hidden until the menu button opens it, then it covers the left of the screen (fixed).
+           Desktop (md:): always visible, and sticky + h-screen keeps it in place while the page scrolls. -->
+      <aside
+        id="sidebar"
+        class="flex hidden md:flex flex-col fixed md:sticky inset-y-0 md:top-0 left-0 z-20 w-72 md:w-56 h-screen overflow-y-auto flex-shrink-0 bg-white border-r border-gray-200 p-5"
+      >
+        <!-- Logo, with a close button next to it (the close button only shows on mobile).
+             gap-5 and the wider mobile sidebar (w-72) keep the button away from the logo. -->
+        <div class="flex items-center justify-between gap-5">
+          <img src="../images/logo-blue.png" alt="Careporium logo" class="w-36 h-auto" />
+          <button type="button" id="closeMenuButton" class="md:hidden p-2 rounded-lg hover:bg-gray-100">
+            <img src="../icons/close.png" alt="Close menu" class="w-6 h-6" />
           </button>
         </div>
 
         <!-- Menu links -->
         <nav class="space-y-2 mt-10">
-          <a href="/WorkerShiftMarket/Dashboard.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50">
-            <img src="/icons/nav-dashboard.png" alt="" class="w-4 h-4" />
+          <a href="../WorkerShiftMarket/Dashboard.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50">
+            <img src="../icons/nav-dashboard.png" alt="" class="w-4 h-4" />
             Dashboard
           </a>
-          <a href="/WorkerShiftMarket/FindShifts.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50">
-            <img src="/icons/nav-find-shifts.png" alt="" class="w-4 h-4" />
+          <a href="../WorkerShiftMarket/FindShifts.html" data-needs-verification class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50">
+            <img src="../icons/nav-find-shifts.png" alt="" class="w-4 h-4" />
             Find shifts
           </a>
-          <a href="/WorkerShiftMarket/MyApplications.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50">
-            <img src="/icons/nav-applications.png" alt="" class="w-4 h-4" />
+          <a href="../WorkerShiftMarket/MyApplications.html" data-needs-verification class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50">
+            <img src="../icons/nav-applications.png" alt="" class="w-4 h-4" />
             My applications
           </a>
-  <!-- Active page: light blue -->
-          <a href="/WorkerShiftMarket/UpcomingShifts.html" class="flex items-center gap-3 px-3 py-2 rounded-lg bg-blue-50 text-blue-600 text-sm font-medium">
-            <img src="/icons/nav-upcoming.png" alt="" class="w-4 h-4" />
+          <!-- Active page: light blue -->
+          <a href="../WorkerShiftMarket/UpcomingShifts.html" data-needs-verification class="flex items-center gap-3 px-3 py-2 rounded-lg bg-blue-50 text-blue-600 text-sm font-medium">
+            <img src="../icons/nav-upcoming.png" alt="" class="w-4 h-4" />
             Upcoming shifts
           </a>
-          <a href="/WorkerShiftMarket/Profile.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50">
-            <img src="/icons/nav-profile.png" alt="" class="w-4 h-4" />
+          <a href="../WorkerShiftMarket/Profile.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50">
+            <img src="../icons/nav-profile.png" alt="" class="w-4 h-4" />
             Profile
           </a>
-            <button
-            type="button"
-            id="logoutButton"
-            data-login="/AuthenticationSection/login.html"
-            class="mt-auto flex items-center gap-3 px-3 py-2 rounded-lg border border-red-600 text-red-600 text-sm font-medium hover:bg-red-50"
-          >
-            <img src="/icons/logout.png" alt="" class="w-4 h-4" />
-            Log out
-          </button>
+          <a href="../WorkerShiftMarket/Payments.html" data-needs-verification class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50">
+            <img src="../icons/nav-payments.png" alt="" class="w-4 h-4" />
+            Payments
+          </a>
+          <a href="../WorkerShiftMarket/Notifications.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50">
+            <img src="../icons/bell.png" alt="" class="w-4 h-4" />
+            Notifications
+          </a>
         </nav>
+
+        <!-- Log out: outside the <nav>, so mt-auto can push it to the bottom-left of the sidebar -->
+        <button
+          type="button"
+          id="logoutButton"
+          data-login="../AuthenticationSection/login.html"
+          class="mt-auto w-full flex items-center gap-3 px-3 py-2 rounded-lg border border-red-600 text-red-600 text-sm font-medium hover:bg-red-50"
+        >
+          <img src="../icons/logout.png" alt="" class="w-4 h-4" />
+          Log out
+        </button>
       </aside>
 
       <!-- ==================== RIGHT SIDE ==================== -->
       <div class="flex-1 min-w-0">
-        <!-- Top bar: where you are on the left, user on the right -->
-        <header class="bg-white border-b border-gray-200 px-5 md:px-8 py-4 flex items-center justify-between">
+        <!-- Top bar. sticky top-0 keeps it at the top while the page scrolls under it. -->
+        <header class="sticky top-0 z-10 bg-white border-b border-gray-200 px-5 md:px-8 py-4 flex items-center justify-between">
           <div class="flex items-center gap-3">
             <!-- Menu button (only on mobile) -->
             <button type="button" id="menuButton" class="md:hidden">
-              <img src="/icons/menu.png" alt="Open menu" class="w-6 h-6" />
+              <img src="../icons/menu.png" alt="Open menu" class="w-6 h-6" />
             </button>
             <p class="text-xs font-medium text-gray-500 uppercase">Worker workspace / Upcoming shifts</p>
           </div>
 
           <div class="flex items-center gap-3">
-            <img src="/icons/bell.png" alt="Notifications" class="w-4 h-4" />
-            <p class="hidden sm:block text-sm font-medium">Amara Okafor</p>
+            <!-- The bell opens the Notifications page -->
+            <a href="../WorkerShiftMarket/Notifications.html" class="p-1 rounded-lg hover:bg-gray-100"><img src="../icons/bell.png" alt="Notifications" class="w-4 h-4" /></a>
+            <p class="hidden sm:block text-sm font-medium" data-user-name></p>
             <!-- Initials in a light blue circle -->
-            <span class="w-8 h-8 rounded-full bg-blue-50 text-blue-600 text-xs font-semibold flex items-center justify-center">AO</span>
+            <span class="w-8 h-8 rounded-full bg-blue-50 text-blue-600 text-xs font-semibold flex items-center justify-center" data-user-initials></span>
           </div>
         </header>
 
         <!-- ==================== PAGE CONTENT ==================== -->
         <main class="p-5 md:p-8 max-w-6xl">
-          <!-- Page heading -->
-          <p class="text-xs font-medium text-blue-600 uppercase">Upcoming</p>
-          <h1 class="text-3xl font-semibold mt-2">Your next confirmed shift.</h1>
-          <p class="text-sm text-gray-700 mt-2">Everything you need to prepare and arrive with confidence.</p>
+          <!-- Errors that don't belong to one input (e.g. "Can't reach the server") show here -->
+          <p id="formError" class="hidden bg-red-50 text-red-600 text-xs font-medium rounded-lg p-3 mb-5"></p>
 
-          <!-- Shift summary -->
-          <section class="bg-white border border-gray-200 rounded-2xl p-6 mt-5">
-            <div class="flex flex-wrap gap-2">
-              <span class="inline-block bg-green-50 text-green-700 text-xs font-semibold uppercase px-2 py-1 rounded">✓ Confirmed</span>
-              <span class="inline-block bg-blue-50 text-blue-600 text-xs font-semibold uppercase px-2 py-1 rounded">Starts in 10 days</span>
-            </div>
-            <h2 class="text-xl font-semibold mt-3">Community Nurse · Yaba Community Clinic</h2>
-            <p class="text-sm text-gray-700 mt-3">Friday, 9 October 2026 · 08:00–16:00 WAT · Yaba, Lagos</p>
+          <!-- Heading. The JS fills it in from the shift. -->
+          <h1 id="shiftTitle" class="text-3xl font-semibold">Registered nurse · General ward</h1>
+          <p id="shiftFacility" class="text-xs text-gray-700 mt-3">Mainland Care Hospital · Yaba, Lagos</p>
+          <p id="shiftWhen" class="text-xs text-gray-700 mt-1">Friday, 9 October · 08:00–16:00 WAT · Shift CP-1042</p>
+
+          <p id="pageLoading" class="text-sm text-gray-700 mt-5">Loading your shift…</p>
+
+          <!-- The colored box at the top. The JS changes its color and text for each step
+               (offer, booked, ready, scanning, working, done, or an error). -->
+          <section id="stateBanner" class="hidden border rounded-2xl p-6 mt-5">
+            <h2 id="bannerTitle" class="text-lg font-semibold"></h2>
+            <p id="bannerText" class="text-xs text-gray-700 mt-2"></p>
           </section>
 
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mt-5">
-            <!-- Checklist -->
-            <section class="bg-white border border-gray-200 rounded-2xl p-6 md:col-span-2">
-              <h2 class="text-lg font-semibold">Before your shift</h2>
-              <div class="space-y-3 mt-3">
-                <div class="flex items-center gap-3 text-sm"><span class="w-5 h-5 rounded-full bg-green-100 text-green-600 text-xs flex items-center justify-center">✓</span>Facility confirmed your booking</div>
-                <div class="flex items-center gap-3 text-sm"><span class="w-5 h-5 rounded-full bg-green-100 text-green-600 text-xs flex items-center justify-center">✓</span>Credentials verified and shared securely</div>
-                <div class="flex items-center gap-3 text-sm"><span class="w-5 h-5 rounded-full border border-gray-300"></span>Review arrival and uniform instructions</div>
-                <div class="flex items-center gap-3 text-sm"><span class="w-5 h-5 rounded-full border border-gray-300"></span>Check in at the facility when you arrive</div>
-              </div>
-              <a href="#" class="inline-block bg-blue-600 text-white text-sm font-medium text-center px-8 py-3 rounded-lg hover:bg-blue-700 mt-5">View shift instructions</a>
-            </section>
+          <!-- The JS draws the card and buttons for the current step here -->
+          <div id="stateCard"></div>
 
-            <!-- Arrival information -->
-            <section class="bg-white border border-gray-200 rounded-2xl p-6">
-              <h2 class="text-lg font-semibold">Arrival information</h2>
-              <div class="space-y-3 mt-3">
-                <div class="flex justify-between gap-3 text-xs"><span class="text-gray-700">Location</span><span class="font-semibold">Yaba, Lagos</span></div>
-                <div class="flex justify-between gap-3 text-xs"><span class="text-gray-700">Check-in</span><span class="font-semibold">07:45 · Reception</span></div>
-                <div class="flex justify-between gap-3 text-xs"><span class="text-gray-700">Contact</span><span class="font-semibold">Shift coordinator</span></div>
+          <!-- ===== SCANNING: the camera view ===== -->
+          <div id="scanView" class="hidden">
+            <div class="relative bg-gray-900 rounded-2xl overflow-hidden h-72 md:h-80 mt-5">
+              <!-- The camera picture appears here once the camera is allowed -->
+              <video id="scanVideo" class="hidden absolute inset-0 w-full h-full object-cover" playsinline muted></video>
+              <!-- The 4 white corners of the scanning frame -->
+              <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <div class="relative w-40 h-40">
+                  <span class="absolute w-8 h-8 border-white top-0 left-0 border-t-2 border-l-2"></span>
+                  <span class="absolute w-8 h-8 border-white top-0 right-0 border-t-2 border-r-2"></span>
+                  <span class="absolute w-8 h-8 border-white bottom-0 left-0 border-b-2 border-l-2"></span>
+                  <span class="absolute w-8 h-8 border-white bottom-0 right-0 border-b-2 border-r-2"></span>
+                </div>
               </div>
-              <p class="text-xs text-gray-700 mt-3">Full address and contact details are available for confirmed bookings.</p>
-              <a href="#" class="block border border-blue-600 text-blue-600 text-sm font-medium text-center px-8 py-3 rounded-lg hover:bg-blue-50 mt-5">View directions</a>
-            </section>
+              <p class="absolute left-5 bottom-5 text-xs text-white">Position the facility's QR inside the frame.</p>
+            </div>
+            <button type="button" id="allowCamera" class="block w-full bg-blue-600 text-white text-sm font-medium text-center py-3 rounded-lg hover:bg-blue-700 mt-5">Allow camera and scan</button>
+            <p class="text-xs text-gray-700 mt-3">Camera access is needed to scan. Attendance is recorded only after a valid QR is recognised.</p>
+            <button type="button" data-go="code" class="text-xs font-medium text-blue-600 mt-3">Camera not working? Enter the code instead</button>
+            <!-- No camera (e.g. on a laptop): read the QR from a photo or screenshot instead -->
+            <label class="block text-xs font-medium text-blue-600 mt-3 cursor-pointer">
+              <input type="file" id="qrPhoto" accept="image/*" class="hidden" />
+              Or upload a photo / screenshot of the QR
+            </label>
+            <button type="button" id="cancelScan" class="block w-full border border-blue-600 text-blue-600 text-sm font-medium text-center py-3 rounded-lg hover:bg-blue-50 mt-5">Cancel</button>
+          </div>
+
+          <!-- ===== TYPING THE BACKUP CODE (when the camera can't be used) ===== -->
+          <div id="codeView" class="hidden">
+            <form id="codeForm" class="bg-white border border-gray-200 rounded-2xl p-6 mt-5" novalidate>
+              <label for="backupCodeInput" id="backupCodeLabel" class="block text-sm font-semibold mb-2">6-digit code</label>
+              <!-- inputmode="numeric" opens the number keyboard on phones -->
+              <input type="text" id="backupCodeInput" inputmode="numeric" maxlength="6" placeholder="e.g. 482913" class="w-full border border-gray-200 rounded-lg py-3 px-3 text-lg tracking-widest text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-200" />
+              <p id="backupCodeInputError" class="text-xs font-medium text-red-500 mt-1 hidden"></p>
+              <button type="submit" class="block w-full bg-blue-600 text-white text-sm font-medium text-center py-3 rounded-lg hover:bg-blue-700 mt-5">Clock in</button>
+              <button type="button" data-go="scanning" class="block w-full border border-blue-600 text-blue-600 text-sm font-medium text-center py-3 rounded-lg hover:bg-blue-50 mt-3">Scan the QR instead</button>
+              <button type="button" data-go="back" class="block w-full text-xs font-medium text-blue-600 text-center mt-3">Cancel</button>
+            </form>
+          </div>
+
+          <!-- ==================== DEMO ONLY ====================
+               Shown only when USE_DEMO_MODE is true in api.js. Without a backend there's no real clock and
+               no other people, so these controls pretend. They disappear with the real backend. -->
+          <div id="demoPanel" class="hidden border-2 border-dashed border-gray-300 rounded-xl p-5 mt-8">
+            <p class="text-xs font-semibold text-gray-700 uppercase">Demo only</p>
+            <label for="demoTime" class="block text-xs font-medium text-gray-700 mt-3">Pretend time on the shift day</label>
+            <select id="demoTime" class="mt-1 border border-gray-300 rounded-lg py-2 px-3 text-sm"></select>
+            <div class="flex flex-wrap gap-2 mt-3">
+              <button type="button" data-demo="rightQr" class="border border-gray-300 text-gray-700 text-xs font-medium px-4 py-2 rounded-lg hover:bg-gray-50">Pretend to scan the right QR</button>
+              <button type="button" data-demo="wrongQr" class="border border-gray-300 text-gray-700 text-xs font-medium px-4 py-2 rounded-lg hover:bg-gray-50">Pretend to scan a wrong QR</button>
+              <button type="button" data-demo="reset" class="border border-gray-300 text-gray-700 text-xs font-medium px-4 py-2 rounded-lg hover:bg-gray-50">Reset the demo shift</button>
+            </div>
+            <p class="text-xs text-gray-500 mt-3">The backup code for the demo shift is 482913. Open the facility's shift page in another tab to see both sides update.</p>
           </div>
         </main>
       </div>
     </div>
 
-    <!-- Shared JavaScript for all worker dashboard pages -->
-    <script src="/js/workerDashboard.js"></script>
+    <!-- api.js must come first: the page script uses its settings and helpers -->
+    <script src="../js/api.js"></script>
+    <!-- backend.js translates between the pages and the backend's field names -->
+    <script src="../js/backend.js"></script>
+    <script src="../js/WorkerDashboard.js"></script>
+    <!-- jsQR reads QR codes from the camera picture -->
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+    <script src="../js/shifts.js"></script>
+    <script src="../js/workerShift.js"></script>
   </body>
 </html>

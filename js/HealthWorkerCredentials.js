@@ -1,4 +1,5 @@
 // ====== CREDENTIAL VERIFICATION PAGE ======
+// Needs /js/api.js to be loaded first.
 
 // The files the user has picked. They start empty (null means "nothing yet").
 let licenseFile = null;
@@ -89,21 +90,34 @@ function showStep(stepNumber) {
     document.getElementById("successStep").classList.remove("hidden");
   }
 
-  // The success screen has no sidebar in the design.
-  // The sidebar always has "hidden" (hidden on mobile). "md:block" is what shows it on desktop,
-  // so we only need to add or remove "md:block".
+  // The success screen has no sidebar and no mobile stepper in the design.
+  // The sidebar always has "hidden" (hidden on mobile). "md:flex" is what shows it on desktop,
+  // so we only need to add or remove "md:flex".
   const sidebar = document.getElementById("sidebar");
+  const mobileStepper = document.getElementById("mobileStepper");
+
   if (stepNumber === 4) {
-    sidebar.classList.remove("md:block");
+    sidebar.classList.remove("md:flex");
+    if (mobileStepper) {
+      mobileStepper.classList.add("hidden");
+    }
   } else {
-    sidebar.classList.add("md:block");
+    sidebar.classList.add("md:flex");
+    if (mobileStepper) {
+      mobileStepper.classList.remove("hidden");
+    }
   }
 
   updateSidebar(stepNumber);
+  updateMobileStepper(stepNumber);
 
   // Go back to the top of the page
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
+
+// The classes for the 3 looks of a step circle
+const CIRCLE_DONE_OR_CURRENT = "w-5 h-5 rounded-full bg-blue-600 text-white text-xs flex items-center justify-center flex-shrink-0";
+const CIRCLE_NOT_YET = "w-5 h-5 rounded-full border border-gray-300 text-gray-700 text-xs flex items-center justify-center flex-shrink-0";
 
 // Color the 4 sidebar items: done (blue check), current (light blue row), or not yet (gray)
 function updateSidebar(currentStep) {
@@ -114,20 +128,40 @@ function updateSidebar(currentStep) {
     if (i < currentStep) {
       // DONE: blue circle with a check
       row.className = "flex items-center gap-3 p-3 rounded-lg";
-      circle.className =
-        "w-5 h-5 rounded-full bg-blue-600 text-white text-xs flex items-center justify-center";
+      circle.className = CIRCLE_DONE_OR_CURRENT;
       circle.textContent = "✓";
     } else if (i === currentStep) {
       // CURRENT: light blue row and blue circle with the number
       row.className = "flex items-center gap-3 p-3 rounded-lg bg-blue-50";
-      circle.className =
-        "w-5 h-5 rounded-full bg-blue-600 text-white text-xs flex items-center justify-center";
+      circle.className = CIRCLE_DONE_OR_CURRENT;
       circle.textContent = i;
     } else {
       // NOT YET: white circle with a gray border
       row.className = "flex items-center gap-3 p-3 rounded-lg";
-      circle.className =
-        "w-5 h-5 rounded-full border border-gray-300 text-gray-700 text-xs flex items-center justify-center";
+      circle.className = CIRCLE_NOT_YET;
+      circle.textContent = i;
+    }
+  }
+}
+
+// Color the 4 circles of the mobile stepper (shown at the top on phones).
+// It uses the ids mobileCircle1 to mobileCircle4. If the page doesn't have them, nothing happens.
+function updateMobileStepper(currentStep) {
+  for (let i = 1; i <= 4; i++) {
+    const circle = document.getElementById("mobileCircle" + i);
+    if (!circle) {
+      return;
+    }
+
+    if (i <= currentStep) {
+      circle.className = CIRCLE_DONE_OR_CURRENT;
+    } else {
+      circle.className = CIRCLE_NOT_YET;
+    }
+
+    if (i < currentStep) {
+      circle.textContent = "✓";
+    } else {
       circle.textContent = i;
     }
   }
@@ -155,16 +189,12 @@ document.querySelectorAll(".back-arrow").forEach(function (arrow) {
 const licenseInput = document.getElementById("licenseInput");
 
 // Clicking the upload box (or the preview, to change the file) opens the file picker
-document
-  .getElementById("licenseUploadBox")
-  .addEventListener("click", function () {
-    licenseInput.click();
-  });
-document
-  .getElementById("licensePreviewCard")
-  .addEventListener("click", function () {
-    licenseInput.click();
-  });
+document.getElementById("licenseUploadBox").addEventListener("click", function () {
+  licenseInput.click();
+});
+document.getElementById("licensePreviewCard").addEventListener("click", function () {
+  licenseInput.click();
+});
 
 // When a file is picked
 licenseInput.addEventListener("change", function () {
@@ -188,8 +218,7 @@ licenseInput.addEventListener("change", function () {
   licenseFile = file;
 
   showPreview(file, "licensePreviewImage", "licensePdfBox");
-  document.getElementById("licenseFileText").textContent =
-    file.name + " · " + formatSize(file.size);
+  document.getElementById("licenseFileText").textContent = file.name + " · " + formatSize(file.size);
 
   // Swap the upload box for the preview
   document.getElementById("licenseUploadBox").classList.add("hidden");
@@ -197,10 +226,8 @@ licenseInput.addEventListener("change", function () {
 
   // Change the text at the top, like in the design
   document.getElementById("step1Title").textContent = "Professional license";
-  document.getElementById("step1Subtitle").textContent =
-    "Make sure the document is clear, valid, and not expired.";
-  document.getElementById("step1BannerText").textContent =
-    "Your information is safe with us.";
+  document.getElementById("step1Subtitle").textContent = "Make sure the document is clear, valid, and not expired.";
+  document.getElementById("step1BannerText").textContent = "Your information is safe with us.";
 });
 
 // Back: go to the page the user came from
@@ -211,10 +238,7 @@ document.getElementById("step1Back").addEventListener("click", function () {
 // Next: only move on if a license was uploaded
 document.getElementById("step1Next").addEventListener("click", function () {
   if (licenseFile === null) {
-    showError(
-      "licenseError",
-      "Please upload your professional license to continue.",
-    );
+    showError("licenseError", "Please upload your professional license to continue.");
     return;
   }
   showStep(2);
@@ -251,8 +275,7 @@ idInput.addEventListener("change", function () {
   idFile = file;
 
   showPreview(file, "idPreviewImage", "idPdfBox");
-  document.getElementById("idFileText").textContent =
-    file.name + " · " + formatSize(file.size);
+  document.getElementById("idFileText").textContent = file.name + " · " + formatSize(file.size);
 
   // Swap the upload box for the preview
   document.getElementById("idUploadBox").classList.add("hidden");
@@ -266,11 +289,7 @@ idTypeOptions.forEach(function (option) {
   option.addEventListener("click", function () {
     // Make every option look "not picked"
     idTypeOptions.forEach(function (otherOption) {
-      otherOption.classList.remove(
-        "border-blue-400",
-        "bg-blue-50",
-        "text-blue-600",
-      );
+      otherOption.classList.remove("border-blue-400", "bg-blue-50", "text-blue-600");
       otherOption.classList.add("border-gray-200", "bg-white", "text-gray-900");
     });
 
@@ -385,8 +404,36 @@ document.getElementById("step3Back").addEventListener("click", function () {
   showStep(2);
 });
 
+// ==================================================
+// SUBMIT (send all 4 documents)
+// ==================================================
+
+// Put every file and the ID type into one FormData, ready to send to the server.
+// FormData is used (not JSON) because it can carry files.
+function buildCredentials() {
+  const formData = new FormData();
+  formData.append("professionalLicence", licenseFile);
+  formData.append("idDocument", idFile);
+  formData.append("idType", selectedIdType);
+  formData.append("educationCertificate", educationFile);
+  formData.append("proofOfAddress", addressFile);
+  return formData;
+}
+
+// DEMO: remember that this account has sent its documents. If they were rejected before,
+// this is a resubmission. (With the real backend, the server keeps track of this.)
+function markDemoDocumentsSent() {
+  if (getDemoVerification().status === "rejected") {
+    setDemoVerification("resubmission");
+  } else {
+    setDemoVerification("pending");
+  }
+}
+
+const submitButton = document.getElementById("step3Submit");
+
 // Submit: both documents are required
-document.getElementById("step3Submit").addEventListener("click", function () {
+submitButton.addEventListener("click", async function () {
   let isValid = true;
 
   if (educationFile === null) {
@@ -399,31 +446,30 @@ document.getElementById("step3Submit").addEventListener("click", function () {
     isValid = false;
   }
 
-  // NOTE: Sending the files to the server needs a backend. For now we just show the success screen.
-  if (isValid) {
-    showStep(4);
+  if (!isValid) {
+    return;
   }
-});
 
-// ==================================================
-// LOG OUT (every page)
-// ==================================================
+  // DEMO: no server, so just remember the new status
+  if (USE_DEMO_MODE) {
+    markDemoDocumentsSent();
+  }
 
-const logoutButton = document.getElementById("logoutButton");
+  // REAL: send the files to the server
+  if (!USE_DEMO_MODE) {
+    setLoading(submitButton, true, "Uploading…");
 
-if (logoutButton) {
-  logoutButton.addEventListener("click", function () {
-    // Ask first, so nobody logs out by accident
-    const confirmed = confirm("Are you sure you want to log out?");
-    if (!confirmed) {
+    try {
+      // Sent with the worker's profile update (backend.js gives the files the backend's names)
+      await Backend.uploadWorkerDocuments({ licence: licenseFile, id: idFile, education: educationFile, address: addressFile });
+    } catch (error) {
+      showError("addressError", "Couldn't upload your documents: " + error.message);
+      setLoading(submitButton, false);
       return;
     }
+  }
 
-    // Forget who was logged in (saved by the login page)
-    localStorage.removeItem("userType");
+  showStep(4);
+});
 
-    // Go to the sign-in page written in the button's data-login="..."
-    // replace() also stops the Back button from returning to the dashboard
-    window.location.replace(logoutButton.getAttribute("data-login"));
-  });
-}
+// (The log out button is handled in api.js, shared by every page.)

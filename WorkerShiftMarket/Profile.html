@@ -29,225 +29,215 @@
     </script>
   </head>
 
-  <body class="bg-slate-50 text-gray-900">
+  <!-- data-page tells WorkerDashboard.js which page this is, so it loads the right data -->
+  <body class="bg-slate-50 text-gray-900" data-page="profile">
     <!-- Sidebar on the left, page on the right -->
     <div class="flex min-h-screen">
       <!-- ==================== SIDEBAR ==================== -->
-      <!-- On desktop it always shows (md:flex). On mobile it's hidden until the menu button opens it. -->
+      <!-- Mobile: hidden until the menu button opens it, then it covers the left of the screen (fixed).
+           Desktop (md:): always visible, and sticky + h-screen keeps it in place while the page scrolls. -->
       <aside
         id="sidebar"
-        class="hidden md:flex fixed md:static inset-y-0 left-0 z-20 w-56 flex-shrink-0 flex-col bg-white border-r border-gray-200 p-5"
+        class="flex hidden md:flex flex-col fixed md:sticky inset-y-0 md:top-0 left-0 z-20 w-72 md:w-56 h-screen overflow-y-auto flex-shrink-0 bg-white border-r border-gray-200 p-5"
       >
-        <!-- Logo, with a close button next to it (the close button only shows on mobile) -->
-        <div class="flex items-center justify-between">
-          <img
-            src="/images/logo-blue.png"
-            alt="Careporium logo"
-            class="w-36 h-auto"
-          />
-          <button type="button" id="closeMenuButton" class="md:hidden">
-            <img src="/icons/close.png" alt="Close menu" class="w-6 h-6" />
+        <!-- Logo, with a close button next to it (the close button only shows on mobile).
+             gap-5 and the wider mobile sidebar (w-72) keep the button away from the logo. -->
+        <div class="flex items-center justify-between gap-5">
+          <img src="../images/logo-blue.png" alt="Careporium logo" class="w-36 h-auto" />
+          <button type="button" id="closeMenuButton" class="md:hidden p-2 rounded-lg hover:bg-gray-100">
+            <img src="../icons/close.png" alt="Close menu" class="w-6 h-6" />
           </button>
         </div>
 
         <!-- Menu links -->
         <nav class="space-y-2 mt-10">
-          <a
-            href="/WorkerShiftMarket/Dashboard.html"
-            class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50"
-          >
-            <img src="/icons/nav-dashboard.png" alt="" class="w-4 h-4" />
+          <a href="../WorkerShiftMarket/Dashboard.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50">
+            <img src="../icons/nav-dashboard.png" alt="" class="w-4 h-4" />
             Dashboard
           </a>
-          <a
-            href="/WorkerShiftMarket/FindShifts.html"
-            class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50"
-          >
-            <img src="/icons/nav-find-shifts.png" alt="" class="w-4 h-4" />
+          <a href="../WorkerShiftMarket/FindShifts.html" data-needs-verification class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50">
+            <img src="../icons/nav-find-shifts.png" alt="" class="w-4 h-4" />
             Find shifts
           </a>
-          <!-- Active page: light blue -->
-          <a
-            href="/WorkerShiftMarket/MyApplications.html"
-            class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium"
-          >
-            <img src="/icons/nav-applications.png" alt="" class="w-4 h-4" />
+          <a href="../WorkerShiftMarket/MyApplications.html" data-needs-verification class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50">
+            <img src="../icons/nav-applications.png" alt="" class="w-4 h-4" />
             My applications
           </a>
-          <a
-            href="/WorkerShiftMarket/UpcomingShifts.html"
-            class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50"
-          >
-            <img src="/icons/nav-upcoming.png" alt="" class="w-4 h-4" />
+          <a href="../WorkerShiftMarket/UpcomingShifts.html" data-needs-verification class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50">
+            <img src="../icons/nav-upcoming.png" alt="" class="w-4 h-4" />
             Upcoming shifts
           </a>
-          <a
-            href="/WorkerShiftMarket/Profile.html"
-            class="flex items-center gap-3 px-3 py-2 rounded-lg bg-blue-50 text-blue-600 text-sm font-medium hover:bg-gray-50"
-          >
-            <img src="/icons/nav-profile.png" alt="" class="w-4 h-4" />
+          <!-- Active page: light blue -->
+          <a href="../WorkerShiftMarket/Profile.html" class="flex items-center gap-3 px-3 py-2 rounded-lg bg-blue-50 text-blue-600 text-sm font-medium">
+            <img src="../icons/nav-profile.png" alt="" class="w-4 h-4" />
             Profile
           </a>
-            <button
-            type="button"
-            id="logoutButton"
-            data-login="/AuthenticationSection/login.html"
-            class="mt-auto flex items-center gap-3 px-3 py-2 rounded-lg border border-red-600 text-red-600 text-sm font-medium hover:bg-red-50"
-          >
-            <img src="/icons/logout.png" alt="" class="w-4 h-4" />
-            Log out
-          </button>
+          <a href="../WorkerShiftMarket/Payments.html" data-needs-verification class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50">
+            <img src="../icons/nav-payments.png" alt="" class="w-4 h-4" />
+            Payments
+          </a>
+          <a href="../WorkerShiftMarket/Notifications.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50">
+            <img src="../icons/bell.png" alt="" class="w-4 h-4" />
+            Notifications
+          </a>
         </nav>
+
+        <!-- Log out: outside the <nav>, so mt-auto can push it to the bottom-left of the sidebar -->
+        <button
+          type="button"
+          id="logoutButton"
+          data-login="../AuthenticationSection/login.html"
+          class="mt-auto w-full flex items-center gap-3 px-3 py-2 rounded-lg border border-red-600 text-red-600 text-sm font-medium hover:bg-red-50"
+        >
+          <img src="../icons/logout.png" alt="" class="w-4 h-4" />
+          Log out
+        </button>
       </aside>
 
       <!-- ==================== RIGHT SIDE ==================== -->
       <div class="flex-1 min-w-0">
-        <!-- Top bar: where you are on the left, user on the right -->
-        <header
-          class="bg-white border-b border-gray-200 px-5 md:px-8 py-4 flex items-center justify-between"
-        >
+        <!-- Top bar. sticky top-0 keeps it at the top while the page scrolls under it. -->
+        <header class="sticky top-0 z-10 bg-white border-b border-gray-200 px-5 md:px-8 py-4 flex items-center justify-between">
           <div class="flex items-center gap-3">
             <!-- Menu button (only on mobile) -->
             <button type="button" id="menuButton" class="md:hidden">
-              <img src="/icons/menu.png" alt="Open menu" class="w-6 h-6" />
+              <img src="../icons/menu.png" alt="Open menu" class="w-6 h-6" />
             </button>
-            <p class="text-xs font-medium text-gray-500 uppercase">
-              Worker workspace / Profile
-            </p>
+            <p class="text-xs font-medium text-gray-500 uppercase">Worker workspace / Profile</p>
           </div>
 
           <div class="flex items-center gap-3">
-            <img src="/icons/bell.png" alt="Notifications" class="w-4 h-4" />
-            <p class="hidden sm:block text-sm font-medium">Amara Okafor</p>
+            <!-- The bell opens the Notifications page -->
+            <a href="../WorkerShiftMarket/Notifications.html" class="p-1 rounded-lg hover:bg-gray-100"><img src="../icons/bell.png" alt="Notifications" class="w-4 h-4" /></a>
+            <p class="hidden sm:block text-sm font-medium" data-user-name></p>
             <!-- Initials in a light blue circle -->
-            <span
-              class="w-8 h-8 rounded-full bg-blue-50 text-blue-600 text-xs font-semibold flex items-center justify-center"
-              >AO</span
-            >
+            <span class="w-8 h-8 rounded-full bg-blue-50 text-blue-600 text-xs font-semibold flex items-center justify-center" data-user-initials></span>
           </div>
         </header>
 
         <!-- ==================== PAGE CONTENT ==================== -->
         <main class="p-5 md:p-8 max-w-6xl">
-          <!-- Page heading -->
-          <p class="text-xs font-medium text-blue-600 uppercase">
-            Professional profile
-          </p>
-          <h1 class="text-3xl font-semibold mt-2">
-            Your verified professional identity.
-          </h1>
-          <p class="text-sm text-gray-700 mt-2">
-            A clear view of the credentials and experience facilities rely on.
-          </p>
+          <!-- Errors that don't belong to one input (e.g. "Can't reach the server") show here -->
+          <p id="formError" class="hidden bg-red-50 text-red-600 text-xs font-medium rounded-lg p-3 mb-5"></p>
+
+          <!-- Page heading. data-field="..." tells the JS which detail from the server goes where. -->
+          <p class="text-xs font-medium text-blue-600 uppercase">Professional profile</p>
+          <h1 class="text-3xl font-semibold mt-2">Your professional identity.</h1>
+          <p class="text-sm text-gray-700 mt-2">A clear view of the credentials and experience facilities rely on.</p>
 
           <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mt-5">
-            <section
-              class="bg-white border border-gray-200 rounded-2xl p-6 md:col-span-2"
-            >
+            <section class="bg-white border border-gray-200 rounded-2xl p-6 md:col-span-2">
               <!-- Photo (initials), name and badge -->
               <div class="flex items-center gap-5">
-                <span
-                  class="w-14 h-14 rounded-full bg-blue-600 text-white text-lg font-semibold flex items-center justify-center flex-shrink-0"
-                  >AO</span
-                >
+                <span class="w-14 h-14 rounded-full bg-blue-600 text-white text-lg font-semibold flex items-center justify-center flex-shrink-0" data-field="initials"></span>
                 <div>
-                  <h2 class="text-xl font-semibold">Amara Okafor</h2>
-                  <p class="text-sm text-gray-700">
-                    Registered Nurse · Acute Care · Lagos
-                  </p>
-                  <div class="mt-1">
-                    <span
-                      class="inline-block bg-green-50 text-green-700 text-xs font-semibold uppercase px-2 py-1 rounded"
-                      >✓ Verified professional</span
-                    >
-                  </div>
+                  <h2 class="text-xl font-semibold" data-field="name"></h2>
+                  <p class="text-sm text-gray-700" data-field="headline"></p>
+                  <div class="mt-1"><span id="profileBadge" class="hidden inline-block text-xs font-semibold uppercase px-2 py-1 rounded"></span></div>
                 </div>
               </div>
 
-              <p class="text-sm text-gray-700 mt-5">
-                Experienced nurse supporting acute and community care teams.
-                Available for day shifts across Lagos.
-              </p>
+              <p class="text-sm text-gray-700 mt-5" data-field="about"></p>
 
-              <h2 class="text-lg font-semibold mt-5">
-                Professional credentials
-              </h2>
-              <div class="space-y-3 mt-3">
-                <div class="flex gap-3 text-xs">
-                  <span class="w-36 flex-shrink-0 text-gray-700"
-                    >Professional licence</span
-                  ><span class="font-semibold">Verified · Active</span>
-                </div>
-                <div class="flex gap-3 text-xs">
-                  <span class="w-36 flex-shrink-0 text-gray-700">Specialty</span
-                  ><span class="font-semibold"
-                    >Acute care, community nursing</span
-                  >
-                </div>
-                <div class="flex gap-3 text-xs">
-                  <span class="w-36 flex-shrink-0 text-gray-700"
-                    >Experience</span
-                  ><span class="font-semibold">5 years</span>
-                </div>
-                <div class="flex gap-3 text-xs">
-                  <span class="w-36 flex-shrink-0 text-gray-700"
-                    >Search area</span
-                  ><span class="font-semibold">Lagos · 25 km radius</span>
-                </div>
+              <h2 class="text-lg font-semibold mt-5">Professional credentials</h2>
+              <div class="space-y-3 mt-3 text-xs">
+                <div class="flex gap-3"><span class="w-36 flex-shrink-0 text-gray-700">Professional licence</span><span class="font-semibold" data-field="licence">—</span></div>
+                <div class="flex gap-3"><span class="w-36 flex-shrink-0 text-gray-700">Specialty</span><span class="font-semibold" data-field="specialty">—</span></div>
+                <div class="flex gap-3"><span class="w-36 flex-shrink-0 text-gray-700">Experience</span><span class="font-semibold" data-field="experience">—</span></div>
+                <div class="flex gap-3"><span class="w-36 flex-shrink-0 text-gray-700">Search area</span><span class="font-semibold" data-field="searchArea">—</span></div>
               </div>
 
-              <a
-                href="#"
-                class="inline-block border border-blue-600 text-blue-600 text-sm font-medium text-center px-8 py-3 rounded-lg hover:bg-blue-50 mt-5"
-                >Edit professional profile</a
-              >
+              <div class="flex flex-wrap gap-3 mt-5">
+                <button type="button" id="editProfileButton" class="inline-block border border-blue-600 text-blue-600 text-sm font-medium text-center py-3 rounded-lg hover:bg-blue-50 px-8">Edit professional profile</button>
+                <!-- The verification page wasn't linked from anywhere, so it's linked here -->
+                <a href="../WorkerShiftMarket/Verification.html" class="inline-block border border-blue-600 text-blue-600 text-sm font-medium text-center py-3 rounded-lg hover:bg-blue-50 px-8">Verification details</a>
+              </div>
             </section>
 
             <!-- Trusted profile -->
-            <section
-              class="bg-white border border-gray-200 rounded-2xl p-6 self-start"
-            >
-              <span
-                class="inline-block bg-green-50 text-green-700 text-xs font-semibold uppercase px-2 py-1 rounded"
-                >✓ Identity verified</span
-              >
+            <section class="bg-white border border-gray-200 rounded-2xl p-6 self-start">
+              <span id="trustBadge" class="hidden inline-block text-xs font-semibold uppercase px-2 py-1 rounded"></span>
               <h2 class="text-lg font-semibold mt-3">Trusted profile</h2>
-              <p class="text-xs text-gray-700 mt-3">
-                Your verified status helps facilities review applications with
-                confidence.
-              </p>
-              <div class="space-y-3 mt-3">
-                <div class="flex gap-3 text-xs">
-                  <span class="w-36 flex-shrink-0 text-gray-700">Identity</span
-                  ><span class="font-semibold">Verified</span>
-                </div>
-                <div class="flex gap-3 text-xs">
-                  <span class="w-36 flex-shrink-0 text-gray-700"
-                    >Professional licence</span
-                  ><span class="font-semibold">Verified</span>
-                </div>
-                <div class="flex gap-3 text-xs">
-                  <span class="w-36 flex-shrink-0 text-gray-700"
-                    >Certificates</span
-                  ><span class="font-semibold">2 approved</span>
-                </div>
-                <div class="flex gap-3 text-xs">
-                  <span class="w-36 flex-shrink-0 text-gray-700"
-                    >Last reviewed</span
-                  ><span class="font-semibold">24 Sep 2026</span>
-                </div>
+              <p id="trustText" class="text-xs text-gray-700 mt-3">Checking your verification status…</p>
+              <div class="space-y-3 mt-3 text-xs">
+                <div class="flex gap-3"><span class="w-36 flex-shrink-0 text-gray-700">Identity</span><span class="font-semibold" data-field="identityStatus">—</span></div>
+                <div class="flex gap-3"><span class="w-36 flex-shrink-0 text-gray-700">Professional licence</span><span class="font-semibold" data-field="licenceStatus">—</span></div>
+                <div class="flex gap-3"><span class="w-36 flex-shrink-0 text-gray-700">Certificates</span><span class="font-semibold" data-field="certificates">—</span></div>
+                <div class="flex gap-3"><span class="w-36 flex-shrink-0 text-gray-700">Progress</span><span class="font-semibold" data-field="lastReviewed">—</span></div>
               </div>
-              <p class="text-xs text-gray-700 mt-3">
-                Documents remain private. Facilities see verification status and
-                relevant credentials.
-              </p>
+              <p class="text-xs text-gray-700 mt-3">Documents remain private. Facilities see verification status and relevant credentials.</p>
             </section>
           </div>
+
+
+          <!-- Edit professional profile (opened by the "Edit professional profile" button) -->
+          <form id="editProfileForm" class="hidden bg-white border border-gray-200 rounded-2xl p-6 mt-5" novalidate>
+            <h2 class="text-lg font-semibold">Edit professional profile</h2>
+            <p class="text-xs text-gray-700 mt-1">Facilities see these details when you apply for a shift.</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mt-5">
+              <div>
+                <label for="editFullName" class="block text-sm font-semibold mb-2">Full name</label>
+                <input type="text" id="editFullName" class="w-full border border-gray-200 rounded-lg py-3 px-3 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-200" />
+                <p id="editFullNameError" class="text-xs font-medium text-red-500 mt-1 hidden"></p>
+              </div>
+              <div>
+                <label for="editProfession" class="block text-sm font-semibold mb-2">Profession</label>
+                <input type="text" id="editProfession" placeholder="e.g. Nurse" class="w-full border border-gray-200 rounded-lg py-3 px-3 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-200" />
+              </div>
+              <div>
+                <label for="editSpecialty" class="block text-sm font-semibold mb-2">Specialty</label>
+                <input type="text" id="editSpecialty" placeholder="e.g. Emergency" class="w-full border border-gray-200 rounded-lg py-3 px-3 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-200" />
+              </div>
+              <div>
+                <label for="editYears" class="block text-sm font-semibold mb-2">Years of experience</label>
+                <input type="number" id="editYears" min="0" max="60" class="w-full border border-gray-200 rounded-lg py-3 px-3 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-200" />
+                <p id="editYearsError" class="text-xs font-medium text-red-500 mt-1 hidden"></p>
+              </div>
+              <div>
+                <label for="editAddress" class="block text-sm font-semibold mb-2">Address</label>
+                <input type="text" id="editAddress" class="w-full border border-gray-200 rounded-lg py-3 px-3 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-200" />
+              </div>
+              <div>
+                <label for="editState" class="block text-sm font-semibold mb-2">State</label>
+                <input type="text" id="editState" placeholder="e.g. Lagos" class="w-full border border-gray-200 rounded-lg py-3 px-3 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-200" />
+              </div>
+              <div class="md:col-span-2">
+                <label for="editAbout" class="block text-sm font-semibold mb-2">About you</label>
+                <textarea id="editAbout" rows="3" maxlength="600" placeholder="A short introduction for facilities" class="w-full border border-gray-200 rounded-lg py-3 px-3 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-200"></textarea>
+              </div>
+            </div>
+            <div class="flex flex-wrap gap-3 mt-5">
+              <button type="submit" id="saveProfileButton" class="bg-blue-600 text-white text-sm font-medium text-center py-3 rounded-lg hover:bg-blue-700 px-8">Save changes</button>
+              <button type="button" id="cancelEditProfile" class="border border-blue-600 text-blue-600 text-sm font-medium text-center py-3 rounded-lg hover:bg-blue-50 px-8">Cancel</button>
+            </div>
+          </form>
+
+          <!-- Experience & soft skills (drawn by experience.js). Facilities see these too. -->
+          <section class="bg-white border border-gray-200 rounded-2xl p-6 mt-5">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <h2 class="text-lg font-semibold">Experience &amp; soft skills</h2>
+              <a href="../WorkerShiftMarket/Experience.html" class="border border-blue-600 text-blue-600 bg-white text-sm font-medium text-center py-3 rounded-lg hover:bg-blue-50 px-8">Manage experience &amp; skills</a>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mt-5">
+              <div class="md:col-span-2">
+                <h3 class="text-sm font-semibold">Recent work experience</h3>
+                <div id="profileExperience" class="space-y-3 mt-3"><p class="text-xs text-gray-700">Loading…</p></div>
+              </div>
+              <div>
+                <h3 class="text-sm font-semibold">Soft skills</h3>
+                <div id="profileSkills" class="flex flex-wrap gap-2 mt-3"></div>
+              </div>
+            </div>
+          </section>
         </main>
       </div>
     </div>
 
-    <!-- Shared JavaScript for all worker dashboard pages -->
-    <script src="/js/WorkerDashboard.js"></script>
+    <!-- api.js must come first: the page script uses its settings and helpers -->
+    <script src="../js/api.js"></script>
+    <!-- backend.js translates between the pages and the backend's field names -->
+    <script src="../js/backend.js"></script>
+    <script src="../js/WorkerDashboard.js"></script>
+    <script src="../js/experience.js"></script>
   </body>
 </html>

@@ -1,4 +1,10 @@
 // ====== RESET PASSWORD (OTP) PAGE ======
+// Needs /js/api.js to be loaded first.
+
+// The email the code was sent to. With the real backend, the page that asks for the
+// email (before this one) should save it with: sessionStorage.setItem("resetEmail", email)
+// It can also come from the address, e.g. resetPassword.html?email=amara@example.com
+const resetEmail = sessionStorage.getItem("resetEmail") || getUrlValue("email");
 
 // ---------- The 6 OTP boxes ----------
 
@@ -30,6 +36,15 @@ otpBoxes.forEach(function (box, index) {
 // Put the cursor in the first box when the page opens
 otpBoxes[0].focus();
 
+// ---------- Error message ----------
+
+const otpError = document.getElementById("otpError");
+
+function showOtpError(message) {
+  otpError.textContent = message;
+  otpError.classList.remove("hidden");
+}
+
 // ---------- Resend countdown ----------
 
 const resendButton = document.getElementById("resendButton");
@@ -43,6 +58,7 @@ let countdown;
 
 function startCountdown() {
   secondsLeft = 30;
+  timerText.textContent = "00:30";
   resendButton.disabled = true;
   resendButton.classList.add("opacity-50");
 
@@ -65,19 +81,25 @@ function startCountdown() {
 // Start the countdown when the page opens
 startCountdown();
 
-// When Resend is clicked, start the countdown again
-// NOTE: Sending a new code needs a backend. For now we only restart the timer.
-resendButton.addEventListener("click", function () {
-  timerText.textContent = "00:30";
+// When Resend is clicked, ask for a new code and start the countdown again
+resendButton.addEventListener("click", async function () {
+  if (!USE_DEMO_MODE) {
+    try {
+      await Backend.resendResetCode(resetEmail);
+    } catch (error) {
+      showOtpError(error.message);
+      return;
+    }
+  }
+
   startCountdown();
 });
 
 // ---------- Form validation ----------
 
 const form = document.getElementById("otpForm");
-const otpError = document.getElementById("otpError");
 
-form.addEventListener("submit", function (event) {
+form.addEventListener("submit", async function (event) {
   // Stop the page from reloading when the form is sent
   event.preventDefault();
 
@@ -89,8 +111,7 @@ form.addEventListener("submit", function (event) {
 
   // The code must have exactly 6 numbers
   if (code.length !== 6) {
-    otpError.textContent = "Please enter the full 6-digit code.";
-    otpError.classList.remove("hidden");
+    showOtpError("Please enter the full 6-digit code.");
 
     // Make the empty boxes red so the user can see what's missing
     otpBoxes.forEach(function (box) {
@@ -102,9 +123,34 @@ form.addEventListener("submit", function (event) {
         box.classList.add("border-gray-300");
       }
     });
-  } else {
-    // All 6 numbers are there: go to the page for choosing a new password.
-    // NOTE: Only a backend can check if the code is actually correct.
-    window.location.href = "/AuthenticationSection/newPassword.html";
+    return;
+  }
+
+  otpError.classList.add("hidden");
+
+  // DEMO: any 6 numbers go to the new password page
+  if (USE_DEMO_MODE) {
+    window.location.href = "../AuthenticationSection/newPassword.html";
+    return;
+  }
+
+  // REAL: the server checks the code. If it's right, it answers with { resetToken: "..." },
+  // which the new password page needs to prove the code was checked.
+  if (!resetEmail) {
+    showOtpError("Please start again from “Forgot password?” on the login page.");
+    return;
+  }
+
+  const verifyButton = form.querySelector('button[type="submit"]');
+  setLoading(verifyButton, true, "Verifying…");
+
+  try {
+    const resetToken = await Backend.verifyResetCode(code);
+
+    sessionStorage.setItem("resetToken", resetToken);
+    window.location.href = "../AuthenticationSection/newPassword.html";
+  } catch (error) {
+    showOtpError(error.message);
+    setLoading(verifyButton, false);
   }
 });
