@@ -278,17 +278,36 @@ if (fundForm) {
     document.getElementById("newPaymentLink").addEventListener("click", async function () {
       const button = document.getElementById("newPaymentLink");
       setLoading(button, true, "Getting a new link…");
+      // Open the tab now, while the click is still fresh: browsers block tabs opened after
+      // waiting for the server. It's pointed at the checkout once the new link arrives.
+      let payTab = null;
+      try { payTab = window.open("", "_blank"); } catch (e) { payTab = null; }
+      if (payTab) {
+        try { payTab.document.write("<p style='font-family:sans-serif;padding:24px'>Getting your payment page…</p>"); } catch (e) {}
+      }
+      const closeTab = function () { if (payTab && !payTab.closed) payTab.close(); };
       try {
         const p = await Backend.retryShiftPayment(fpShiftId);
         if (p.status !== "awaiting_funding") {
+          closeTab();
           showFunded();
           return;
         }
         showEscrow(p);
-        document.getElementById("paymentCheckNote").textContent = p.checkoutUrl
-          ? "New payment link ready."
-          : "The server didn't send a payment link back. Ask the backend developer to check the HarrenaPay sandbox.";
+        if (p.checkoutUrl && payTab && !payTab.closed) {
+          payTab.location.href = p.checkoutUrl;
+          document.getElementById("paymentCheckNote").textContent =
+            "New payment page opened in another tab. Pay there, then come back and press “I've paid · check status”.";
+        } else if (p.checkoutUrl) {
+          document.getElementById("paymentCheckNote").textContent =
+            "New payment link ready. Press “Make test payment to escrow” above to open it.";
+        } else {
+          closeTab();
+          document.getElementById("paymentCheckNote").textContent =
+            "The server didn't send a payment link back. Ask the backend developer to check the Paystack setup.";
+        }
       } catch (error) {
+        closeTab();
         // The server can't make a new link for this payment (e.g. its retry supports another
         // provider): if this page already has a link, that one still works
         if (document.getElementById("payLink").getAttribute("href") !== "#" &&
