@@ -1670,6 +1670,25 @@ function applicationsInsideShift(shift) {
     .map(function (a) { return Object.assign({ shift: idOf(shift) }, a, { _shift: shift }); });
 }
 
+// The list of applications in a server answer, however it's wrapped:
+// [...], { applications: [...] }, { data: { applications: [...] } }, { shift, applicants: [...] }...
+function applicationsFrom(answer) {
+  const names = ["applications", "applicants", "shiftApplications", "data", "results", "items", "docs", "rows"];
+  let list = asList(answer, names);
+  if (list.length) return list;
+  if (answer && typeof answer === "object") {
+    for (const name of ["data", "result", "shift"]) {
+      list = asList(answer[name], names);
+      if (list.length) return list;
+    }
+    // any array of objects in the answer
+    for (const value of Object.values(answer)) {
+      if (Array.isArray(value) && value.length && typeof value[0] === "object") return value;
+    }
+  }
+  return [];
+}
+
 async function loadFacilityApplicationsList(knownShifts) {
   // Which per-shift route worked last time (so the others aren't tried again on every page)
   let remembered = -1;
@@ -1696,7 +1715,10 @@ async function loadFacilityApplicationsList(knownShifts) {
     const route = SHIFT_APPLICATION_LISTS[index];
     const results = await Promise.all(shifts.map(function (shift) {
       return apiRequest(route(idOf(shift))).then(
-        function (answer) { return { ok: true, shift: shift, list: asList(answer, ["applications", "data"]) }; },
+        function (answer) {
+          console.info("[applicants] " + route(idOf(shift)) + " answered:", answer);
+          return { ok: true, shift: shift, list: applicationsFrom(answer) };
+        },
         function (error) { return { ok: false, shift: shift, error: error }; },
       );
     }));
