@@ -327,15 +327,42 @@ if (approveButton) {
       const submission = await Backend.adminSubmission(reviewType, submissionId);
       fillFields(submission.fields);
       showDocuments(submission.documents);
+      showVerifiedState(submission.status);
     } catch (error) {
       showGeneralError("Couldn't load this submission: " + error.message);
     }
+  }
+
+  // Already verified: nothing left to approve, so lock the buttons and say so
+  function showVerifiedState(status) {
+    const verified = String(status || "").toLowerCase() === "verified";
+    if (!verified) return;
+    const who = reviewType === "facility" ? "facility" : "worker";
+
+    approveButton.disabled = true;
+    approveButton.textContent = "Verified ✓";
+    approveButton.title = "This " + who + " is already verified";
+    approveButton.className = "w-full bg-green-50 text-green-700 border border-green-200 text-sm font-semibold text-center py-3 rounded-lg mt-3 cursor-not-allowed";
+
+    rejectButton.disabled = true;
+    rejectButton.title = "This " + who + " is already verified";
+    rejectButton.classList.add("opacity-50", "cursor-not-allowed");
+    rejectButton.classList.remove("hover:bg-blue-50");
+
+    checks.forEach(function (check) {
+      check.checked = true;
+      check.disabled = true;
+    });
+    if (notesInput) notesInput.disabled = true;
+    checksError.textContent = "This " + who + " has been verified. There's nothing left to review.";
+    checksError.className = "text-xs font-medium text-green-700 mt-3";
   }
 
   loadSubmission();
 
   // APPROVE: every checkbox must be ticked
   approveButton.addEventListener("click", async function () {
+    if (approveButton.disabled) return;
     let allTicked = true;
     checks.forEach(function (check) {
       if (!check.checked) {
@@ -514,8 +541,12 @@ if (userSearch) {
 
       let html = "";
       users.forEach(function (user) {
+        // "View account" goes straight to the review page (documents + verify)
+        const userType = user.type || (user.role === "Facility" ? "facility" : "worker");
+        const reviewLink = (userType === "facility" ? PAGES.reviewFacility : PAGES.reviewWorker) +
+          "?id=" + encodeURIComponent(user.id);
         html += `
-          <tr class="user-row border-t border-gray-100"
+          <tr class="user-row border-t border-gray-100 cursor-pointer hover:bg-slate-50"
               data-name="${escapeHtml(user.name)}" data-role="${escapeHtml(user.role)}"
               data-email="${escapeHtml(user.email)}" data-verification="${escapeHtml(user.verification)}"
               data-access="${escapeHtml(user.access)}" data-details="${escapeHtml(user.details)}"
@@ -524,7 +555,7 @@ if (userSearch) {
             <td class="${CELL}">${escapeHtml(user.role)}</td>
             <td class="${CELL}">${escapeHtml(user.verification)}</td>
             <td class="access-cell ${CELL}">${escapeHtml(user.access)}</td>
-            <td class="${CELL}"><button type="button" class="view-account text-blue-600 hover:underline">View account</button></td>
+            <td class="${CELL}"><a href="${reviewLink}" class="view-account text-blue-600 hover:underline">View account</a></td>
           </tr>`;
       });
 
@@ -578,11 +609,19 @@ if (userSearch) {
 
   // "View account" buttons. One listener on the whole table catches every button,
   // even on rows added later by loadUsers().
+  // "View account" is a link to the review page (the browser follows it).
+  // Clicking anywhere else on a row selects it in the "Selected account" card (for suspending).
   userBody.addEventListener("click", function (event) {
-    if (event.target.classList.contains("view-account")) {
-      // closest("tr") finds the table row the button is in
-      showAccount(event.target.closest("tr"));
+    const row = event.target.closest("tr");
+    if (!row) return;
+    if (event.target.closest("a.view-account")) {
+      if (USE_DEMO_MODE) {
+        event.preventDefault(); // demo rows have no real account to open
+        showAccount(row);
+      }
+      return;
     }
+    showAccount(row);
   });
 
   // Change the access shown for the selected row

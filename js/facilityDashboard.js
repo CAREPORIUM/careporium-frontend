@@ -176,7 +176,10 @@ function shiftCardHtml(shift, withButton) {
   let button = "";
   if (shift.status === "awaiting_payment") {
     badge = '<div class="mb-2"><span class="inline-block bg-amber-50 text-amber-700 text-xs font-semibold px-2 py-1 rounded">Awaiting payment</span></div>';
-    button = `<a href="../FacilityHiringSection/FundShift.html?shift=${encodeURIComponent(shift.id)}" class="block bg-blue-600 text-white text-sm font-medium text-center py-3 rounded-lg hover:bg-blue-700 mt-3">Fund shift</a>`;
+    button = `<div class="grid grid-cols-2 gap-3 mt-3">
+      <a href="../FacilityHiringSection/FundShift.html?shift=${encodeURIComponent(shift.id)}" class="block bg-blue-600 text-white text-sm font-medium text-center py-3 rounded-lg hover:bg-blue-700">Fund shift</a>
+      <button type="button" data-delete-shift="${escapeHtml(shift.id)}" class="block border border-red-600 text-red-600 text-sm font-medium text-center py-3 rounded-lg hover:bg-red-50">Delete</button>
+    </div>`;
   } else if (withButton) {
     if (shift.status === "open") {
       button = `<div class="grid grid-cols-2 gap-3 mt-3">
@@ -199,6 +202,44 @@ function shiftCardHtml(shift, withButton) {
       ${button}
     </div>`;
 }
+
+// ==================================================
+// DELETE AN UNFUNDED SHIFT
+// Any button with data-delete-shift: on a shift card (data-delete-shift="<shiftId>"), or on the
+// Fund shift page (empty value: the shift comes from the page address, ?shift=...).
+// One listener for the whole page, so it also works on cards drawn later.
+// ==================================================
+
+document.addEventListener("click", async function (event) {
+  const button = event.target.closest("[data-delete-shift]");
+  if (!button) return;
+  event.preventDefault();
+
+  const shiftId = button.getAttribute("data-delete-shift") || getUrlValue("shift");
+  if (!shiftId) return;
+  if (!confirm("Delete this shift for good? It hasn't been paid for, so no money is involved. This can't be undone.")) return;
+
+  if (USE_DEMO_MODE) {
+    const card = button.closest(".shift-item");
+    if (card) card.remove();
+    else window.location.href = "../FacilityHiringSection/ManageShifts.html";
+    return;
+  }
+
+  setLoading(button, true, "Deleting…");
+  try {
+    await Backend.deleteShift(shiftId);
+    const card = button.closest(".shift-item");
+    if (card) {
+      card.remove(); // on Manage shifts / the dashboard: just remove the card
+    } else {
+      window.location.href = "../FacilityHiringSection/ManageShifts.html"; // on Fund shift: back to the list
+    }
+  } catch (error) {
+    setLoading(button, false);
+    showGeneralError("Couldn't delete this shift: " + ((error && error.message) || String(error)));
+  }
+});
 
 // ==================================================
 // 1. MOBILE MENU (every page)

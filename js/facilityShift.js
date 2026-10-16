@@ -322,6 +322,39 @@ function render() {
   }
 
   showPaymentStatus();
+  showManageButtons(state, accepted);
+}
+
+// Close / Delete shift.
+// Delete only while nobody is booked (otherwise a booked worker would lose their shift): close it instead.
+function showManageButtons(state, accepted) {
+  const box = document.getElementById("manageShiftBox");
+  if (!box) return;
+  box.classList.toggle("hidden", state === "completed");
+  if (state === "completed") return;
+
+  const closed = shiftData.rawStatus === "closed" || shiftData.rawStatus === "cancelled";
+  const booked = accepted.length > 0;
+  const closeButton = document.getElementById("closeShiftButton");
+  const deleteButton = document.getElementById("deleteShiftButton");
+  const note = document.getElementById("manageShiftNote");
+
+  closeButton.disabled = closed;
+  closeButton.textContent = closed ? "Shift closed" : "Close shift";
+  closeButton.classList.toggle("opacity-50", closed);
+  closeButton.classList.toggle("cursor-not-allowed", closed);
+
+  deleteButton.disabled = booked;
+  deleteButton.classList.toggle("opacity-50", booked);
+  deleteButton.classList.toggle("cursor-not-allowed", booked);
+
+  if (booked) {
+    note.textContent = "This shift has a booked worker, so it can't be deleted. Close it instead to stop new applications.";
+  } else if (closed) {
+    note.textContent = "This shift is closed and no longer takes applications.";
+  } else {
+    note.textContent = "";
+  }
 }
 
 // The shift's payment: while the escrow isn't funded, the shift isn't live for workers.
@@ -440,6 +473,46 @@ confirmButton.addEventListener("click", async function () {
     render();
   }
 });
+
+// "Close shift"
+const closeShiftButton = document.getElementById("closeShiftButton");
+if (closeShiftButton) {
+  closeShiftButton.addEventListener("click", async function () {
+    if (!confirm("Close this shift? Workers will no longer be able to apply for it.")) return;
+    setLoading(closeShiftButton, true, "Closing…");
+    const done = await runAction(function () { return Backend.closeShift(shiftData.id); }, function (shift) {
+      shift.status = "closed";
+    });
+    setLoading(closeShiftButton, false);
+    if (done) {
+      if (shiftData.rawStatus !== "closed") shiftData.rawStatus = "closed"; // in case the server's status word differs
+      render();
+    }
+  });
+}
+
+// "Delete shift" → ask, delete, then back to Manage shifts
+const deleteShiftButton = document.getElementById("deleteShiftButton");
+if (deleteShiftButton) {
+  deleteShiftButton.addEventListener("click", async function () {
+    const funded = shiftData && !shiftData.awaitingPayment;
+    const question = "Delete this shift for good? This can't be undone." +
+      (funded ? "\n\nThis shift's escrow has been funded. Check with support how the money is returned before you delete it." : "");
+    if (!confirm(question)) return;
+    if (USE_DEMO_MODE) {
+      window.location.href = "../FacilityHiringSection/ManageShifts.html";
+      return;
+    }
+    setLoading(deleteShiftButton, true, "Deleting…");
+    try {
+      await Backend.deleteShift(shiftData.id);
+      window.location.href = "../FacilityHiringSection/ManageShifts.html";
+    } catch (error) {
+      setLoading(deleteShiftButton, false);
+      showGeneralError("Couldn't delete this shift: " + ((error && error.message) || String(error)));
+    }
+  });
+}
 
 // The buttons inside the worker cards. One listener catches them all, even after a redraw.
 document.getElementById("workerList").addEventListener("click", async function (event) {

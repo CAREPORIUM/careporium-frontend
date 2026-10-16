@@ -173,6 +173,10 @@
                   <button type="button" id="newPaymentLink" class="border border-blue-600 text-blue-600 text-sm font-medium text-center py-3 rounded-lg hover:bg-blue-50 px-8">Get a new payment link</button>
                 </div>
                 <p id="paymentCheckNote" class="text-xs text-gray-500 mt-3">This page checks the payment automatically every few seconds.</p>
+                <!-- Changed your mind before paying? Deletes the unfunded shift -->
+                <p class="text-xs text-gray-700 mt-5">Don't need this shift any more?
+                  <button type="button" data-delete-shift class="text-red-600 font-medium hover:underline">Delete this shift</button>
+                </p>
               </div>
             </div>
 

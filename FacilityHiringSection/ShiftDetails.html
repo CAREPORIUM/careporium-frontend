@@ -165,6 +165,17 @@
                 <p id="qrDone" class="hidden text-xs text-gray-700 mt-3">This shift is completed. Clock-in and clock-out are closed.</p>
               </section>
             </div>
+
+            <!-- Close or delete the shift (the JS hides this once the shift is completed) -->
+            <section id="manageShiftBox" class="bg-white border border-gray-200 rounded-2xl p-6 mt-5">
+              <h2 class="text-lg font-semibold">Manage this shift</h2>
+              <p class="text-xs text-gray-700 mt-1">Close the shift to stop new applications. Delete it to remove it completely.</p>
+              <div class="flex flex-wrap gap-3 mt-5">
+                <button type="button" id="closeShiftButton" class="border border-blue-600 text-blue-600 text-sm font-medium px-6 py-3 rounded-lg hover:bg-blue-50">Close shift</button>
+                <button type="button" id="deleteShiftButton" class="border border-red-600 text-red-600 text-sm font-medium px-6 py-3 rounded-lg hover:bg-red-50">Delete shift</button>
+              </div>
+              <p id="manageShiftNote" class="text-xs text-gray-700 mt-3"></p>
+            </section>
           </div>
 
           <!-- ==================== "COMPLETE THIS SHIFT?" ==================== -->

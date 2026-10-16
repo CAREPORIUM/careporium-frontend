@@ -2944,6 +2944,7 @@ Backend.facilityShift = async function (shiftId) {
     shortDay: longDate(pick(s, ["shiftDate", "date"])).split(", ")[1] || "",
     needed: needed,
     status: status,
+    rawStatus: String(pick(s, ["status"]) || "").toLowerCase(), // e.g. "open", "closed", "pending_payment"
     qrValue: qrValue,
     qrImage: qrImage,
     qrError: qrError,
@@ -2983,6 +2984,16 @@ Backend.facilityShift = async function (shiftId) {
 
 Backend.completeShift = function (shiftId) {
   return apiRequest(ENDPOINTS.completeShift(shiftId), "PATCH");
+};
+
+// Close a shift: it stays on record, but stops taking applications
+Backend.closeShift = function (shiftId) {
+  return apiRequest(ENDPOINTS.closeShift(shiftId), "PATCH");
+};
+
+// Delete a shift for good
+Backend.deleteShift = function (shiftId) {
+  return apiRequest(ENDPOINTS.deleteShift(shiftId), "DELETE");
 };
 
 Backend.retryPayment = function (shiftId) {
@@ -3432,35 +3443,16 @@ Backend.adminUsers = async function () {
 // ==================================================
 
 // Where a notification's button goes, from what it's about
-// function notificationLink(n, role) {
-//   const link = pick(n, ["link", "url", "actionLink", "actionUrl", "data.link"]);
-//   if (link) return link;
-//   const text = (pick(n, ["type", "category", "event"]) + " " + pick(n, ["title"]) + " " + pick(n, ["message", "body", "text"])).toLowerCase();
-//   const shiftId = idValue(pick(n, ["shift", "shiftId", "data.shiftId", "data.shift", "relatedShift", "metadata.shiftId"]));
-//   const W = "../WorkerShiftMarket/";
-//   const F = "../FacilityHiringSection/";
-//   if (role === "facility") {
-//     if (/applica|applied|applicant/.test(text)) return F + "Applicants.html" + (shiftId ? "?shift=" + encodeURIComponent(shiftId) : "");
-//     if (/payment|fund|escrow|paid|payout/.test(text)) return shiftId ? F + "FundShift.html?shift=" + encodeURIComponent(shiftId) : F + "Payments.html";
-//     if (/verif|document|approv|reject/.test(text)) return F + "FacilityProfile.html";
-//     if (shiftId) return F + "ShiftDetails.html?shift=" + encodeURIComponent(shiftId);
-//     return F + "Dashboard.html";
-//   }
-//   if (/accept|booked|clock|attendance|starts|reminder/.test(text) && shiftId) return W + "UpcomingShifts.html?shift=" + encodeURIComponent(shiftId);
-//   if (/applica|applied/.test(text)) return W + "MyApplications.html";
-//   if (/payment|payout|paid/.test(text)) return W + "Payments.html";
-//   if (/verif|document|approv|reject/.test(text)) return W + "Profile.html";
-//   if (shiftId) return W + "ShiftDetails.html?shift=" + encodeURIComponent(shiftId);
-//   return W + "Dashboard.html";
-// }
-
-// Where a notification's button goes.
-// The backend may send its own link (e.g. "/facility/applications"), meant for a different
-// frontend. Only links to this site's .html pages are used as they are; known backend paths are
-// turned into the matching page; anything else is worked out from what the notification is about.
 function notificationLink(n, role) {
-  const W = "../WorkerShiftMarket/";
-  const F = "../FacilityHiringSection/";
+  const link = pick(n, ["link", "url", "actionLink", "actionUrl", "data.link"]);
+  if (link) return link;
+  const text = (
+    pick(n, ["type", "category", "event"]) +
+    " " +
+    pick(n, ["title"]) +
+    " " +
+    pick(n, ["message", "body", "text"])
+  ).toLowerCase();
   const shiftId = idValue(
     pick(n, [
       "shift",
@@ -3471,74 +3463,32 @@ function notificationLink(n, role) {
       "metadata.shiftId",
     ]),
   );
-  const withShift = function (page) {
-    return page + (shiftId ? "?shift=" + encodeURIComponent(shiftId) : "");
-  };
-
-  const link = String(
-    pick(n, ["link", "url", "actionLink", "actionUrl", "data.link"]) || "",
-  );
-  // 1. A link to one of this site's pages: use it
-  if (/\.html(\?|#|$)/i.test(link)) {
-    return link;
-  }
-  // 2. A backend path: turn it into the matching page
-  if (link) {
-    const path = link
-      .toLowerCase()
-      .replace(/^https?:\/\/[^/]+/, "")
-      .split("?")[0];
-    const isFacility = path.indexOf("/facility") === 0 || role === "facility";
-    if (/application|applicant/.test(path))
-      return isFacility
-        ? withShift(F + "Applicants.html")
-        : W + "MyApplications.html";
-    if (/payment|payout|escrow|fund/.test(path))
-      return isFacility ? F + "Payments.html" : W + "Payments.html";
-    if (/attendance|clock|upcoming/.test(path))
-      return isFacility
-        ? withShift(F + "ShiftDetails.html")
-        : withShift(W + "UpcomingShifts.html");
-    if (/shift/.test(path))
-      return isFacility
-        ? shiftId
-          ? withShift(F + "ShiftDetails.html")
-          : F + "ManageShifts.html"
-        : shiftId
-          ? withShift(W + "ShiftDetails.html")
-          : W + "FindShifts.html";
-    if (/profile|verif|document/.test(path))
-      return isFacility ? F + "FacilityProfile.html" : W + "Profile.html";
-    if (/dispute/.test(path))
-      return isFacility ? F + "Payments.html" : W + "Payments.html";
-    if (/notification/.test(path))
-      return isFacility ? F + "Notifications.html" : W + "Notifications.html";
-  }
-
-  // 3. No usable link: work it out from what the notification says
-  const text = (
-    pick(n, ["type", "category", "event"]) +
-    " " +
-    pick(n, ["title"]) +
-    " " +
-    pick(n, ["message", "body", "text"])
-  ).toLowerCase();
+  const W = "../WorkerShiftMarket/";
+  const F = "../FacilityHiringSection/";
   if (role === "facility") {
     if (/applica|applied|applicant/.test(text))
-      return withShift(F + "Applicants.html");
+      return (
+        F +
+        "Applicants.html" +
+        (shiftId ? "?shift=" + encodeURIComponent(shiftId) : "")
+      );
     if (/payment|fund|escrow|paid|payout/.test(text))
-      return shiftId ? withShift(F + "FundShift.html") : F + "Payments.html";
+      return shiftId
+        ? F + "FundShift.html?shift=" + encodeURIComponent(shiftId)
+        : F + "Payments.html";
     if (/verif|document|approv|reject/.test(text))
       return F + "FacilityProfile.html";
-    if (shiftId) return withShift(F + "ShiftDetails.html");
+    if (shiftId)
+      return F + "ShiftDetails.html?shift=" + encodeURIComponent(shiftId);
     return F + "Dashboard.html";
   }
   if (/accept|booked|clock|attendance|starts|reminder/.test(text) && shiftId)
-    return withShift(W + "UpcomingShifts.html");
+    return W + "UpcomingShifts.html?shift=" + encodeURIComponent(shiftId);
   if (/applica|applied/.test(text)) return W + "MyApplications.html";
   if (/payment|payout|paid/.test(text)) return W + "Payments.html";
   if (/verif|document|approv|reject/.test(text)) return W + "Profile.html";
-  if (shiftId) return withShift(W + "ShiftDetails.html");
+  if (shiftId)
+    return W + "ShiftDetails.html?shift=" + encodeURIComponent(shiftId);
   return W + "Dashboard.html";
 }
 
